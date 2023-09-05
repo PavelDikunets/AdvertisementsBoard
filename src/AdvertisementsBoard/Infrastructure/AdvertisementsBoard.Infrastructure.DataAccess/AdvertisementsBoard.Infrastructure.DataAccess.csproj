@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Application\AdvertisementsBoard.Application.AppServices\AdvertisementsBoard.Application.AppServices.csproj"/>
+    </ItemGroup>
+
 </Project>

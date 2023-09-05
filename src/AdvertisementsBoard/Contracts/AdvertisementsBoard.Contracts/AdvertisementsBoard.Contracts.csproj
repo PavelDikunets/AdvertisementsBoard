@@ -6,4 +6,20 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DocumentationFile>AdvertisementsBoard.Contracts.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DocumentationFile>AdvertisementsBoard.Contracts.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="AdvertisementsBoard.Contracts.xml" />
+      <Content Include="AdvertisementsBoard.Contracts.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

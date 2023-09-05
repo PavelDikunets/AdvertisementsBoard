@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdvertisementsBoard.Contracts</name>
+    </assembly>
+    <members>
+        <member name="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto">
+            <summary>
+                Объявление.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.Title">
+            <summary>
+                Заголовок.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.Description">
+            <summary>
+                Описание.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.Price">
+            <summary>
+                Цена.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.TagNames">
+            <summary>
+                Наименование тегов.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.CategoryId">
+            <summary>
+                Идентификатор категории.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.CategoryName">
+            <summary>
+                Наименование категории
+            </summary>
+        </member>
+        <member name="T:AdvertisementsBoard.Contracts.Base.BaseDto">
+            <summary>
+                Базовый контракт.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Base.BaseDto.Id">
+            <summary>
+                Идентификатор сущности.
+            </summary>
+        </member>
+    </members>
+</doc>
