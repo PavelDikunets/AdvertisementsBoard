@@ -10,4 +10,5 @@
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
     </ItemGroup>
 
+
 </Project>

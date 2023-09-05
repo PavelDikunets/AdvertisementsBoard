@@ -1,8 +1,11 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
+using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Hosts.Api.Controllers;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Advertisements.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Attachments.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +33,10 @@ builder.Services.AddSwaggerGen(s =>
 // Сервис и репозиторий для работы с объявлениями.
 builder.Services.AddTransient<IAdvertisementService, AdvertisementService>();
 builder.Services.AddTransient<IAdvertisementRepository, AdvertisementRepository>();
+
+// Сервис и репозиторий для работы с вложениями.
+builder.Services.AddTransient<IAttachmentService, AttachmentService>();
+builder.Services.AddTransient<IAttachmentRepository, AttachmentRepository>();
 
 var app = builder.Build();
 

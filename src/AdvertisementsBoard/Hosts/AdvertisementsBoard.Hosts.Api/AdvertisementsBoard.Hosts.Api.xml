@@ -56,5 +56,60 @@
             <param name="id">Идентификатор объявления.</param>
             <param name="cancellationToken">Токен отмены операции.</param>
         </member>
+        <member name="T:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController">
+            <summary>
+                Контроллер для работы с вложениями.
+            </summary>
+            <response code="500">Произошла ошибка на стороне сервера.</response>
+        </member>
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.#ctor(AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services.IAttachmentService)">
+            <summary>
+                Инициализирует экземпляр <see cref="T:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController" />
+            </summary>
+            <param name="attachmentService">Сервис для работы с вложениями.</param>
+        </member>
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.GetByIdAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+                Получить вложение по идентификатору.
+            </summary>
+            <param name="id">Идентификатор вложения.</param>
+            <param name="cancellationToken">Токен отмены операции.</param>
+            <returns>Модель объявления <see cref="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto" /></returns>
+            <response code="200">Ok.</response>
+            <response code="404">Не найдено.</response>
+        </member>
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.GetAllAsync(System.Threading.CancellationToken,System.Int32,System.Int32)">
+            <summary>
+                Получить постраничные вложения.
+            </summary>
+            <param name="cancellationToken">Токен отмены операции.</param>
+            <param name="pageSize">Размер страницы.</param>
+            <param name="pageIndex">Номер страницы.</param>
+            <returns>Коллекция вложений <see cref="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto" /></returns>
+            <response code="200">Ok.</response>
+            <response code="404">Не найдены.</response>
+        </member>
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.UploadAsync(AdvertisementsBoard.Contracts.Attachments.AttachmentDto,System.Threading.CancellationToken)">
+            <summary>
+                Загрузить вложение.
+            </summary>
+            <param name="dto">Модель вложения.</param>
+            <param name="cancellationToken">Токен отмены операции.</param>
+            <response code="201">Вложение успешно загружено.</response>
+        </member>
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.UpdateAsync(AdvertisementsBoard.Contracts.Attachments.AttachmentDto,System.Threading.CancellationToken)">
+            <summary>
+                Редактировать вложение.
+            </summary>
+            <param name="dto">Модель вложения.</param>
+            <param name="cancellationToken">Токен отмены операции.</param>
+        </member>
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.DeleteByIdAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+                Удалить вложение по идентификатору.
+            </summary>
+            <param name="id">Идентификатор вложения.</param>
+            <param name="cancellationToken">Токен отмены операции.</param>
+        </member>
     </members>
 </doc>

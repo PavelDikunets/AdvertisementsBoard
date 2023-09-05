@@ -39,6 +39,16 @@
                 Наименование категории
             </summary>
         </member>
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto">
+            <summary>
+                Вложения.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.AttachmentDto.FilePath">
+            <summary>
+                Путь к файлу.
+            </summary>
+        </member>
         <member name="T:AdvertisementsBoard.Contracts.Base.BaseDto">
             <summary>
                 Базовый контракт.
