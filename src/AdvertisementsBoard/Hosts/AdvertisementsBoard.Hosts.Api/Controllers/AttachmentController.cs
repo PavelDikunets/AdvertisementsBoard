@@ -68,7 +68,7 @@ public class AttachmentController : ControllerBase
     /// <response code="201">Вложение успешно загружено.</response>
     [ProducesResponseType(typeof(AttachmentDto), StatusCodes.Status201Created)]
     [HttpPost]
-    public async Task<IActionResult> UploadAsync(AttachmentDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadAsync(CreateAttachmentDto dto, CancellationToken cancellationToken)
     {
         return Created(string.Empty, null);
     }
@@ -79,7 +79,7 @@ public class AttachmentController : ControllerBase
     /// <param name="dto">Модель вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     [HttpPut]
-    public async Task<IActionResult> UpdateAsync(AttachmentDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAsync(UpdateAttachmentDto dto, CancellationToken cancellationToken)
     {
         return Ok();
     }

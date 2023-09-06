@@ -93,7 +93,7 @@
             <response code="200">Ok.</response>
             <response code="404">Не найдены.</response>
         </member>
-        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.UploadAsync(AdvertisementsBoard.Contracts.Attachments.AttachmentDto,System.Threading.CancellationToken)">
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.UploadAsync(AdvertisementsBoard.Contracts.Attachments.CreateAttachmentDto,System.Threading.CancellationToken)">
             <summary>
                 Загрузить вложение.
             </summary>
@@ -101,7 +101,7 @@
             <param name="cancellationToken">Токен отмены операции.</param>
             <response code="201">Вложение успешно загружено.</response>
         </member>
-        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.UpdateAsync(AdvertisementsBoard.Contracts.Attachments.AttachmentDto,System.Threading.CancellationToken)">
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.UpdateAsync(AdvertisementsBoard.Contracts.Attachments.UpdateAttachmentDto,System.Threading.CancellationToken)">
             <summary>
                 Редактировать вложение.
             </summary>
