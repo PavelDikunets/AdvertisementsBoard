@@ -39,12 +39,92 @@
                 Наименование категории
             </summary>
         </member>
+        <member name="T:AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto">
+            <summary>
+                Модель создания объявления.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto.Title">
+            <summary>
+                Заголовок.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto.Description">
+            <summary>
+                Описание.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto.Price">
+            <summary>
+                Цена.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto.TagNames">
+            <summary>
+                Наименование тегов.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto.CategoryId">
+            <summary>
+                Идентификатор категории.
+            </summary>
+        </member>
+        <member name="T:AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto">
+            <summary>
+                Модель обновления объявления.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto.Title">
+            <summary>
+                Заголовок.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto.Description">
+            <summary>
+                Описание.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto.Price">
+            <summary>
+                Цена.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto.TagNames">
+            <summary>
+                Наименование тегов.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto.CategoryId">
+            <summary>
+                Идентификатор категории.
+            </summary>
+        </member>
         <member name="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto">
             <summary>
                 Вложения.
             </summary>
         </member>
         <member name="P:AdvertisementsBoard.Contracts.Attachments.AttachmentDto.FilePath">
+            <summary>
+                Путь к файлу.
+            </summary>
+        </member>
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.CreateAttachmentDto">
+            <summary>
+                Модель создания вложения.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.CreateAttachmentDto.FilePath">
+            <summary>
+                Путь к файлу.
+            </summary>
+        </member>
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.UpdateAttachmentDto">
+            <summary>
+                Модель обновления вложения.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.UpdateAttachmentDto.FilePath">
             <summary>
                 Путь к файлу.
             </summary>

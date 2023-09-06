@@ -8,6 +8,7 @@
             <summary>
                 Контроллер для работы с объявлениями.
             </summary>
+            <response code="500">Произошла ошибка на стороне сервера.</response>
         </member>
         <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.#ctor(AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services.IAdvertisementService)">
             <summary>
@@ -22,9 +23,8 @@
             <param name="id">Идентификатор объявления.</param>
             <param name="cancellationToken">Токен отмены операции.</param>
             <returns>Модель объявления <see cref="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto" /></returns>
-            <response code="200">Ресурс успешно найден.</response>
-            <response code="404">Ресурс не найден.</response>
-            <response code="500">Произошла ошибка на стороне сервера.</response>
+            <response code="200">Ok.</response>
+            <response code="404">Объявление не найдено.</response>
         </member>
         <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.GetAllAsync(System.Threading.CancellationToken,System.Int32,System.Int32)">
             <summary>
@@ -34,13 +34,17 @@
             <param name="pageSize">Размер страницы.</param>
             <param name="pageIndex">Номер страницы.</param>
             <returns>Коллекция объявлений <see cref="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto" /></returns>
+            <response code="200">Ok.</response>
+            <response code="404">Объявления не найдены.</response>
         </member>
-        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.CreateAsync(AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto,System.Threading.CancellationToken)">
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.CreateAsync(AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto,System.Threading.CancellationToken)">
             <summary>
                 Создать объявление.
             </summary>
-            <param name="dto">Модель объявления</param>
+            <param name="dto">Модель создания объявления</param>
             <param name="cancellationToken">Токен отмены операции.</param>
+            <returns>Идентификатор объявления.</returns>
+            <response code="201">Объявление успешно создано.</response>
         </member>
         <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.UpdateAsync(AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto,System.Threading.CancellationToken)">
             <summary>
