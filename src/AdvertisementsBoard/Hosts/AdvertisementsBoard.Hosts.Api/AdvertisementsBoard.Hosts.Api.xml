@@ -46,7 +46,7 @@
             <returns>Идентификатор объявления.</returns>
             <response code="201">Объявление успешно создано.</response>
         </member>
-        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.UpdateAsync(AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto,System.Threading.CancellationToken)">
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.UpdateAsync(AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto,System.Threading.CancellationToken)">
             <summary>
                 Редактировать объявление.
             </summary>

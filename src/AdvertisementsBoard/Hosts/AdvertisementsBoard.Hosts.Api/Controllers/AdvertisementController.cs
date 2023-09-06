@@ -81,7 +81,7 @@ public class AdvertisementController : ControllerBase
     /// <param name="dto">Модель объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     [HttpPut]
-    public async Task<IActionResult> UpdateAsync(AdvertisementDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAsync(UpdateAdvertisementDto dto, CancellationToken cancellationToken)
     {
         return Ok();
     }
