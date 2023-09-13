@@ -9,20 +9,34 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5259
-      - ConnectionStrings__PostqresDb=Server=postgres;Database=AdvertisementsBoard;Username=postgres;Password=password;Port=5432
+      - ConnectionStrings__PostgresAdvertisementsBoardDb=Host=database;Database=AdvertisementsBoardDb;Username=postgres;Password=password;Port=5432
     ports:
       - "5259:5259"
     depends_on:
-      - postgres
+      - migrator
     networks:
       - advertisementsboard-network
   
-  postgres:
-    container_name: advertisementsboard-postqres
-    image: "postgres"
+  migrator:
+    container_name: advertisementsboard-migrator
+    build:
+      context: .
+      dockerfile: src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Migrator/Dockerfile
+    ports:
+      - "5230:5230"
+    environment:
+      - ConnectionStrings__PostgresAdvertisementsBoardDb=Host=database;Database=AdvertisementsBoardDb;Username=postgres;Password=password;Port=5432
+    depends_on:
+      - database
+    networks:
+      - advertisementsboard-network
+  
+  database:
+    container_name: advertisementsboard-database
+    image: postgres
     restart: always
     environment:
-      - POSTGRES_DB=AdvertisementsBoard
+      - POSTGRES_DB=AdvertisementsBoardDb
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     ports:
