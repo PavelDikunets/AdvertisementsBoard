@@ -1,7 +1,7 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Contracts.Attachments;
 
-namespace AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Attachments.Repositories;
+namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
 
 /// <summary>
 ///     Репозиторий объявлений.

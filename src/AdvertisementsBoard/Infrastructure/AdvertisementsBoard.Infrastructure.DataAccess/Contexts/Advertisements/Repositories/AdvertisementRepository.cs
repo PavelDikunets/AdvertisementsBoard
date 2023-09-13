@@ -2,7 +2,7 @@
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Domain.Advertisements;
 
-namespace AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Advertisements.Repositories;
+namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 
 /// <summary>
 ///     Репозиторий объявлений.
@@ -36,7 +36,7 @@ public class AdvertisementRepository : IAdvertisementRepository
     {
         model.Id = Guid.NewGuid();
         _advertisements.Add(model);
-        return Task.Run((() => model.Id), cancellationToken);
+        return Task.Run(() => model.Id, cancellationToken);
     }
 
     /// <inheritdoc />

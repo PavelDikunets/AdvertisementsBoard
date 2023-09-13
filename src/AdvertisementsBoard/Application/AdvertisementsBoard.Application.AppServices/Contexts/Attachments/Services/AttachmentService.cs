@@ -7,7 +7,7 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Servi
 public class AttachmentService : IAttachmentService
 {
     private readonly IAttachmentRepository _attachmentRepository;
-    
+
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AttachmentService" />
     /// </summary>

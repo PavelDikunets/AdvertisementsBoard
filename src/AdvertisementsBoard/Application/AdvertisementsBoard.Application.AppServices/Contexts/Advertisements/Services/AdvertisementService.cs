@@ -41,7 +41,7 @@ public class AdvertisementService : IAdvertisementService
             TagNames = dto.TagNames,
             CategoryId = dto.CategoryId
         };
-        
+
         return _advertisementRepository.CreateAsync(advertisement, cancellationToken);
     }
 
@@ -57,7 +57,7 @@ public class AdvertisementService : IAdvertisementService
             TagNames = dto.TagNames,
             CategoryId = dto.CategoryId
         };
-        
+
         return _advertisementRepository.UpdateAsync(advertisement, cancellationToken);
     }
 
