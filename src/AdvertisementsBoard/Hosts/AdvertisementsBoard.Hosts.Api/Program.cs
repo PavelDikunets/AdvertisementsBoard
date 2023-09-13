@@ -4,8 +4,13 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositor
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Hosts.Api.Controllers;
-using AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Advertisements.Repositories;
-using AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Attachments.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contexts;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess.Interfaces;
+using AdvertisementsBoard.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +34,23 @@ builder.Services.AddSwaggerGen(s =>
             s.IncludeXmlComments(xmlPath);
     }
 });
+
+#region База данных: конфигурация и регистрация контекста
+
+// Добавляем DbContext
+builder.Services.AddSingleton<IDbContextOptionsConfigurator<BaseDbContext>, BaseDbContextConfiguration>();
+
+builder.Services.AddDbContext<BaseDbContext>((Action<IServiceProvider, DbContextOptionsBuilder>)
+    ((sp, dbOptions) => sp.GetRequiredService<IDbContextOptionsConfigurator<BaseDbContext>>()
+        .Configure((DbContextOptionsBuilder<BaseDbContext>)dbOptions)));
+
+builder.Services.AddScoped((Func<IServiceProvider, DbContext>)(sp => sp.GetRequiredService<BaseDbContext>()));
+
+#endregion
+
+// Регистрация open generic репозитория
+builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+
 
 // Сервис и репозиторий для работы с объявлениями.
 builder.Services.AddTransient<IAdvertisementService, AdvertisementService>();
