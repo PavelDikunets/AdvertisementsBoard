@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
@@ -25,9 +25,9 @@
         <Content Include="..\..\..\..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
-        <None Remove="AdvertisementsBoard.Hosts.Api.xml" />
+        <None Remove="AdvertisementsBoard.Hosts.Api.xml"/>
         <Content Include="AdvertisementsBoard.Hosts.Api.xml">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
@@ -35,7 +35,9 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Application\AdvertisementsBoard.Application.AppServices\AdvertisementsBoard.Application.AppServices.csproj"/>
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
-        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.DataAccess\AdvertisementsBoard.Infrastructure.DataAccess.csproj" />
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.DataAccess\AdvertisementsBoard.Infrastructure.DataAccess.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj" />
+        <ProjectReference Include="..\AdvertisementsBoard.Hosts.Migrator\AdvertisementsBoard.Hosts.Migrator.csproj"/>
     </ItemGroup>
 
 </Project>

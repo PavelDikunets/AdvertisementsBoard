@@ -16,10 +16,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="AdvertisementsBoard.Contracts.xml" />
-      <Content Include="AdvertisementsBoard.Contracts.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <None Remove="AdvertisementsBoard.Contracts.xml"/>
+        <Content Include="AdvertisementsBoard.Contracts.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 

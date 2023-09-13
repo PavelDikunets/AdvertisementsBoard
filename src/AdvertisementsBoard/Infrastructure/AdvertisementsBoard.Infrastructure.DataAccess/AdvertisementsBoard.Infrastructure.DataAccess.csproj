@@ -9,8 +9,27 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Application\AdvertisementsBoard.Application.AppServices\AdvertisementsBoard.Application.AppServices.csproj"/>
-        <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj" />
+        <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj"/>
     </ItemGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1"/>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Reference Include="AdvertisementsBoard.Application.AppServices">
+            <HintPath>..\..\Application\AdvertisementsBoard.Application.AppServices\bin\Debug\net7.0\AdvertisementsBoard.Application.AppServices.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Configuration">
+            <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\7.0.10\Microsoft.Extensions.Configuration.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
 
 
 
