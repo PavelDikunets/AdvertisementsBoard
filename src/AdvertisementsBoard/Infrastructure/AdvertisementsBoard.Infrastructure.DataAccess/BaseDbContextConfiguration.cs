@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts;
+namespace AdvertisementsBoard.Infrastructure.DataAccess;
 
 /// <summary>
 ///     Конфигурация контекста БД.
 /// </summary>
 public class BaseDbContextConfiguration : IDbContextOptionsConfigurator<BaseDbContext>
 {
-    private const string PostqresConnectionStringName = "PostqresDb";
     private readonly IConfiguration _configuration;
+    private readonly ILoggerFactory _loggerFactory;
 
     /// <summary>
     ///     Инициализация экземпляра <see cref="BaseDbContextConfiguration" />
@@ -21,6 +21,7 @@ public class BaseDbContextConfiguration : IDbContextOptionsConfigurator<BaseDbCo
     public BaseDbContextConfiguration(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         _configuration = configuration;
+        _loggerFactory = loggerFactory;
     }
 
     /// <inheritdoc />
@@ -28,10 +29,7 @@ public class BaseDbContextConfiguration : IDbContextOptionsConfigurator<BaseDbCo
     {
         var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
         var configuration = builder.Build();
-        var connectionString = _configuration.GetConnectionString(PostqresConnectionStringName);
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException($"Строка с именем \"{PostqresConnectionStringName}\" не найдена");
-
+        var connectionString = configuration.GetConnectionString("PostgresDb");
         options.UseNpgsql(connectionString);
     }
 }

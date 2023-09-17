@@ -1,12 +1,12 @@
 using System.Linq.Expressions;
 
-namespace AdvertisementsBoard.Infrastructure.DataAccess;
+namespace AdvertisementsBoard.Infrastructure.Repositories;
 
 /// <summary>
 ///     Базовый репозиторий.
 /// </summary>
 /// <typeparam name="TEntity">Сущность.</typeparam>
-public interface IBaseRepository<TEntity> where TEntity : class
+public interface IBaseDbRepository<TEntity> where TEntity : class
 {
     /// <summary>
     ///     Получить все элементы сущности <see cref="TEntity" />.

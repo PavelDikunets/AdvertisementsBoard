@@ -1,53 +1,63 @@
-version: '3.7'
+version: '3.8'
 services:
   
   api:
-    container_name: advertisementsboard-api
+    container_name: advertisements_board-api
     build:
       context: .
       dockerfile: src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5259
-      - ConnectionStrings__PostgresAdvertisementsBoardDb=Host=database;Database=AdvertisementsBoardDb;Username=postgres;Password=password;Port=5432
+      - PostgresDb__Host=database;Database=AdvertisementsBoard;Username=dbuser;Password=password;Port=5432
     ports:
       - "5259:5259"
     depends_on:
+      - database
       - migrator
     networks:
-      - advertisementsboard-network
+      - advertisements_board-network
   
   migrator:
-    container_name: advertisementsboard-migrator
+    container_name: advertisements_board-migrator
     build:
       context: .
       dockerfile: src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Migrator/Dockerfile
     ports:
       - "5230:5230"
     environment:
-      - ConnectionStrings__PostgresAdvertisementsBoardDb=Host=database;Database=AdvertisementsBoardDb;Username=postgres;Password=password;Port=5432
+      - ConnectionStrings__PostgresDb=Host=database;Database=AdvertisementsBoard;Username=dbuser;Password=password;Port=5432;
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
-      - advertisementsboard-network
+      - advertisements_board-network
   
   database:
-    container_name: advertisementsboard-database
-    image: postgres
+    container_name: advertisements_board-database
+    image: postgres:latest
+    command: ["postgres", "-c", "listen_addresses=0.0.0.0"]
     restart: always
     environment:
-      - POSTGRES_DB=AdvertisementsBoardDb
-      - POSTGRES_USER=postgres
+      - POSTGRES_DB=AdvertisementsBoard
+      - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - advertisements_board-data:/var/lib/postgresql/data/
     networks:
-      - advertisementsboard-network
+      - advertisements_board-network
+    healthcheck:
+      test: [ "CMD-SHELL" , "pg_isready -U postqres" ]
+      interval: 15s
+      timeout: 30s
+      retries: 2
 
 networks:
-  advertisementsboard-network:
+  advertisements_board-network:
+    driver:  bridge
+    enable_ipv6: false
 
 volumes:
-  postgres_data:
+  advertisements_board-data:

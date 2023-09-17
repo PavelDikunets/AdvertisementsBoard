@@ -11,7 +11,7 @@ public class AttachmentService : IAttachmentService
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AttachmentService" />
     /// </summary>
-    /// <param name="attachmentRepository">Репозиторий для работы с вложениями. </param>
+    /// <param name="attachmentRepository">Репозиторий для работы с вложениями.</param>
     public AttachmentService(IAttachmentRepository attachmentRepository)
     {
         _attachmentRepository = attachmentRepository;

@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AdvertisementsBoard.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.Repositories;
@@ -7,21 +6,22 @@ namespace AdvertisementsBoard.Infrastructure.Repositories;
 /// <summary>
 ///     Базовый репозиторий.
 /// </summary>
-public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
+public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntity : class
 {
+    protected readonly DbContext DbContext;
+    protected DbSet<TEntity> DbSet;
+
     /// <summary>
-    ///     Инициализирует экземпляр <see cref="BaseRepository{TEntity}" />.
+    ///     Инициализирует экземпляр <see cref="BaseDbRepository{TEntity}" />.
     /// </summary>
     /// <param name="dbContext">Контекст базы данных.</param>
     /// <param name="dbSet">Таблица базы данных.</param>
-    public BaseRepository(DbContext dbContext, DbSet<TEntity> dbSet)
+    public BaseDbRepository(DbContext dbContext)
     {
         DbContext = dbContext;
         DbSet = DbContext.Set<TEntity>();
     }
 
-    protected DbContext DbContext { get; }
-    protected DbSet<TEntity> DbSet { get; }
 
     public IQueryable<TEntity> GetAll()
     {

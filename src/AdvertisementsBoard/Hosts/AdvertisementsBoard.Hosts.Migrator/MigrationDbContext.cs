@@ -1,5 +1,4 @@
 using AdvertisementsBoard.Infrastructure.DataAccess;
-using AdvertisementsBoard.Infrastructure.DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Hosts.Migrator;

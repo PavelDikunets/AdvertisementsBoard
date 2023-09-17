@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         services.AddDbContext<MigrationDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("PostgresAdvertisementsBoardDb")));
+            options.UseNpgsql(configuration.GetConnectionString("PostgresDb")));
         return services;
     }
 }
