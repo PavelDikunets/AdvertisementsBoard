@@ -30,7 +30,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisementsBoard.Infrast
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisementsBoard.Infrastructure", "src\AdvertisementsBoard\Infrastructure\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj", "{4FF7F6A5-CD53-45E6-A09A-65053D11D128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisementsBoard.Infrastructure.ComponentRegistar", "src\AdvertisementsBoard\Infrastructure\AdvertisementsBoard.Infrastructure.ComponentRegistar\AdvertisementsBoard.Infrastructure.ComponentRegistar.csproj", "{F589D8FB-A030-4A3C-9420-820BCD8D24CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisementsBoard.Infrastructure.ComponentRegistrar", "src\AdvertisementsBoard\Infrastructure\AdvertisementsBoard.Infrastructure.ComponentRegistrar\AdvertisementsBoard.Infrastructure.ComponentRegistrar.csproj", "{F589D8FB-A030-4A3C-9420-820BCD8D24CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisementsBoard.Hosts.Migrator", "src\AdvertisementsBoard\Hosts\AdvertisementsBoard.Hosts.Migrator\AdvertisementsBoard.Hosts.Migrator.csproj", "{ADD51899-2C83-45DD-B7C6-B4CC8077D488}"
 EndProject

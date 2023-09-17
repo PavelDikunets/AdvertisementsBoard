@@ -11,20 +11,21 @@ public class CreateAdvertisementDto
     ///     Заголовок.
     /// </summary>
     [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
-    [StringLength(20, MinimumLength = 5, ErrorMessage = "Поле {0} должно содержать от {2} до {1} символов.")]
+    [StringLength(100, MinimumLength = 5, ErrorMessage = "Поле {0} должно содержать от {2} до {1} символов.")]
     public string Title { get; set; }
 
     /// <summary>
     ///     Описание.
     /// </summary>
-    [Required(ErrorMessage = "Поле Description не может быть пустым.")]
-    [StringLength(100, MinimumLength = 20, ErrorMessage = "Поле {0} должно содержать от {2} до {1} символов.")]
+    [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
+    [StringLength(500, MinimumLength = 20, ErrorMessage = "Поле {0} должно содержать от {2} до {1} символов.")]
     public string Description { get; set; }
 
     /// <summary>
     ///     Цена.
     /// </summary>
-    [Range(0, 100_000_000, ErrorMessage = "Поле {0} должно быть в диапазоне от {1} до {2}.")]
+    [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
+    [Range(0, 100_000_000_000, ErrorMessage = "Поле {0} должно быть в диапазоне от {1} до {2}.")]
     public decimal Price { get; set; }
 
     /// <summary>

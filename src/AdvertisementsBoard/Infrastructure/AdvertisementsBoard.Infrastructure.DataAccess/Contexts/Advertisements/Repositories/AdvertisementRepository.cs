@@ -1,6 +1,7 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
-using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Domain.Advertisements;
+using AdvertisementsBoard.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 
@@ -9,45 +10,42 @@ namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.
 /// </summary>
 public class AdvertisementRepository : IAdvertisementRepository
 {
-    private readonly List<Advertisement> _advertisements = new();
+    private readonly IBaseDbRepository<Advertisement> _repository;
 
-    /// <inheritdoc />
-    public Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public AdvertisementRepository(IBaseDbRepository<Advertisement> repository)
     {
-        return Task.Run(() => new AdvertisementDto
-        {
-            Id = Guid.NewGuid(),
-            Title = "Тестовый заголовок.",
-            Description = "Тестовое описание.",
-            Price = 101010101010.101M,
-            TagNames = new[] { "ТестТег1", "ТестТег2" },
-            CategoryName = "Тестовая категория."
-        }, cancellationToken);
+        _repository = repository;
     }
 
     /// <inheritdoc />
-    public Task<AdvertisementDto> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10, int pageIndex = 0)
+    public async Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return null;
+        return await _repository.GetByIdAsync(id, cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<Guid> CreateAsync(Advertisement model, CancellationToken cancellationToken)
+    public async Task<List<Advertisement>> GetAllAsync(CancellationToken cancellationToken)
     {
-        model.Id = Guid.NewGuid();
-        _advertisements.Add(model);
-        return Task.Run(() => model.Id, cancellationToken);
+        return await _repository.GetAll().ToListAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<AdvertisementDto> UpdateAsync(Advertisement model, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Advertisement model, CancellationToken cancellationToken)
     {
-        return null;
+        await _repository.AddAsync(model, cancellationToken);
+        return model.Id;
     }
 
     /// <inheritdoc />
-    public Task<AdvertisementDto> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Advertisement> UpdateAsync(Advertisement model, CancellationToken cancellationToken)
     {
-        return null;
+        await _repository.UpdateAsync(model, cancellationToken);
+        return model;
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteByIdAsync(Advertisement model, CancellationToken cancellationToken)
+    {
+        await _repository.DeleteAsync(model, cancellationToken);
     }
 }

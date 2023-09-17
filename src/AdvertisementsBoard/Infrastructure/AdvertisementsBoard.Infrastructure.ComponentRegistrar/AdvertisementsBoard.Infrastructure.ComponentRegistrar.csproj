@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>AdvertisementsBoard.Infrastructure.ComponentRegistrar</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Application\AdvertisementsBoard.Application.AppServices\AdvertisementsBoard.Application.AppServices.csproj"/>
+        <ProjectReference Include="..\AdvertisementsBoard.Infrastructure.DataAccess\AdvertisementsBoard.Infrastructure.DataAccess.csproj"/>
+        <ProjectReference Include="..\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0"/>
+    </ItemGroup>
+
+</Project>

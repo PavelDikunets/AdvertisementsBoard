@@ -12,7 +12,7 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
+    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
     Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -21,8 +21,8 @@ public interface IAdvertisementService
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция объявлений <see cref="AdvertisementDto" /></returns>
-    public Task<AdvertisementDto> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
+    /// <returns>Коллекция объявлений <see cref="AdvertisementDto" />.</returns>
+    public Task<List<AdvertisementDto>> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
         int pageIndex = 0);
 
     /// <summary>
@@ -30,7 +30,7 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="dto">Модель объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор <see cref="AdvertisementDto" /></returns>
+    /// <returns>Идентификатор <see cref="AdvertisementDto" />.</returns>
     public Task<Guid> CreateAsync(CreateAdvertisementDto dto, CancellationToken cancellationToken);
 
     /// <summary>
@@ -43,7 +43,8 @@ public interface IAdvertisementService
     /// <summary>
     ///     Удалить объявление по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор объявления.</param>
+    /// <param name="dto"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AdvertisementDto> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <param name="id">Идентификатор объявления.</param>
+    public Task<string> DeleteByIdAsync(AdvertisementDto dto, CancellationToken cancellationToken);
 }

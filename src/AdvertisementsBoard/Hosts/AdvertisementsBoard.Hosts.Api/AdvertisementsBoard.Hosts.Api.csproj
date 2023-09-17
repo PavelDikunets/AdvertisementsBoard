@@ -2,10 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -35,9 +35,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Application\AdvertisementsBoard.Application.AppServices\AdvertisementsBoard.Application.AppServices.csproj"/>
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.ComponentRegistrar\AdvertisementsBoard.Infrastructure.ComponentRegistrar.csproj"/>
         <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.DataAccess\AdvertisementsBoard.Infrastructure.DataAccess.csproj"/>
-        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj"/>
         <ProjectReference Include="..\AdvertisementsBoard.Hosts.Migrator\AdvertisementsBoard.Hosts.Migrator.csproj"/>
     </ItemGroup>
+
 
 </Project>
