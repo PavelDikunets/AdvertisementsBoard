@@ -1,11 +1,9 @@
-﻿using AdvertisementsBoard.Contracts.Base;
-
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-///     Объявление.
+/// Модель объявления.
 /// </summary>
-public class AdvertisementDto : BaseDto
+public class AdvertisementDto
 {
     /// <summary>
     ///     Заголовок.
@@ -28,9 +26,9 @@ public class AdvertisementDto : BaseDto
     public string[] TagNames { get; set; }
 
     /// <summary>
-    ///     Идентификатор категории.
+    /// Статус активности.
     /// </summary>
-    public Guid CategoryId { get; set; }
+    public bool IsActive { get; set; }
 
     /// <summary>
     ///     Наименование категории

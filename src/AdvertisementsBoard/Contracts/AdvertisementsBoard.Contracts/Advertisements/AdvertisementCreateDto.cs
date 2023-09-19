@@ -5,7 +5,7 @@ namespace AdvertisementsBoard.Contracts.Advertisements;
 /// <summary>
 ///     Модель создания объявления.
 /// </summary>
-public class CreateAdvertisementDto
+public class AdvertisementCreateDto
 {
     /// <summary>
     ///     Заголовок.
@@ -31,12 +31,18 @@ public class CreateAdvertisementDto
     /// <summary>
     ///     Наименование тегов.
     /// </summary>
-    [MaxLength(6, ErrorMessage = "Максимальное количество {0}: {1} ")]
-    [MinLength(1, ErrorMessage = "Минимальное количество {0}: {1} ")]
+    [MaxLength(6, ErrorMessage = "Максимальное количество {0}: {1}")]
+    [MinLength(1, ErrorMessage = "Минимальное количество {0}: {1}")]
     public string[] TagNames { get; set; }
 
     /// <summary>
-    ///     Идентификатор категории.
+    ///     Наименование категории
     /// </summary>
-    public Guid CategoryId { get; set; }
+    [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
+    public string CategoryName { get; set; }
+    
+    /// <summary>
+    /// Статус активности.
+    /// </summary>
+    public bool IsActive { get; set; }
 }
