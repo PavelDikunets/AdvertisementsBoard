@@ -1,12 +1,12 @@
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-/// Модель созданного объявления.
+///     Модель созданного объявления.
 /// </summary>
 public class AdvertisementCreatedDto
 {
     /// <summary>
-    /// Идентификатор созданного объявления.
+    ///     Идентификатор созданного объявления.
     /// </summary>
     public Guid Id { get; set; }
 }

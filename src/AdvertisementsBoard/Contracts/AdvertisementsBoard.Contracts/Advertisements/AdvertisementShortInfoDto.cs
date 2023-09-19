@@ -1,7 +1,7 @@
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-/// Модель объявления с краткой информацией.
+///     Модель объявления с краткой информацией.
 /// </summary>
 public class AdvertisementShortInfoDto
 {
@@ -9,7 +9,7 @@ public class AdvertisementShortInfoDto
     ///     Заголовок.
     /// </summary>
     public string Title { get; set; }
-    
+
     /// <summary>
     ///     Цена.
     /// </summary>

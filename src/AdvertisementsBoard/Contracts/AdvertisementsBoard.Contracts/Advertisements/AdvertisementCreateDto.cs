@@ -40,9 +40,9 @@ public class AdvertisementCreateDto
     /// </summary>
     [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
     public string CategoryName { get; set; }
-    
+
     /// <summary>
-    /// Статус активности.
+    ///     Статус активности.
     /// </summary>
     public bool IsActive { get; set; }
 }

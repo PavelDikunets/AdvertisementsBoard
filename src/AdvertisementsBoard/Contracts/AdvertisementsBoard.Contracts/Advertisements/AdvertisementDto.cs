@@ -1,7 +1,7 @@
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-/// Модель объявления.
+///     Модель объявления.
 /// </summary>
 public class AdvertisementDto
 {
@@ -26,7 +26,7 @@ public class AdvertisementDto
     public string[] TagNames { get; set; }
 
     /// <summary>
-    /// Статус активности.
+    ///     Статус активности.
     /// </summary>
     public bool IsActive { get; set; }
 

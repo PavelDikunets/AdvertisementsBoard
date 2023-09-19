@@ -35,7 +35,6 @@ public class AttachmentController : ControllerBase
     [HttpGet("Get-by-id")]
     [ProducesResponseType(typeof(AttachmentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var result = await _attachmentService.GetByIdAsync(id, cancellationToken);

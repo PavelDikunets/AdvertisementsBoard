@@ -8,14 +8,13 @@ namespace AdvertisementsBoard.Infrastructure.Repositories;
 /// </summary>
 public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntity : class
 {
-    protected readonly DbContext DbContext;
+    protected DbContext DbContext;
     protected DbSet<TEntity> DbSet;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="BaseDbRepository{TEntity}" />.
     /// </summary>
     /// <param name="dbContext">Контекст базы данных.</param>
-    /// <param name="dbSet">Таблица базы данных.</param>
     public BaseDbRepository(DbContext dbContext)
     {
         DbContext = dbContext;
@@ -39,7 +38,11 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
     /// <inheritdoc />
     public async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await DbSet.FindAsync(id, cancellationToken);
+        var result = await DbSet.FindAsync(id, cancellationToken);
+
+        if (result == null) throw new ArgumentNullException(nameof(result));
+
+        return result;
     }
 
     /// <inheritdoc />
