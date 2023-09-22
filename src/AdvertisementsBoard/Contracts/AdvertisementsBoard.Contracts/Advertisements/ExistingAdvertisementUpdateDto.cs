@@ -7,9 +7,9 @@ namespace AdvertisementsBoard.Contracts.Advertisements;
 /// </summary>
 public class ExistingAdvertisementUpdateDto : AdvertisementCreateDto
 {
-   /// <summary>
-   ///     Идентификатор существующего объявления.
-   /// </summary>
-   [Required]
+    /// <summary>
+    ///     Идентификатор существующего объявления.
+    /// </summary>
+    [Required]
     public Guid Id { get; set; }
 }

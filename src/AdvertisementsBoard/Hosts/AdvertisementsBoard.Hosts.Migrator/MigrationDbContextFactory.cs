@@ -14,8 +14,7 @@ public class MigrationDbContextFactory : IDesignTimeDbContextFactory<MigrationDb
     {
         var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
         var configuration = builder.Build();
-        var connectionString = configuration.GetConnectionString("PostgresAdvertisementsBoardDb");
-
+        var connectionString = configuration.GetConnectionString("PostgresDb");
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<MigrationDbContext>();
         dbContextOptionsBuilder.UseNpgsql(connectionString);
         return new MigrationDbContext(dbContextOptionsBuilder.Options);

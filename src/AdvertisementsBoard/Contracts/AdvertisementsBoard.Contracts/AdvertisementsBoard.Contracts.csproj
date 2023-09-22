@@ -6,7 +6,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DocumentationFile>AdvertisementsBoard.Contracts.xml</DocumentationFile>
     </PropertyGroup>
@@ -21,6 +20,5 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
 
 </Project>

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AdvertisementsBoard.Hosts.Migrator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
