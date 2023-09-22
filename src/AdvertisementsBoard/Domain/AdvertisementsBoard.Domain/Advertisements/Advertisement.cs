@@ -1,3 +1,4 @@
+using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Domain.Base;
 
 namespace AdvertisementsBoard.Domain.Advertisements;
@@ -36,4 +37,9 @@ public class Advertisement : BaseEntity
     ///     Наименование категории.
     /// </summary>
     public Guid CategoryId { get; set; }
+
+    /// <summary>
+    ///     Вложения.
+    /// </summary>
+    public virtual List<Attachment> Attachments { get; set; }
 }

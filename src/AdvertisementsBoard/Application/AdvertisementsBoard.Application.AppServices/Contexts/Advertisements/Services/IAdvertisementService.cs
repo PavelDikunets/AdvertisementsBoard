@@ -12,8 +12,8 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
-    Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
+    Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить постраничные объявления.
@@ -30,7 +30,7 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="dto">Модель создания объявления <see cref="AdvertisementCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор <see cref="Guid" />.</returns>
+    /// <returns>Идентификатор объявления <see cref="Guid" />.</returns>
     public Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
@@ -38,8 +38,9 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="dto"><see cref="ExistingAdvertisementUpdateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
-    public Task<AdvertisementDto> UpdateAsync(ExistingAdvertisementUpdateDto dto, CancellationToken cancellationToken);
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
+    public Task<AdvertisementInfoDto> UpdateAsync(ExistingAdvertisementUpdateDto dto,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.

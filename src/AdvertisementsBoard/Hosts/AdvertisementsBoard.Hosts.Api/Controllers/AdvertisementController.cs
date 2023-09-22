@@ -29,12 +29,11 @@ public class AdvertisementController : ControllerBase
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
     /// <response code="200">Объявление найдено.</response>
     /// <response code="404">Объявление не найдено.</response>
     [HttpGet("Get-by-id/")]
-    [ProducesResponseType(typeof(AdvertisementDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(AdvertisementInfoDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         try
@@ -44,7 +43,7 @@ public class AdvertisementController : ControllerBase
         }
         catch (ArgumentNullException)
         {
-            return NotFound();
+            throw new ArgumentNullException($"Объявление по идентификатору {id} не найдено!");
         }
     }
 
@@ -54,11 +53,10 @@ public class AdvertisementController : ControllerBase
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция объявлений <see cref="AdvertisementDto" /></returns>
+    /// <returns>Коллекция объявлений <see cref="AdvertisementInfoDto" /></returns>
     /// <response code="200">Объявления найдены.</response>
     /// <response code="404">Объявления не найдены.</response>
     [ProducesResponseType(typeof(AdvertisementShortInfoDto[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("Get-all-paged")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
         int pageIndex = 0)
@@ -74,7 +72,7 @@ public class AdvertisementController : ControllerBase
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор объявления.</returns>
     /// <response code="201">Объявление успешно создано.</response>
-    [ProducesResponseType(typeof(AdvertisementCreatedDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<IActionResult> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {
@@ -87,12 +85,23 @@ public class AdvertisementController : ControllerBase
     /// </summary>
     /// <param name="dto">Модель объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <response code="404">Объявление не найдено.</response>
+    /// <response code="200">Объявление успешно обновлено.</response>
+    /// <response code="400">Некорректный запрос.</response>
+    [ProducesResponseType(typeof(ExistingAdvertisementUpdateDto), StatusCodes.Status200OK)]
     [HttpPut]
     public async Task<IActionResult> UpdateAsync(ExistingAdvertisementUpdateDto dto,
         CancellationToken cancellationToken)
     {
-        var result = await _advertisementService.UpdateAsync(dto, cancellationToken);
-        return Ok(result);
+        try
+        {
+            var result = await _advertisementService.UpdateAsync(dto, cancellationToken);
+            return Ok(result);
+        }
+        catch (ArgumentNullException)
+        {
+            return NotFound(dto.Id);
+        }
     }
 
     /// <summary>
@@ -103,8 +112,6 @@ public class AdvertisementController : ControllerBase
     /// <response code="200">Объявление успешно удалено.</response>
     /// <response code="404">Объявление не найдено.</response>
     [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         try

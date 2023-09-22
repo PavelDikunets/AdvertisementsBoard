@@ -3,12 +3,8 @@
 namespace AdvertisementsBoard.Contracts.Attachments;
 
 /// <summary>
-///     Вложения.
+///     Модель вложения.
 /// </summary>
 public class AttachmentDto : BaseDto
 {
-    /// <summary>
-    ///     Путь к файлу.
-    /// </summary>
-    public string FilePath { get; set; }
 }

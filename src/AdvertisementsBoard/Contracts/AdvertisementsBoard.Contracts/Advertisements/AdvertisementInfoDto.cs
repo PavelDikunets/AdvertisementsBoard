@@ -1,9 +1,11 @@
+using AdvertisementsBoard.Contracts.Attachments;
+
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-///     Модель объявления.
+///     Модель информации о объявлении.
 /// </summary>
-public class AdvertisementDto
+public class AdvertisementInfoDto
 {
     /// <summary>
     ///     Заголовок.
@@ -31,7 +33,7 @@ public class AdvertisementDto
     public bool IsActive { get; set; }
 
     /// <summary>
-    ///     Наименование категории
+    ///     Коллекция вложений.
     /// </summary>
-    public string CategoryName { get; set; }
+    public List<AttachmentInfoDto> Attachments { get; set; }
 }

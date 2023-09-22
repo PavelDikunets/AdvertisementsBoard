@@ -2,6 +2,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositor
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
 
@@ -18,36 +19,49 @@ public class AttachmentRepository : IAttachmentRepository
     }
 
     /// <inheritdoc />
-    public Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return Task.Run(() => new AttachmentDto
+        var entity = await _repository.GetByIdAsync(id, cancellationToken);
+
+        var model = new AttachmentInfoDto
         {
-            Id = Guid.NewGuid(),
-            FilePath = "/example/filePath/"
-        }, cancellationToken);
+            FileName = entity.FileName
+        };
+        return model;
     }
 
     /// <inheritdoc />
-    public Task<AttachmentDto> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10, int pageIndex = 0)
+    public async Task<AttachmentInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
+        int pageIndex = 0)
     {
-        return null;
+        var entities = _repository.GetAll();
+
+        var models = entities.Select(e => new AttachmentInfoDto
+        {
+            FileName = e.FileName
+        });
+
+        return await models.ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<AttachmentDto> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Attachment entity, CancellationToken cancellationToken)
     {
-        return null;
+        await _repository.AddAsync(entity, cancellationToken);
+        return entity.Id;
     }
 
     /// <inheritdoc />
-    public Task<AttachmentDto> UpdateAsync(AttachmentDto dto, CancellationToken cancellationToken)
+    public async Task<Guid> UpdateByIdAsync()
     {
-        return null;
+        return Guid.NewGuid();
     }
 
     /// <inheritdoc />
-    public Task<AttachmentDto> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return null;
+        var entity = await _repository.GetByIdAsync(id, cancellationToken);
+        await _repository.DeleteAsync(entity, cancellationToken);
+        return true;
     }
 }

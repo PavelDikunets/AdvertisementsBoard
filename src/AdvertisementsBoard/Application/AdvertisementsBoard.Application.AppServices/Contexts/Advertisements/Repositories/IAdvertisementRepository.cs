@@ -13,8 +13,8 @@ public interface IAdvertisementRepository
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
-    Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" /></returns>
+    Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить постраничные объявления.
@@ -35,7 +35,7 @@ public interface IAdvertisementRepository
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AdvertisementDto> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
+    public Task<AdvertisementInfoDto> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.

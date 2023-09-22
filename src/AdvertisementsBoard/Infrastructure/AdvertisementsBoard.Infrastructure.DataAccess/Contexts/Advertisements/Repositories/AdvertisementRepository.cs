@@ -1,5 +1,6 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Contracts.Advertisements;
+using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -19,19 +20,25 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(id, cancellationToken);
+        var dto = await _repository.GetAll().Where(s => s.Id == id)
+            .Select(d => new AdvertisementInfoDto
+            {
+                Title = d.Title,
+                Description = d.Description,
+                Price = d.Price,
+                TagNames = d.TagNames,
+                IsActive = d.IsActive,
+                Attachments = d.Attachments.Select(att => new AttachmentInfoDto
+                {
+                    FileName = att.FileName
+                }).ToList()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+        if (dto == null) throw new Exception("Объявление не найдено");
 
-        var model = new AdvertisementDto
-        {
-            Title = entity.Title,
-            Description = entity.Description,
-            Price = entity.Price,
-            TagNames = entity.TagNames,
-            IsActive = entity.IsActive
-        };
-        return model;
+        return dto;
     }
 
     /// <inheritdoc />
@@ -56,7 +63,7 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementDto> UpdateAsync(Advertisement currentEntity,
+    public async Task<AdvertisementInfoDto> UpdateAsync(Advertisement currentEntity,
         CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(currentEntity.Id, cancellationToken);
@@ -68,7 +75,7 @@ public class AdvertisementRepository : IAdvertisementRepository
 
         await _repository.UpdateAsync(entity, cancellationToken);
 
-        var model = new AdvertisementDto
+        var model = new AdvertisementInfoDto
         {
             Title = entity.Title,
             Description = entity.Description,

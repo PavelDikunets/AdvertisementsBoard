@@ -4,16 +4,6 @@
         <name>AdvertisementsBoard.Contracts</name>
     </assembly>
     <members>
-        <member name="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementCreatedDto">
-            <summary>
-                Модель созданного объявления.
-            </summary>
-        </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementCreatedDto.Id">
-            <summary>
-                Идентификатор созданного объявления.
-            </summary>
-        </member>
         <member name="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementCreateDto">
             <summary>
                 Модель создания объявления.
@@ -49,39 +39,39 @@
                 Статус активности.
             </summary>
         </member>
-        <member name="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto">
+        <member name="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto">
             <summary>
-                Модель объявления.
+                Модель информации о объявлении.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.Title">
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto.Title">
             <summary>
                 Заголовок.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.Description">
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto.Description">
             <summary>
                 Описание.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.Price">
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto.Price">
             <summary>
                 Цена.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.TagNames">
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto.TagNames">
             <summary>
                 Наименование тегов.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.IsActive">
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto.IsActive">
             <summary>
                 Статус активности.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto.CategoryName">
+        <member name="P:AdvertisementsBoard.Contracts.Advertisements.AdvertisementInfoDto.Attachments">
             <summary>
-                Наименование категории
+                Коллекция вложений.
             </summary>
         </member>
         <member name="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementShortInfoDto">
@@ -111,37 +101,57 @@
         </member>
         <member name="P:AdvertisementsBoard.Contracts.Advertisements.ExistingAdvertisementUpdateDto.Id">
             <summary>
-                Идентификатор существующего объявления.
+                Идентификатор объявления.
+            </summary>
+        </member>
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.AttachmentCreatedDto">
+            <summary>
+                Модель загрузки вложения.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.AttachmentCreatedDto.File">
+            <summary>
+                Форма загрузки файла.
             </summary>
         </member>
         <member name="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto">
             <summary>
-                Вложения.
+                Модель вложения.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Attachments.AttachmentDto.FilePath">
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.AttachmentInfoDto">
             <summary>
-                Путь к файлу.
+                Модель информации о вложении.
             </summary>
         </member>
-        <member name="T:AdvertisementsBoard.Contracts.Attachments.CreateAttachmentDto">
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.AttachmentInfoDto.FileName">
             <summary>
-                Модель создания вложения.
+                Наименование файла.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Attachments.CreateAttachmentDto.FilePath">
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.AttachmentUploadDto">
             <summary>
-                Путь к файлу.
+                Модель загрузки вложения.
             </summary>
         </member>
-        <member name="T:AdvertisementsBoard.Contracts.Attachments.UpdateAttachmentDto">
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.AttachmentUploadDto.File">
             <summary>
-                Модель обновления вложения.
+                Форма загрузки файла.
             </summary>
         </member>
-        <member name="P:AdvertisementsBoard.Contracts.Attachments.UpdateAttachmentDto.FilePath">
+        <member name="T:AdvertisementsBoard.Contracts.Attachments.ExistingAttachmentUpdateDto">
             <summary>
-                Путь к файлу.
+                Модель обновления существующего вложения.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.ExistingAttachmentUpdateDto.Id">
+            <summary>
+                Идентификатор вложения.
+            </summary>
+        </member>
+        <member name="P:AdvertisementsBoard.Contracts.Attachments.ExistingAttachmentUpdateDto.File">
+            <summary>
+                Форма загрузки файла.
             </summary>
         </member>
         <member name="T:AdvertisementsBoard.Contracts.Base.BaseDto">
@@ -151,7 +161,7 @@
         </member>
         <member name="P:AdvertisementsBoard.Contracts.Base.BaseDto.Id">
             <summary>
-                Идентификатор сущности.
+                Идентификатор.
             </summary>
         </member>
     </members>

@@ -1,5 +1,6 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Contracts.Advertisements;
+using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Advertisements;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
@@ -19,13 +20,26 @@ public class AdvertisementService : IAdvertisementService
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
-        return result;
+        var entity = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
+
+        var model = new AdvertisementInfoDto
+        {
+            Title = entity.Title,
+            Description = entity.Description,
+            Price = entity.Price,
+            TagNames = entity.TagNames,
+            IsActive = entity.IsActive,
+            Attachments = entity.Attachments.Select(s => new AttachmentInfoDto
+            {
+                FileName = s.FileName
+            }).ToList()
+        };
+
+        return model;
     }
 
-    /// <inheritdoc />
     public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
         int pageIndex = 0)
     {
@@ -33,7 +47,7 @@ public class AdvertisementService : IAdvertisementService
     }
 
     /// <inheritdoc />
-    public Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {
         var entity = new Advertisement
         {
@@ -43,11 +57,11 @@ public class AdvertisementService : IAdvertisementService
             TagNames = dto.TagNames
         };
 
-        return _advertisementRepository.CreateAsync(entity, cancellationToken);
+        return await _advertisementRepository.CreateAsync(entity, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementDto> UpdateAsync(ExistingAdvertisementUpdateDto dto,
+    public async Task<AdvertisementInfoDto> UpdateAsync(ExistingAdvertisementUpdateDto dto,
         CancellationToken cancellationToken)
     {
         var entity = new Advertisement
@@ -63,9 +77,9 @@ public class AdvertisementService : IAdvertisementService
         return await _advertisementRepository.UpdateAsync(entity, cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
-        return result;
+        return await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
     }
 }
