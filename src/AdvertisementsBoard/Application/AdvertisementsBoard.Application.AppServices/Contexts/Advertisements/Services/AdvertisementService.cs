@@ -23,7 +23,7 @@ public class AdvertisementService : IAdvertisementService
     public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
-
+        
         var model = new AdvertisementInfoDto
         {
             Title = entity.Title,
@@ -36,14 +36,18 @@ public class AdvertisementService : IAdvertisementService
                 FileName = s.FileName
             }).ToList()
         };
-
         return model;
     }
 
-    public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0)
+    public async Task<List<AdvertisementShortInfoDto>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
+        int pageNumber)
     {
-        return await _advertisementRepository.GetAllAsync(cancellationToken);
+        var advertisements = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
+        return advertisements.Select(a => new AdvertisementShortInfoDto
+        {
+            Title = a.Title,
+            Price = a.Price
+        }).ToList();
     }
 
     /// <inheritdoc />
@@ -78,8 +82,8 @@ public class AdvertisementService : IAdvertisementService
     }
 
     /// <inheritdoc />
-    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
+        await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
     }
 }

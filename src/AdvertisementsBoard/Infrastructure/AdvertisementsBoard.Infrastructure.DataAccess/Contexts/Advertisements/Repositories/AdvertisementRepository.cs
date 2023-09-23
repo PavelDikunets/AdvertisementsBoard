@@ -22,37 +22,32 @@ public class AdvertisementRepository : IAdvertisementRepository
     /// <inheritdoc />
     public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAll().Where(s => s.Id == id)
-            .Select(d => new AdvertisementInfoDto
+        var result = await _repository.GetAll().Where(s => s.Id == id).Select(a => new AdvertisementInfoDto
+        {
+            Title = a.Title,
+            Description = a.Description,
+            Price = a.Price,
+            TagNames = a.TagNames,
+            IsActive = a.IsActive,
+            Attachments = a.Attachments.Select(f => new AttachmentInfoDto
             {
-                Title = d.Title,
-                Description = d.Description,
-                Price = d.Price,
-                TagNames = d.TagNames,
-                IsActive = d.IsActive,
-                Attachments = d.Attachments.Select(att => new AttachmentInfoDto
-                {
-                    FileName = att.FileName
-                }).ToList()
-            })
-            .FirstOrDefaultAsync(cancellationToken);
-        if (dto == null) throw new Exception("Объявление не найдено");
+                FileName = f.FileName
+            }).ToList()
+        }).FirstOrDefaultAsync(cancellationToken);
 
-        return dto;
+        return result;
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
+        int pageSize)
     {
-        var entities = _repository.GetAll();
+        var allAdvertisements = _repository.GetAllFiltered(a => true);
 
-        var models = entities.Select(e => new AdvertisementShortInfoDto
-        {
-            Title = e.Title,
-            Price = e.Price
-        });
-
-        return await models.ToArrayAsync(cancellationToken);
+        return await allAdvertisements
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -67,11 +62,12 @@ public class AdvertisementRepository : IAdvertisementRepository
         CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(currentEntity.Id, cancellationToken);
+
         entity.Title = currentEntity.Title;
         entity.Description = currentEntity.Description;
         entity.Price = currentEntity.Price;
-        entity.TagNames = currentEntity.TagNames;
         entity.IsActive = currentEntity.IsActive;
+        entity.TagNames = currentEntity.TagNames;
 
         await _repository.UpdateAsync(entity, cancellationToken);
 
@@ -87,10 +83,9 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(id, cancellationToken);
         await _repository.DeleteAsync(entity, cancellationToken);
-        return true;
     }
 }

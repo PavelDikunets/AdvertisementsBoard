@@ -1,4 +1,5 @@
-﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
+﻿using System.ComponentModel.DataAnnotations;
+using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
 using AdvertisementsBoard.Contracts.Advertisements;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,21 +30,21 @@ public class AdvertisementController : ControllerBase
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
+    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
     /// <response code="200">Объявление найдено.</response>
     /// <response code="404">Объявление не найдено.</response>
-    [HttpGet("Get-by-id/")]
+    [HttpGet("Get-by-id")]
     [ProducesResponseType(typeof(AdvertisementInfoDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
         try
         {
             var result = await _advertisementService.GetByIdAsync(id, cancellationToken);
             return Ok(result);
         }
-        catch (ArgumentNullException)
+        catch (NullReferenceException ex)
         {
-            throw new ArgumentNullException($"Объявление по идентификатору {id} не найдено!");
+            return NotFound();
         }
     }
 
@@ -51,17 +52,15 @@ public class AdvertisementController : ControllerBase
     ///     Получить постраничные объявления.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <param name="pageNumber">Номер страницы.</param>
     /// <param name="pageSize">Размер страницы.</param>
-    /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция объявлений <see cref="AdvertisementInfoDto" /></returns>
     /// <response code="200">Объявления найдены.</response>
-    /// <response code="404">Объявления не найдены.</response>
+    /// <returns>Массив объявлений <see cref="AdvertisementDto" /></returns>
     [ProducesResponseType(typeof(AdvertisementShortInfoDto[]), StatusCodes.Status200OK)]
     [HttpGet("Get-all-paged")]
-    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0)
+    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageNumber=0, int pageSize=10)
     {
-        var result = await _advertisementService.GetAllAsync(cancellationToken);
+        var result = await _advertisementService.GetAllAsync(cancellationToken, pageSize, pageNumber);
         return Ok(result);
     }
 
@@ -72,7 +71,7 @@ public class AdvertisementController : ControllerBase
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор объявления.</returns>
     /// <response code="201">Объявление успешно создано.</response>
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(AdvertisementDto), StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<IActionResult> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {
@@ -83,6 +82,7 @@ public class AdvertisementController : ControllerBase
     /// <summary>
     ///     Редактировать объявление.
     /// </summary>
+    /// <param name="id"></param>
     /// <param name="dto">Модель объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="404">Объявление не найдено.</response>
@@ -100,7 +100,7 @@ public class AdvertisementController : ControllerBase
         }
         catch (ArgumentNullException)
         {
-            return NotFound(dto.Id);
+            return NotFound();
         }
     }
 
@@ -109,15 +109,15 @@ public class AdvertisementController : ControllerBase
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <response code="200">Объявление успешно удалено.</response>
+    /// <response code="204">Объявление успешно удалено.</response>
     /// <response code="404">Объявление не найдено.</response>
     [HttpDelete]
-    public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
         try
         {
             await _advertisementService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
+            return NoContent();
         }
         catch (ArgumentNullException)
         {

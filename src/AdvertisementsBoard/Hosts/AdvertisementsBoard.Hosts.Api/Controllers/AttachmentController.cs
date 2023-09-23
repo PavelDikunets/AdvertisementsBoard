@@ -1,4 +1,5 @@
-﻿using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
+﻿using System.ComponentModel.DataAnnotations;
+using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 using AdvertisementsBoard.Contracts.Attachments;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,16 +30,22 @@ public class AttachmentController : ControllerBase
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <response code="200">Вложение найдено.</response>
+    /// <response code="404">Вложение не найдено.</response>
     /// <returns>Модель объявления <see cref="AttachmentDto" /></returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="404">Не найдено.</response>
     [HttpGet("Get-by-id")]
     [ProducesResponseType(typeof(AttachmentInfoDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
-        var result = await _attachmentService.GetByIdAsync(id, cancellationToken);
-        return Ok(result);
+        try
+        {
+            var result = await _attachmentService.GetByIdAsync(id, cancellationToken);
+            return Ok(result);
+        }
+        catch (ArgumentNullException)
+        {
+            return NotFound();
+        }
     }
 
     /// <summary>
@@ -47,18 +54,17 @@ public class AttachmentController : ControllerBase
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция вложений <see cref="AttachmentDto" /></returns>
-    /// <response code="200">Ok.</response>
-    /// <response code="404">Не найдены.</response>
-    [ProducesResponseType(typeof(AttachmentInfoDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    /// <response code="200">Вложения найдены.</response>
+    /// <response code="404">Вложения не найдены.</response>
+    /// <returns>Массив вложений <see cref="AttachmentInfoDto" /></returns>
+    [ProducesResponseType(typeof(AttachmentInfoDto[]), StatusCodes.Status200OK)]
     [HttpGet("Get-all-paged")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
         int pageIndex = 0)
     {
         try
         {
-            var result = await _attachmentService.GetAllAsync(cancellationToken);
+            var result = await _attachmentService.GetAllAsync(cancellationToken, pageSize, pageIndex);
             return Ok(result);
         }
         catch (ArgumentNullException)
@@ -74,10 +80,11 @@ public class AttachmentController : ControllerBase
     /// <param name="dto">Модель вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Вложение успешно загружено.</response>
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    /// <returns>Идентификатор <see cref="Guid" /></returns>
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadAsync(Guid id, [FromForm] AttachmentUploadDto dto,
+    public async Task<IActionResult> UploadAsync([Required] Guid id, [FromForm] AttachmentUploadDto dto,
         CancellationToken cancellationToken)
     {
         var result = await _attachmentService.UploadByIdAsync(id, dto, cancellationToken);
@@ -90,8 +97,11 @@ public class AttachmentController : ControllerBase
     /// <param name="id"></param>
     /// <param name="dto">Модель вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Обновленное вложение <see cref="AttachmentInfoDto" /></returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpPut]
-    public async Task<IActionResult> UpdateAsync(Guid id, ExistingAttachmentUpdateDto dto,
+    public async Task<IActionResult> UpdateAsync([Required] Guid id, ExistingAttachmentUpdateDto dto,
         CancellationToken cancellationToken)
     {
         try
@@ -99,10 +109,9 @@ public class AttachmentController : ControllerBase
             var result = await _attachmentService.UpdateAsync(dto, cancellationToken);
             return Ok(result);
         }
-
         catch (ArgumentNullException)
         {
-            return NotFound(dto.Id);
+            return NotFound();
         }
     }
 
@@ -111,17 +120,19 @@ public class AttachmentController : ControllerBase
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <response code="204">Объявление успешно удалено.</response>
+    /// <response code="404">Объявление не найдено.</response>
     [HttpDelete]
-    public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
         try
         {
             await _attachmentService.DeleteByIdAsync(id, cancellationToken);
-            return Ok();
+            return NoContent();
         }
         catch (ArgumentNullException)
         {
-            return NotFound(id);
+            return NotFound();
         }
     }
 }

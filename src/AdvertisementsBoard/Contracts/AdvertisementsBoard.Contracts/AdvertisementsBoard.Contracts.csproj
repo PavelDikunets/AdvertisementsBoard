@@ -17,12 +17,9 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="6.0.0-preview.4.21253.5"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Remove="AdvertisementsBoard.Contracts.xml"/>
-        <Content Include="AdvertisementsBoard.Contracts.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
 </Project>

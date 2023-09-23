@@ -24,6 +24,8 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
 
     public IQueryable<TEntity> GetAll()
     {
+        if (DbSet == null) throw new ArgumentNullException(nameof(DbSet));
+
         return DbSet;
     }
 

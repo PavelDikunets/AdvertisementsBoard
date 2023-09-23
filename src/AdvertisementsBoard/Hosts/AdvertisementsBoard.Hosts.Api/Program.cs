@@ -1,4 +1,5 @@
 using AdvertisementsBoard.Contracts.Advertisements;
+using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Hosts.Api.Controllers;
 using AdvertisementsBoard.Infrastructure.ComponentRegistrar;
 
@@ -13,7 +14,15 @@ builder.Services.AddSwaggerGen(s =>
 {
     var includeDocsTypesMarkers = new[]
     {
+        typeof(AttachmentDto),
+        typeof(AttachmentInfoDto),
+        typeof(AttachmentUploadDto),
+        typeof(ExistingAdvertisementUpdateDto),
+        typeof(AdvertisementDto),
         typeof(AdvertisementInfoDto),
+        typeof(AdvertisementCreateDto),
+        typeof(ExistingAttachmentUpdateDto),
+        typeof(AttachmentController),
         typeof(AdvertisementController)
     };
     foreach (var marker in includeDocsTypesMarkers)

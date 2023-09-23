@@ -6,7 +6,7 @@ public class FileService : IFileService
 {
     public async Task<string> UploadFileAsync(IFormFile file, CancellationToken cancellationToken)
     {
-        var uploadPath = Path.Combine("../../Infrastructure/AdvertisementsBoard.Infrastructure/FilesStorage");
+        var uploadPath = Path.Combine("../../Infrastructure/AdvertisementsBoard.Infrastructure/FileStorage");
 
         var filename = Guid.NewGuid() + Path.GetExtension(file.FileName);
         var filePath = Path.Combine(uploadPath, filename);

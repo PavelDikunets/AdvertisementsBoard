@@ -11,7 +11,7 @@ public interface IAttachmentRepository
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" /></returns>
+    /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
     Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -20,7 +20,7 @@ public interface IAttachmentRepository
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция вложений <see cref="AdvertisementInfoDto" /></returns>
+    /// <returns>Коллекция вложений <see cref="AdvertisementDto" /></returns>
     public Task<AttachmentInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
         int pageIndex = 0);
 

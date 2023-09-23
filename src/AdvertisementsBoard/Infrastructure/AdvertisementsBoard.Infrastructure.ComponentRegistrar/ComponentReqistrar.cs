@@ -21,7 +21,7 @@ public static class ComponentReqistrar
     /// <summary>
     ///     Регистрация сервисов.
     /// </summary>
-    /// <param name="services">Сервисы.</param>
+    /// <param name="services">IServiceCollection.</param>
     public static void AddServices(this IServiceCollection services)
     {
         services.AddSingleton<IDbContextOptionsConfigurator<BaseDbContext>, BaseDbContextConfiguration>();
