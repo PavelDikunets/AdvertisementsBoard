@@ -45,6 +45,7 @@ public class AdvertisementRepository : IAdvertisementRepository
         var allAdvertisements = _repository.GetAllFiltered(a => true);
 
         return await allAdvertisements
+            .OrderBy(a => a.Id)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
