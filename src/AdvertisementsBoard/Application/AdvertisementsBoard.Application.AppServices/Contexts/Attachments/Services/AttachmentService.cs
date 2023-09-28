@@ -1,8 +1,5 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
-using AdvertisementsBoard.Application.AppServices.Contexts.Files.Services;
-using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Attachments;
-using AdvertisementsBoard.Domain.Attachments;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 

@@ -58,12 +58,13 @@ public class AdvertisementService : IAdvertisementService
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {
-        var entity = new Advertisement
+        var advertisement = new Advertisement
         {
             Title = dto.Title,
             Description = dto.Description,
             Price = dto.Price,
-            TagNames = dto.TagNames
+            TagNames = dto.TagNames,
+            CategoryId = dto.CategoryId
         };
 
         var result = await _advertisementRepository.CreateAsync(entity, cancellationToken);
