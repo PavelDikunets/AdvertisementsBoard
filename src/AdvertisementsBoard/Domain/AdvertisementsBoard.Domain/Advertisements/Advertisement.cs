@@ -28,6 +28,11 @@ public class Advertisement : BaseEntity
     public string[] TagNames { get; set; }
 
     /// <summary>
+    ///     Статус актиновности.
+    /// </summary>
+    public bool IsActive { get; set; }
+
+    /// <summary>
     ///     Наименование категории.
     /// </summary>
     public Guid CategoryId { get; set; }

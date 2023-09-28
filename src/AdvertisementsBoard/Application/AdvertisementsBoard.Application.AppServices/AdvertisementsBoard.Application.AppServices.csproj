@@ -8,8 +8,11 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
-        <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj" />
+        <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0"/>
+    </ItemGroup>
 
 </Project>

@@ -8,11 +8,12 @@
             <summary>
                 Контроллер для работы с объявлениями.
             </summary>
-            <response code="500">Произошла ошибка на стороне сервера.</response>
+            <response code="500">Произошла внутренняя ошибка на стороне сервера.</response>
         </member>
         <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.#ctor(AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services.IAdvertisementService)">
             <summary>
-                Инициализирует экземпляр <see cref="T:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController" />
+                Инициализирует экземпляр
+                <see cref="T:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController"/>
             </summary>
             <param name="advertisementService">Сервис для работы с объявлениями.</param>
         </member>
@@ -22,8 +23,9 @@
             </summary>
             <param name="id">Идентификатор объявления.</param>
             <param name="cancellationToken">Токен отмены операции.</param>
-            <returns>Модель объявления <see cref="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto" /></returns>
-            <response code="200">Ok.</response>
+            <returns>Модель объявления<see cref="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto"/>.
+            </returns>
+            <response code="200">Объявление найдено.</response>
             <response code="404">Объявление не найдено.</response>
         </member>
         <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.GetAllAsync(System.Threading.CancellationToken,System.Int32,System.Int32)">
@@ -33,11 +35,13 @@
             <param name="cancellationToken">Токен отмены операции.</param>
             <param name="pageSize">Размер страницы.</param>
             <param name="pageIndex">Номер страницы.</param>
-            <returns>Коллекция объявлений <see cref="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto" /></returns>
-            <response code="200">Ok.</response>
+            <returns>Коллекция объявлений
+                <see cref="T:AdvertisementsBoard.Contracts.Advertisements.AdvertisementDto"/>
+            </returns>
+            <response code="200">Объявления найдены.</response>
             <response code="404">Объявления не найдены.</response>
         </member>
-        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.CreateAsync(AdvertisementsBoard.Contracts.Advertisements.CreateAdvertisementDto,System.Threading.CancellationToken)">
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.CreateAsync(AdvertisementsBoard.Contracts.Advertisements.AdvertisementCreateDto,System.Threading.CancellationToken)">
             <summary>
                 Создать объявление.
             </summary>
@@ -46,7 +50,7 @@
             <returns>Идентификатор объявления.</returns>
             <response code="201">Объявление успешно создано.</response>
         </member>
-        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.UpdateAsync(AdvertisementsBoard.Contracts.Advertisements.UpdateAdvertisementDto,System.Threading.CancellationToken)">
+        <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AdvertisementController.UpdateAsync(AdvertisementsBoard.Contracts.Advertisements.ExistingAdvertisementUpdateDto,System.Threading.CancellationToken)">
             <summary>
                 Редактировать объявление.
             </summary>
@@ -59,6 +63,8 @@
             </summary>
             <param name="id">Идентификатор объявления.</param>
             <param name="cancellationToken">Токен отмены операции.</param>
+            <response code="200">Объявление успешно удалено.</response>
+            <response code="404">Объявление не найдено.</response>
         </member>
         <member name="T:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController">
             <summary>
@@ -68,7 +74,8 @@
         </member>
         <member name="M:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController.#ctor(AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services.IAttachmentService)">
             <summary>
-                Инициализирует экземпляр <see cref="T:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController" />
+                Инициализирует экземпляр
+                <see cref="T:AdvertisementsBoard.Hosts.Api.Controllers.AttachmentController"/>
             </summary>
             <param name="attachmentService">Сервис для работы с вложениями.</param>
         </member>
@@ -78,7 +85,9 @@
             </summary>
             <param name="id">Идентификатор вложения.</param>
             <param name="cancellationToken">Токен отмены операции.</param>
-            <returns>Модель объявления <see cref="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto" /></returns>
+            <returns>Модель объявления
+                <see cref="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto"/>
+            </returns>
             <response code="200">Ok.</response>
             <response code="404">Не найдено.</response>
         </member>
@@ -89,7 +98,9 @@
             <param name="cancellationToken">Токен отмены операции.</param>
             <param name="pageSize">Размер страницы.</param>
             <param name="pageIndex">Номер страницы.</param>
-            <returns>Коллекция вложений <see cref="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto" /></returns>
+            <returns>Коллекция вложений
+                <see cref="T:AdvertisementsBoard.Contracts.Attachments.AttachmentDto"/>
+            </returns>
             <response code="200">Ok.</response>
             <response code="404">Не найдены.</response>
         </member>

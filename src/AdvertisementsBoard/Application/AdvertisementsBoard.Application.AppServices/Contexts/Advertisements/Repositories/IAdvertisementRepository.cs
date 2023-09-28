@@ -20,30 +20,28 @@ public interface IAdvertisementRepository
     ///     Получить постраничные объявления.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <param name="pageSize">Размер страницы.</param>
-    /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция объявлений <see cref="AdvertisementDto" /></returns>
-    public Task<AdvertisementDto> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0);
+    /// <returns>Массив моделей объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
+    public Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать объявление.
     /// </summary>
-    /// <param name="model">Модель объявления</param>
+    /// <param name="entity">Сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<Guid> CreateAsync(Advertisement model, CancellationToken cancellationToken);
+    public Task<Guid> CreateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Редактировать объявление.
     /// </summary>
-    /// <param name="model">Модель объявления</param>
+    /// <param name="entity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AdvertisementDto> UpdateAsync(Advertisement model, CancellationToken cancellationToken);
+    public Task<AdvertisementDto> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AdvertisementDto> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Возвращает true, если удаление произошло успешно, false - в противном случае.</returns>
+    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

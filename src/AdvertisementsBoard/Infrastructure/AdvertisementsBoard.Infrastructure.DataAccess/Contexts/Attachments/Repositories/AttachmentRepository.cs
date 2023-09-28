@@ -1,13 +1,22 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Contracts.Attachments;
+using AdvertisementsBoard.Domain.Attachments;
+using AdvertisementsBoard.Infrastructure.Repositories;
 
-namespace AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Attachments.Repositories;
+namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
 
 /// <summary>
 ///     Репозиторий объявлений.
 /// </summary>
 public class AttachmentRepository : IAttachmentRepository
 {
+    private readonly IBaseDbRepository<Attachment> _repository;
+
+    public AttachmentRepository(IBaseDbRepository<Attachment> repository)
+    {
+        _repository = repository;
+    }
+
     /// <inheritdoc />
     public Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {

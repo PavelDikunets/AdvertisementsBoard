@@ -1,19 +1,30 @@
-using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
-using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
-using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
-using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Hosts.Api.Controllers;
-using AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Advertisements.Repositories;
-using AdvertisementsBoard.Infrastructure.DataAccess.Contracts.Attachments.Repositories;
+using AdvertisementsBoard.Infrastructure.ComponentRegistrar;
+using AdvertisementsBoard.Infrastructure.DataAccess;
+using AdvertisementsBoard.Infrastructure.DataAccess.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region
+
+// Регистрация конфигурации контекста базы данных.
+builder.Services.AddSingleton<IDbContextOptionsConfigurator<BaseDbContext>, BaseDbContextConfiguration>();
+
+builder.Services.AddDbContext<BaseDbContext>(
+    (sp, dbOptions) => sp.GetRequiredService<IDbContextOptionsConfigurator<BaseDbContext>>()
+        .Configure((DbContextOptionsBuilder<BaseDbContext>)dbOptions));
+
+builder.Services.AddScoped((Func<IServiceProvider, DbContext>)(sp => sp.GetRequiredService<BaseDbContext>()));
+
+#endregion
+
+builder.Services.AddServices();
+builder.Services.AddRepositories();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(s =>
 {
     var includeDocsTypesMarkers = new[]
@@ -30,14 +41,6 @@ builder.Services.AddSwaggerGen(s =>
     }
 });
 
-// Сервис и репозиторий для работы с объявлениями.
-builder.Services.AddTransient<IAdvertisementService, AdvertisementService>();
-builder.Services.AddTransient<IAdvertisementRepository, AdvertisementRepository>();
-
-// Сервис и репозиторий для работы с вложениями.
-builder.Services.AddTransient<IAttachmentService, AttachmentService>();
-builder.Services.AddTransient<IAttachmentRepository, AttachmentRepository>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,8 +49,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
