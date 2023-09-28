@@ -1,14 +1,20 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
-
-COPY . ./app
-WORKDIR ./app/src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api
-RUN dotnet restore
-RUN dotnet publish -c Release -o out
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
+﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-COPY --from=build /app/src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/out ./
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY ["src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/AdvertisementsBoard.Hosts.Api.csproj", "src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/"]
+RUN dotnet restore "src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/AdvertisementsBoard.Hosts.Api.csproj"
+COPY . .
+WORKDIR "/src/src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api"
+RUN dotnet build "AdvertisementsBoard.Hosts.Api.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "AdvertisementsBoard.Hosts.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AdvertisementsBoard.Hosts.Api.dll"]
