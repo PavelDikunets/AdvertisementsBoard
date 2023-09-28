@@ -36,8 +36,4 @@
         <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.DataAccess\AdvertisementsBoard.Infrastructure.DataAccess.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Migrations\"/>
-    </ItemGroup>
-
 </Project>

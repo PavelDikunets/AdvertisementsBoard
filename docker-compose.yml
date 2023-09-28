@@ -12,14 +12,11 @@ services:
       - ConnectionStrings__PostgresDb=Server=${POSTGRES_SERVER};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Port=${POSTGRES_PORT}
     ports:
       - "5259:5259"
+    depends_on:
+      - database
+      - migrator
     networks:
       - advertisements_board-network
-    depends_on:
-      - migrator
-      - database
-    volumes:
-      - ./wwwroot:/app/wwwroot
-    command: [ "./wait-for-it.sh", "database:5432", "--", "dotnet", "AdvertisementsBoard.Hosts.Api.dll" ]
   
   migrator:
     container_name: advertisements_board-migrator
@@ -31,11 +28,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
       - ConnectionStrings__PostgresDb=Server=${POSTGRES_SERVER};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Port=${POSTGRES_PORT}
+    depends_on:
+      database:
+        condition: service_healthy
     networks:
       - advertisements_board-network
-    depends_on:
-      - database
-    command: [ "./wait-for-it.sh", "database:5432", "--", "dotnet", "AdvertisementsBoard.Hosts.Migrator.dll" ]
   
   database:
     container_name: advertisements_board-database
@@ -51,6 +48,11 @@ services:
       - advertisements_board-data:/var/lib/postgresql/data/
     networks:
       - advertisements_board-network
+    healthcheck:
+      test: [ "CMD-SHELL" , "pg_isready -U postqres" ]
+      interval: 15s
+      timeout: 30s
+      retries: 2
 
 networks:
   advertisements_board-network:

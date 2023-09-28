@@ -19,7 +19,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -35,16 +34,18 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <None Remove="AdvertisementsBoard.Hosts.Api.xml"/>
+        <Content Include="AdvertisementsBoard.Hosts.Api.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Application\AdvertisementsBoard.Application.AppServices\AdvertisementsBoard.Application.AppServices.csproj"/>
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
         <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.ComponentRegistrar\AdvertisementsBoard.Infrastructure.ComponentRegistrar.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="wwwroot\"/>
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure.DataAccess\AdvertisementsBoard.Infrastructure.DataAccess.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj"/>
+        <ProjectReference Include="..\AdvertisementsBoard.Hosts.Migrator\AdvertisementsBoard.Hosts.Migrator.csproj"/>
     </ItemGroup>
 
 </Project>

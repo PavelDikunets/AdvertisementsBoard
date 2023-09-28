@@ -16,10 +16,9 @@
 
     <ItemGroup>
         <None Remove="AdvertisementsBoard.Contracts.xml"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <Content Include="AdvertisementsBoard.Contracts.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

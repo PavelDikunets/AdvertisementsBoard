@@ -1,10 +1,37 @@
-using AdvertisementsBoard.Contracts.Base;
-
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
 ///     Модель объявления.
 /// </summary>
-public class AdvertisementDto : BaseDto
+public class AdvertisementDto
 {
+    /// <summary>
+    ///     Заголовок.
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
+    ///     Описание.
+    /// </summary>
+    public string Description { get; set; }
+
+    /// <summary>
+    ///     Цена.
+    /// </summary>
+    public decimal Price { get; set; }
+
+    /// <summary>
+    ///     Наименование тегов.
+    /// </summary>
+    public string[] TagNames { get; set; }
+
+    /// <summary>
+    ///     Статус активности.
+    /// </summary>
+    public bool IsActive { get; set; }
+
+    /// <summary>
+    ///     Наименование категории
+    /// </summary>
+    public string CategoryName { get; set; }
 }
