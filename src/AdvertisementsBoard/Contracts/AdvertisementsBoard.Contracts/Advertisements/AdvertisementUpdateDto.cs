@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-///     Модель обновления существующего объявления.
+///     Модель редактирования объявления.
 /// </summary>
-public class ExistingAdvertisementUpdateDto : AdvertisementCreateDto
+public class AdvertisementUpdateDto : AdvertisementCreateDto
 {
     /// <summary>
     ///     Идентификатор объявления.

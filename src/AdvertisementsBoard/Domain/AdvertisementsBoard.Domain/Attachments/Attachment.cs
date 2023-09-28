@@ -8,7 +8,7 @@ public class Attachment : BaseEntity
     /// <summary>
     ///     Путь к файлу.
     /// </summary>
-    public string FileName { get; set; }
+    public string Url { get; set; }
 
     /// <summary>
     ///     Идентификатор объявления.

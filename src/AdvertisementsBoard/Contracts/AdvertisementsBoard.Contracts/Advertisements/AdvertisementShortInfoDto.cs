@@ -1,9 +1,11 @@
+using AdvertisementsBoard.Contracts.Base;
+
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
 ///     Модель объявления с краткой информацией.
 /// </summary>
-public class AdvertisementShortInfoDto
+public class AdvertisementShortInfoDto : BaseDto
 {
     /// <summary>
     ///     Заголовок.

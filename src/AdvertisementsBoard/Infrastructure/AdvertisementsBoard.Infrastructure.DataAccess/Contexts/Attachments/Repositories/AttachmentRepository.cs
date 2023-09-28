@@ -1,5 +1,4 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
-using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -19,26 +18,20 @@ public class AttachmentRepository : IAttachmentRepository
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Attachment> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(id, cancellationToken);
-
-        var model = new AttachmentInfoDto
-        {
-            FileName = entity.FileName
-        };
-        return model;
+        return entity;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0)
+    public async Task<Attachment[]> GetAllByIdAsync(Guid advertisementId, CancellationToken cancellationToken)
     {
-        var entities = _repository.GetAll();
+        var entities = _repository.GetAll().Where(e => e.AdvertisementId == advertisementId);
 
-        var models = entities.Select(e => new AttachmentInfoDto
+        var models = entities.Select(e => new Attachment
         {
-            FileName = e.FileName
+            Url = e.Url
         });
 
         return await models.ToArrayAsync(cancellationToken);
@@ -52,9 +45,12 @@ public class AttachmentRepository : IAttachmentRepository
     }
 
     /// <inheritdoc />
-    public async Task<Guid> UpdateByIdAsync()
+    public async Task<Guid> UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken)
     {
-        return Guid.NewGuid();
+        var entity = await _repository.GetByIdAsync(updatedEntity.Id, cancellationToken);
+        entity.Url = updatedEntity.Url;
+        await _repository.UpdateAsync(entity, cancellationToken);
+        return entity.Id;
     }
 
     /// <inheritdoc />

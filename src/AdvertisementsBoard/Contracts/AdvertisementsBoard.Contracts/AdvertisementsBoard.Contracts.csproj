@@ -15,11 +15,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="6.0.0-preview.4.21253.5"/>
+        <None Remove="AdvertisementsBoard.Contracts.xml"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="AdvertisementsBoard.Contracts.xml"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
 </Project>

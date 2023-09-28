@@ -14,7 +14,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
         builder.ToTable("Attachments");
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedOnAdd();
-        builder.Property(p => p.FileName).IsRequired().HasMaxLength(255);
+        builder.Property(p => p.Url).IsRequired().HasMaxLength(255);
 
         builder.HasOne(d => d.Advertisement)
             .WithMany(p => p.Attachments)

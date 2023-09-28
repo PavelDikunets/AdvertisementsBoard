@@ -1,6 +1,4 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
-using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,26 +18,18 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _repository.GetAll().Where(s => s.Id == id).Select(a => new AdvertisementInfoDto
-        {
-            Title = a.Title,
-            Description = a.Description,
-            Price = a.Price,
-            TagNames = a.TagNames,
-            IsActive = a.IsActive,
-            Attachments = a.Attachments.Select(f => new AttachmentInfoDto
-            {
-                FileName = f.FileName
-            }).ToList()
-        }).FirstOrDefaultAsync(cancellationToken);
-
-        return result;
+        var entity = await _repository.GetAll()
+            .Where(e => e.Id == id)
+            .Include(a => a.Attachments)
+            .FirstOrDefaultAsync(cancellationToken);
+        return entity;
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
+    public async Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken,
+        int pageNumber,
         int pageSize)
     {
         var allAdvertisements = _repository.GetAllFiltered(a => true);
@@ -59,28 +49,10 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementInfoDto> UpdateAsync(Advertisement currentEntity,
+    public async Task UpdateAsync(Advertisement updatedEntity,
         CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(currentEntity.Id, cancellationToken);
-
-        entity.Title = currentEntity.Title;
-        entity.Description = currentEntity.Description;
-        entity.Price = currentEntity.Price;
-        entity.IsActive = currentEntity.IsActive;
-        entity.TagNames = currentEntity.TagNames;
-
-        await _repository.UpdateAsync(entity, cancellationToken);
-
-        var model = new AdvertisementInfoDto
-        {
-            Title = entity.Title,
-            Description = entity.Description,
-            Price = entity.Price,
-            TagNames = entity.TagNames,
-            IsActive = entity.IsActive
-        };
-        return model;
+        await _repository.UpdateAsync(updatedEntity, cancellationToken);
     }
 
     /// <inheritdoc />

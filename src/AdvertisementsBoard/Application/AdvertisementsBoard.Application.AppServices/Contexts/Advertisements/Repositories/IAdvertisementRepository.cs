@@ -14,7 +14,7 @@ public interface IAdvertisementRepository
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
-    public Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить постраничные объявления.
@@ -23,7 +23,8 @@ public interface IAdvertisementRepository
     /// <param name="pageNumber">Номер страницы.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <returns>Массив моделей объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
-    public Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber, int pageSize);
+    public Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
+        int pageSize);
 
     /// <summary>
     ///     Создать объявление.
@@ -35,9 +36,9 @@ public interface IAdvertisementRepository
     /// <summary>
     ///     Редактировать объявление.
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="updatedEntity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AdvertisementInfoDto> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
+    public Task UpdateAsync(Advertisement updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.

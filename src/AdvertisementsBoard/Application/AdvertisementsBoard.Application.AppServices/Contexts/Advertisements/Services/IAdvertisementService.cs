@@ -12,7 +12,7 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
     Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -21,8 +21,8 @@ public interface IAdvertisementService
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageNumber">Номер страницы.</param>
-    /// <returns>Массив моделей с информацией об объявлениях <see cref="AdvertisementShortInfoDto" />.</returns>
-    public Task<List<AdvertisementShortInfoDto>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
+    /// <returns>Массив объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
+    public Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber);
 
     /// <summary>
@@ -30,16 +30,16 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="dto">Модель создания объявления <see cref="AdvertisementCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор объявления <see cref="Guid" />.</returns>
+    /// <returns>Идентификатор созданного объявления <see cref="Guid" />.</returns>
     public Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Редактировать объявление.
     /// </summary>
-    /// <param name="dto">Модель обновления существующего объявления <see cref="ExistingAdvertisementUpdateDto" />.</param>
+    /// <param name="dto">Модель обновления существующего объявления <see cref="AdvertisementUpdateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
-    public Task<AdvertisementInfoDto> UpdateAsync(ExistingAdvertisementUpdateDto dto,
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
+    public Task<AdvertisementInfoDto> UpdateAsync(AdvertisementUpdateDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>

@@ -1,6 +1,6 @@
-﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
-using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
+﻿using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Files.Services;
+using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
 
@@ -9,7 +9,6 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Servi
 /// <inheritdoc />
 public class AttachmentService : IAttachmentService
 {
-    private readonly IAdvertisementRepository _advertisementRepository;
     private readonly IAttachmentRepository _attachmentRepository;
     private readonly IFileService _fileService;
 
@@ -18,63 +17,82 @@ public class AttachmentService : IAttachmentService
     /// </summary>
     /// <param name="attachmentRepository">Репозиторий для работы с вложениями.</param>
     /// <param name="fileService">Сервис для работы с файлами.</param>
-    /// <param name="advertisementRepository"></param>
-    public AttachmentService(IAttachmentRepository attachmentRepository, IFileService fileService,
-        IAdvertisementRepository advertisementRepository)
+    public AttachmentService(IAttachmentRepository attachmentRepository, IFileService fileService)
     {
         _attachmentRepository = attachmentRepository;
         _fileService = fileService;
-        _advertisementRepository = advertisementRepository;
     }
 
     /// <inheritdoc />
     public async Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
-        return result;
+        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
+
+        var dto = new AttachmentInfoDto
+        {
+            Url = entity.Url
+        };
+
+        return dto;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0)
+    public async Task<AttachmentInfoDto[]> GetAllByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _attachmentRepository.GetAllAsync(cancellationToken);
+        var entities = await _attachmentRepository.GetAllByIdAsync(id, cancellationToken);
+        var dto = entities.Select(e => new AttachmentInfoDto
+        {
+            Url = e.Url
+        }).ToArray();
+
+        return dto;
     }
 
     /// <inheritdoc />
     public async Task<Guid> UploadByIdAsync(Guid id, AttachmentUploadDto dto,
         CancellationToken cancellationToken)
     {
-        var advertDto = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
-        if (advertDto == null) throw new Exception("Объявление не найдено");
+        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
 
         var fileName = await _fileService.UploadFileAsync(dto.File, cancellationToken);
 
-        var entity = new Attachment
-        {
-            FileName = fileName,
-            AdvertisementId = id
-        };
+        entity.Url = fileName;
+        entity.AdvertisementId = id;
 
-        return await _attachmentRepository.CreateAsync(entity, cancellationToken);
+        var result = await _attachmentRepository.CreateAsync(entity, cancellationToken);
+        return result;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> UpdateAsync(ExistingAttachmentUpdateDto dto,
+    public async Task<Guid> UpdateByIdAsync(Guid id, AttachmentUploadDto dto,
         CancellationToken cancellationToken)
     {
-        var entity = new Attachment
-        {
-            Id = dto.Id,
-            FileName = dto.FileName
-        };
-        return await _attachmentRepository.UpdateByIdAsync();
+        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
+
+        var attachmentUrl = await _fileService.UploadFileAsync(dto.File, cancellationToken);
+
+        entity.Id = id;
+        entity.Url = attachmentUrl;
+
+        var result = await _attachmentRepository.UpdateByIdAsync(entity, cancellationToken);
+        return result;
     }
 
     /// <inheritdoc />
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _attachmentRepository.DeleteByIdAsync(id, cancellationToken);
-        return result;
+        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
+        await _attachmentRepository.DeleteByIdAsync(entity.Id, cancellationToken);
+        return true;
+    }
+
+
+    private async Task<Attachment> GetAttachmentFromRepositoryById(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
+
+        if (entity == null) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
+
+        return entity;
     }
 }

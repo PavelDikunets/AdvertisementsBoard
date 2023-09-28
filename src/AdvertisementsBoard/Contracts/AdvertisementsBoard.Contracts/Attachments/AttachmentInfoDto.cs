@@ -1,12 +1,9 @@
-namespace AdvertisementsBoard.Contracts.Attachments;
+﻿namespace AdvertisementsBoard.Contracts.Attachments;
 
 /// <summary>
-///     Модель информации о вложении.
+///     Модель вложения.
 /// </summary>
 public class AttachmentInfoDto
 {
-    /// <summary>
-    ///     Наименование файла.
-    /// </summary>
-    public string FileName { get; set; }
+    public string Url { get; set; }
 }
