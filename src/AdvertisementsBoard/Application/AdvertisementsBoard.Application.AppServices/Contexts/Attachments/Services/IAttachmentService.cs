@@ -12,37 +12,42 @@ public interface IAttachmentService
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель вложения <see cref="AttachmentDto" />.</returns>
-    Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Модель вложения <see cref="AttachmentInfoDto" />.</returns>
+    Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить постраничные вложения.
+    ///     Получить все вложения у объявления.
     /// </summary>
+    /// <param name="advertisementId">Идентификтор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <param name="pageSize">Размер страницы.</param>
-    /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция вложений <see cref="AttachmentDto" />.</returns>
-    public Task<AttachmentDto> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0);
+    /// <returns>Массив вложений <see cref="AttachmentInfoDto" />.</returns>
+    public Task<AttachmentInfoDto[]> GetAllByIdAsync(Guid advertisementId, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Загрузить вложение.
     /// </summary>
-    /// <param name="dto">Модель вложения.</param>
+    /// <param name="id">Идентификатор объявления.</param>
+    /// <param name="dto">Модель загрузки вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AttachmentDto> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken);
+    /// <returns>Идентификатор вложения.</returns>
+    public Task<Guid> UploadByIdAsync(Guid id, AttachmentUploadDto dto,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Редактировать вложение.
     /// </summary>
-    /// <param name="dto">Модель вложения.</param>
+    /// <param name="id">Идентификатор вложения.</param>
+    /// <param name="dto">Модель загрузки вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AttachmentDto> UpdateAsync(AttachmentDto dto, CancellationToken cancellationToken);
+    /// <returns>Идентификатор вложения.</returns>
+    public Task<Guid> UpdateByIdAsync(Guid id, AttachmentUploadDto dto,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AttachmentDto> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Возвращает true, если удаление произошло успешно, false - в противном случае.</returns>
+    public Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -24,6 +24,8 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
 
     public IQueryable<TEntity> GetAll()
     {
+        if (DbSet == null) throw new ArgumentNullException(nameof(DbSet));
+
         return DbSet;
     }
 
@@ -39,8 +41,6 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
     public async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var result = await DbSet.FindAsync(id, cancellationToken);
-
-        if (result == null) throw new ArgumentNullException(nameof(result));
 
         return result;
     }

@@ -14,14 +14,17 @@ public interface IAdvertisementRepository
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
-    Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить постраничные объявления.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <param name="pageNumber">Номер страницы.</param>
+    /// <param name="pageSize">Размер страницы.</param>
     /// <returns>Массив моделей объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
-    public Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
+    public Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
+        int pageSize);
 
     /// <summary>
     ///     Создать объявление.
@@ -33,15 +36,14 @@ public interface IAdvertisementRepository
     /// <summary>
     ///     Редактировать объявление.
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="updatedEntity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AdvertisementDto> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
+    public Task UpdateAsync(Advertisement updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если удаление произошло успешно, false - в противном случае.</returns>
-    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

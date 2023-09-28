@@ -1,5 +1,4 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
-using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -19,33 +18,27 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(id, cancellationToken);
-
-        var model = new AdvertisementDto
-        {
-            Title = entity.Title,
-            Description = entity.Description,
-            Price = entity.Price,
-            TagNames = entity.TagNames,
-            IsActive = entity.IsActive
-        };
-        return model;
+        var entity = await _repository.GetAll()
+            .Where(e => e.Id == id)
+            .Include(a => a.Attachments)
+            .FirstOrDefaultAsync(cancellationToken);
+        return entity;
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken,
+        int pageNumber,
+        int pageSize)
     {
-        var entities = _repository.GetAll();
+        var allAdvertisements = _repository.GetAllFiltered(a => true);
 
-        var models = entities.Select(e => new AdvertisementShortInfoDto
-        {
-            Title = e.Title,
-            Price = e.Price
-        });
-
-        return await models.ToArrayAsync(cancellationToken);
+        return await allAdvertisements
+            .OrderBy(a => a.Id)
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -56,34 +49,16 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementDto> UpdateAsync(Advertisement currentEntity,
+    public async Task UpdateAsync(Advertisement updatedEntity,
         CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(currentEntity.Id, cancellationToken);
-        entity.Title = currentEntity.Title;
-        entity.Description = currentEntity.Description;
-        entity.Price = currentEntity.Price;
-        entity.TagNames = currentEntity.TagNames;
-        entity.IsActive = currentEntity.IsActive;
-
-        await _repository.UpdateAsync(entity, cancellationToken);
-
-        var model = new AdvertisementDto
-        {
-            Title = entity.Title,
-            Description = entity.Description,
-            Price = entity.Price,
-            TagNames = entity.TagNames,
-            IsActive = entity.IsActive
-        };
-        return model;
+        await _repository.UpdateAsync(updatedEntity, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(id, cancellationToken);
         await _repository.DeleteAsync(entity, cancellationToken);
-        return true;
     }
 }

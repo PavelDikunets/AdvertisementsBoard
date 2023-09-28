@@ -1,4 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
 COPY . ./app
 WORKDIR ./app/src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Migrator
 RUN dotnet restore
