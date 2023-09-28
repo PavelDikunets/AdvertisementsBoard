@@ -6,4 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
+        <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0"/>
+    </ItemGroup>
+
 </Project>
