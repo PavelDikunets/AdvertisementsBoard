@@ -1,12 +1,11 @@
-using AdvertisementsBoard.Domain.Attachments;
-using AdvertisementsBoard.Domain.Base;
+using AdvertisementsBoard.Contracts.Attachments;
 
-namespace AdvertisementsBoard.Domain.Advertisements;
+namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
-///     Сущность объявлений.
+///     Модель информации о объявлении.
 /// </summary>
-public class Advertisement : BaseEntity
+public class AdvertisementInfoDto
 {
     /// <summary>
     ///     Заголовок.
@@ -29,17 +28,12 @@ public class Advertisement : BaseEntity
     public string[] TagNames { get; set; }
 
     /// <summary>
-    ///     Статус актиновности.
+    ///     Статус активности.
     /// </summary>
     public bool IsActive { get; set; }
 
     /// <summary>
-    ///     Наименование категории.
+    ///     Коллекция вложений.
     /// </summary>
-    public Guid CategoryId { get; set; }
-
-    /// <summary>
-    ///     Вложения.
-    /// </summary>
-    public virtual List<Attachment> Attachments { get; set; }
+    public List<AttachmentInfoDto> Attachments { get; set; }
 }

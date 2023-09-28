@@ -6,7 +6,7 @@
 public class BaseDto
 {
     /// <summary>
-    ///     Идентификатор сущности.
+    ///     Идентификатор.
     /// </summary>
     public Guid Id { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Contracts.Attachments;
+using AdvertisementsBoard.Domain.Attachments;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 
@@ -11,36 +11,34 @@ public interface IAttachmentRepository
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
-    Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Attachment> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить постраничные вложения.
+    ///     Получить все вложения у объявления.
     /// </summary>
+    /// <param name="advertisementId">Идентификтор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <param name="pageSize">Размер страницы.</param>
-    /// <param name="pageIndex">Номер страницы.</param>
-    /// <returns>Коллекция вложений <see cref="AdvertisementDto" /></returns>
-    public Task<AttachmentDto> GetAllAsync(CancellationToken cancellationToken, int pageSize = 10,
-        int pageIndex = 0);
+    /// <returns>Массив вложений <see cref="Attachment" />.</returns>
+    public Task<Attachment[]> GetAllByIdAsync(Guid advertisementId, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать вложение.
     /// </summary>
-    /// <param name="dto">Модель объявления.</param>
+    /// <param name="updatedEntity">Сущность вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AttachmentDto> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken);
+    public Task<Guid> CreateAsync(Attachment updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Редактировать вложение.
     /// </summary>
-    /// <param name="dto">Модель вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AttachmentDto> UpdateAsync(AttachmentDto dto, CancellationToken cancellationToken);
+    /// <param name="updatedEntity">Сущность вложения.</param>
+    public Task<Guid> UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<AttachmentDto> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }
