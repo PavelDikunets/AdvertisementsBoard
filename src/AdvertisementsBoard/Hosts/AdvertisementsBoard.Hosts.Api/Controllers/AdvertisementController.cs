@@ -36,7 +36,7 @@ public class AdvertisementController : ControllerBase
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" />.</returns>
+    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
     /// <response code="200">Объявление найдено.</response>
     /// <response code="404">Объявление не найдено.</response>
     [HttpGet]
@@ -85,8 +85,8 @@ public class AdvertisementController : ControllerBase
     /// <param name="dto">Модель создания объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Объявление успешно создано.</response>
-    /// <returns>Идентификатор объявления.</returns>
-    [ProducesResponseType(typeof(AdvertisementDto), StatusCodes.Status201Created)]
+    /// <returns>Идентификатор созданного объявления <see cref="Guid" />.</returns>
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [HttpPost]
     public async Task<IActionResult> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {

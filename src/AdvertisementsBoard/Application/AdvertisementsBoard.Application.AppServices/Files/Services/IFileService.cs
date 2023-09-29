@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace AdvertisementsBoard.Application.AppServices.Contexts.Files.Services;
+namespace AdvertisementsBoard.Application.AppServices.Files.Services;
 
 /// <summary>
 ///     Сервис для работы с файлами.
