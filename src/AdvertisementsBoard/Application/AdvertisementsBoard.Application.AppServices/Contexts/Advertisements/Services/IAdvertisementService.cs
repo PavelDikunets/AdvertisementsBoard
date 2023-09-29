@@ -34,9 +34,9 @@ public interface IAdvertisementService
     public Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Редактировать объявление.
+    ///     Обновить объявление.
     /// </summary>
-    /// <param name="dto">Модель обновления существующего объявления <see cref="AdvertisementUpdateDto" />.</param>
+    /// <param name="dto">Модель обновления объявления <see cref="AdvertisementUpdateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
     public Task<AdvertisementInfoDto> UpdateAsync(AdvertisementUpdateDto dto,

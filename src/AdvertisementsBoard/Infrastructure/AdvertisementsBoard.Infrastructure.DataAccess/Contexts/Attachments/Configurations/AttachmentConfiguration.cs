@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Configurations;
 
 /// <summary>
-///     Конфигурация таблицы Attachment.
+///     Конфигурация таблицы Attachments.
 /// </summary>
 public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
 {

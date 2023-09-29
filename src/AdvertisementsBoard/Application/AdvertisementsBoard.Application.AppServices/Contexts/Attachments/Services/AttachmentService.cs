@@ -1,8 +1,7 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
-using AdvertisementsBoard.Application.AppServices.Contexts.Files.Services;
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Files.Services;
 using AdvertisementsBoard.Contracts.Attachments;
-using AdvertisementsBoard.Domain.Attachments;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 
@@ -26,7 +25,9 @@ public class AttachmentService : IAttachmentService
     /// <inheritdoc />
     public async Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
+        var entity = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
+
+        if (entity == null) throw new NotFoundException($"Вложение с идентификатором {id} не найдено.");
 
         var dto = new AttachmentInfoDto
         {
@@ -52,7 +53,9 @@ public class AttachmentService : IAttachmentService
     public async Task<Guid> UploadByIdAsync(Guid id, AttachmentUploadDto dto,
         CancellationToken cancellationToken)
     {
-        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
+        var entity = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
+
+        if (entity == null) throw new NotFoundException($"Вложение с идентификатором {id} не найдено.");
 
         var fileName = await _fileService.UploadFileAsync(dto.File, cancellationToken);
 
@@ -64,34 +67,34 @@ public class AttachmentService : IAttachmentService
     }
 
     /// <inheritdoc />
-    public async Task<Guid> UpdateByIdAsync(Guid id, AttachmentUploadDto dto,
+    public async Task<AttachmentInfoDto> UpdateByIdAsync(Guid id, AttachmentUploadDto uploadDto,
         CancellationToken cancellationToken)
     {
-        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
+        var entity = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
 
-        var attachmentUrl = await _fileService.UploadFileAsync(dto.File, cancellationToken);
+        if (entity == null) throw new NotFoundException($"Вложение с идентификатором {id} не найдено.");
+
+        var attachmentUrl = await _fileService.UploadFileAsync(uploadDto.File, cancellationToken);
 
         entity.Id = id;
         entity.Url = attachmentUrl;
 
-        var result = await _attachmentRepository.UpdateByIdAsync(entity, cancellationToken);
-        return result;
+        var dto = new AttachmentInfoDto
+        {
+            Url = entity.Url
+        };
+
+        await _attachmentRepository.UpdateByIdAsync(entity, cancellationToken);
+        return dto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await GetAttachmentFromRepositoryById(id, cancellationToken);
-        await _attachmentRepository.DeleteByIdAsync(entity.Id, cancellationToken);
-    }
-
-
-    private async Task<Attachment> GetAttachmentFromRepositoryById(Guid id, CancellationToken cancellationToken)
-    {
         var entity = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
 
-        if (entity == null) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
+        if (entity == null) throw new NotFoundException($"Вложение с идентификатором {id} не найдено.");
 
-        return entity;
+        await _attachmentRepository.DeleteByIdAsync(entity.Id, cancellationToken);
     }
 }

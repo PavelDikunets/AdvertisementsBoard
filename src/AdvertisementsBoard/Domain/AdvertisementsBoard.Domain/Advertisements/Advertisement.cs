@@ -1,10 +1,11 @@
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Domain.Base;
+using AdvertisementsBoard.Domain.Categories;
 
 namespace AdvertisementsBoard.Domain.Advertisements;
 
 /// <summary>
-///     Сущность объявлений.
+///     Сущность объявления.
 /// </summary>
 public class Advertisement : BaseEntity
 {
@@ -34,12 +35,17 @@ public class Advertisement : BaseEntity
     public bool IsActive { get; set; }
 
     /// <summary>
-    ///     Наименование категории.
+    ///     Идентификатор категории.
     /// </summary>
     public Guid CategoryId { get; set; }
 
     /// <summary>
-    ///     Вложения.
+    ///     Категория объявления.
+    /// </summary>
+    public virtual Category Category { get; set; }
+
+    /// <summary>
+    ///     Список вложений.
     /// </summary>
     public virtual List<Attachment> Attachments { get; set; }
 }
