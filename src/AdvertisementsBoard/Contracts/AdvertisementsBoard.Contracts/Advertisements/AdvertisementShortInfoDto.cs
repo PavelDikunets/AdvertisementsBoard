@@ -21,4 +21,9 @@ public class AdvertisementShortInfoDto : BaseDto
     ///     Наименование категории
     /// </summary>
     public string CategoryName { get; set; }
+
+    /// <summary>
+    ///     Наименование подкатегории.
+    /// </summary>
+    public string SubCategoryName { get; set; }
 }

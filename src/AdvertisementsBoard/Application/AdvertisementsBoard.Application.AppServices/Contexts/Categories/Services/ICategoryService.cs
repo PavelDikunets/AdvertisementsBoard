@@ -3,7 +3,7 @@ using AdvertisementsBoard.Contracts.Categories;
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
 
 /// <summary>
-///     Сервис работы с объявлениями.
+///     Сервис для работы с категориями.
 /// </summary>
 public interface ICategoryService
 {

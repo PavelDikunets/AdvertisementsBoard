@@ -1,5 +1,5 @@
-using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Domain.Base;
+using AdvertisementsBoard.Domain.SubCategories;
 
 namespace AdvertisementsBoard.Domain.Categories;
 
@@ -14,7 +14,7 @@ public class Category : BaseEntity
     public string Name { get; set; }
 
     /// <summary>
-    ///     Список объявлений.
+    ///     Список подкатегорий.
     /// </summary>
-    public virtual List<Advertisement> Advertisements { get; set; }
+    public virtual List<SubCategory> SubCategories { get; set; }
 }

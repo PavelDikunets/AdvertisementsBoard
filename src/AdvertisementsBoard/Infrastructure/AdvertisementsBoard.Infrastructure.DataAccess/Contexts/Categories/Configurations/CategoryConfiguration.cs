@@ -16,8 +16,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(p => p.Id).ValueGeneratedOnAdd();
         builder.Property(p => p.Name).IsRequired().HasMaxLength(100);
 
-        builder.HasMany(p => p.Advertisements)
+        builder.HasMany(p => p.SubCategories)
             .WithOne(b => b.Category)
-            .HasForeignKey(b => b.CategoryId);
+            .HasForeignKey(b => b.CategoryId).IsRequired();
     }
 }

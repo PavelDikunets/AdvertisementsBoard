@@ -2,6 +2,9 @@
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 
+/// <summary>
+///     Репозиторий для работы с вложениями.
+/// </summary>
 public interface IAttachmentRepository
 {
     /// <summary>

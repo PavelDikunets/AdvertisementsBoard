@@ -44,7 +44,7 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Редактировать вложение.
+    ///     Обновить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="dto">Модель вложения.</param>

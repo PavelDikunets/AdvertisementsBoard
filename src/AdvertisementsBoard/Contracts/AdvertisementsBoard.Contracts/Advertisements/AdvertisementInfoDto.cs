@@ -46,4 +46,14 @@ public class AdvertisementInfoDto
     ///     Наименование категории.
     /// </summary>
     public string CategoryName { get; set; }
+
+    /// <summary>
+    ///     Идентификатор подкатегории.
+    /// </summary>
+    public Guid SubCategoryId { get; set; }
+
+    /// <summary>
+    ///     Наименоваие подкатегории.
+    /// </summary>
+    public string SubCategoryName { get; set; }
 }

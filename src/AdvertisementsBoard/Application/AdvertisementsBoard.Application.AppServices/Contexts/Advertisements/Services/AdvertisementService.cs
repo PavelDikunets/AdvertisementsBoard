@@ -39,6 +39,8 @@ public class AdvertisementService : IAdvertisementService
             IsActive = entity.IsActive,
             CategoryId = entity.CategoryId,
             CategoryName = entity.Category.Name,
+            SubCategoryId = entity.SubCategoryId,
+            SubCategoryName = entity.SubCategory.Name,
             Attachments = entity.Attachments.Select(s => new AttachmentInfoDto
             {
                 Url = s.Url
@@ -59,14 +61,15 @@ public class AdvertisementService : IAdvertisementService
             Id = a.Id,
             Title = a.Title,
             Price = a.Price,
-            CategoryName = a.Category.Name
+            CategoryName = a.Category.Name,
+            SubCategoryName = a.SubCategory.Name
         }).ToArray();
 
         return dto;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(Guid categoryId, AdvertisementCreateDto dto,
+    public async Task<Guid> CreateAsync(Guid categoryId, Guid subCategoryId, AdvertisementCreateDto dto,
         CancellationToken cancellationToken)
     {
         await _categoryService.GetByIdAsync(categoryId, cancellationToken);
@@ -78,7 +81,8 @@ public class AdvertisementService : IAdvertisementService
             Price = dto.Price,
             TagNames = dto.TagNames,
             IsActive = dto.IsActive,
-            CategoryId = categoryId
+            CategoryId = categoryId,
+            SubCategoryId = subCategoryId
         };
 
         var id = await _advertisementRepository.CreateAsync(advertisementEntity, cancellationToken);

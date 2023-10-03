@@ -1,7 +1,7 @@
 namespace AdvertisementsBoard.Contracts.Categories;
 
 /// <summary>
-///     Модель редактирования категории.
+///     Модель обновления категории.
 /// </summary>
 public class CategoryUpdateDto : CategoryCreateDto
 {

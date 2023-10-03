@@ -4,11 +4,14 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositor
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Repositories;
+using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 using AdvertisementsBoard.Application.AppServices.Files.Services;
 using AdvertisementsBoard.Infrastructure.DataAccess;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Categories.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.SubCategories.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Interfaces;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +43,7 @@ public static class ComponentReqistrar
         services.AddScoped<IAdvertisementService, AdvertisementService>();
         services.AddScoped<IAttachmentService, AttachmentService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ISubCategoryService, SubCategoryService>();
     }
 
     /// <summary>
@@ -52,5 +56,6 @@ public static class ComponentReqistrar
         services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
     }
 }

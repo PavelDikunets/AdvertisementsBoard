@@ -1,6 +1,7 @@
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Domain.Base;
 using AdvertisementsBoard.Domain.Categories;
+using AdvertisementsBoard.Domain.SubCategories;
 
 namespace AdvertisementsBoard.Domain.Advertisements;
 
@@ -48,4 +49,14 @@ public class Advertisement : BaseEntity
     ///     Список вложений.
     /// </summary>
     public virtual List<Attachment> Attachments { get; set; }
+
+    /// <summary>
+    ///     Идентификатор подкатегории.
+    /// </summary>
+    public Guid SubCategoryId { get; set; }
+
+    /// <summary>
+    ///     Подкатегория.
+    /// </summary>
+    public virtual SubCategory SubCategory { get; set; }
 }

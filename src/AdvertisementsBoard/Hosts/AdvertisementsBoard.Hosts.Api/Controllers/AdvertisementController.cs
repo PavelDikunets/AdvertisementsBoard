@@ -66,9 +66,10 @@ public class AdvertisementController : ControllerBase
     }
 
     /// <summary>
-    ///     Создать объявление.
+    ///     Создать объявление по идентификатору категории и идентификатору подкатегории.
     /// </summary>
     /// <param name="categoryId">Идентификатор категории.</param>
+    /// <param name="subCategoryId">Индетификатор подкатегории.</param>
     /// <param name="dto">Модель создания объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Объявление успешно создано.</response>
@@ -77,15 +78,16 @@ public class AdvertisementController : ControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([Required] Guid categoryId, AdvertisementCreateDto dto,
+    public async Task<IActionResult> CreateAsync([Required] Guid categoryId, [Required] Guid subCategoryId,
+        AdvertisementCreateDto dto,
         CancellationToken cancellationToken)
     {
-        var result = await _advertisementService.CreateAsync(categoryId, dto, cancellationToken);
+        var result = await _advertisementService.CreateAsync(categoryId, subCategoryId, dto, cancellationToken);
         return Created(nameof(CreateAsync), result);
     }
 
     /// <summary>
-    ///     Редактировать объявление по идентификатору.
+    ///     Обновить объявление по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="dto">Модель объявления</param>
@@ -93,7 +95,7 @@ public class AdvertisementController : ControllerBase
     /// <response code="404">Объявление не найдено.</response>
     /// <response code="200">Объявление успешно обновлено.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Модель объявления <see cref="AdvertisementUpdateDto" />.</returns>
+    /// <returns>Модель обновления объявления <see cref="AdvertisementUpdateDto" />.</returns>
     [ProducesResponseType(typeof(AdvertisementUpdateDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
@@ -122,7 +124,7 @@ public class AdvertisementController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить все вложения по идентификатору объявления.
+    ///     Получить все вложения для объявления по его идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
@@ -131,7 +133,7 @@ public class AdvertisementController : ControllerBase
     /// <response code="404">Объявление не найдено.</response>
     [HttpGet("{id:guid}/Attachments")]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(AttachmentInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AttachmentInfoDto[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAttachmentsByAdvertisementId([Required] Guid id,
         CancellationToken cancellationToken)
     {
@@ -140,7 +142,7 @@ public class AdvertisementController : ControllerBase
     }
 
     /// <summary>
-    ///     Загрузить вложения по идентификатору объявления.
+    ///     Загрузить вложения для объявления по его идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="dto">Модель вложения.</param>

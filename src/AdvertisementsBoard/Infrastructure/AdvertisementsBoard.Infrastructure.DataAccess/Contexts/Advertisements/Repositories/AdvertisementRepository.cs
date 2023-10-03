@@ -24,6 +24,7 @@ public class AdvertisementRepository : IAdvertisementRepository
             .Where(e => e.Id == id)
             .Include(a => a.Attachments)
             .Include(c => c.Category)
+            .Include(s => s.SubCategory)
             .FirstOrDefaultAsync(cancellationToken);
         return entity;
     }
@@ -40,6 +41,7 @@ public class AdvertisementRepository : IAdvertisementRepository
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .Include(c => c.Category)
+            .Include(s => s.SubCategory)
             .ToArrayAsync(cancellationToken);
     }
 

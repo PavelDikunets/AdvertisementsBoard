@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Contracts.Errors;
+using AdvertisementsBoard.Contracts.SubCategories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdvertisementsBoard.Hosts.Api.Controllers;
@@ -16,14 +18,17 @@ namespace AdvertisementsBoard.Hosts.Api.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
+    private readonly ISubCategoryService _subCategoryService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="CategoryController" />
     /// </summary>
     /// <param name="categoryService">Сервис для работы с категориями.</param>
-    public CategoryController(ICategoryService categoryService)
+    /// <param name="subCategoryService">Сервис для работы с подкатегориями.</param>
+    public CategoryController(ICategoryService categoryService, ISubCategoryService subCategoryService)
     {
         _categoryService = categoryService;
+        _subCategoryService = subCategoryService;
     }
 
     /// <summary>
@@ -75,7 +80,7 @@ public class CategoryController : ControllerBase
     }
 
     /// <summary>
-    ///     Редактировать категорию.
+    ///     Обновить категорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="dto">Модель обновления категории.</param>
@@ -83,7 +88,7 @@ public class CategoryController : ControllerBase
     /// <response code="404">Категория не найдена.</response>
     /// <response code="200">Категория успешно обновлена.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Модель категории <see cref="CategoryInfoDto" />.</returns>
+    /// <returns>Модель обновления категории <see cref="CategoryUpdateDto" />.</returns>
     [ProducesResponseType(typeof(CategoryUpdateDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
@@ -108,5 +113,24 @@ public class CategoryController : ControllerBase
     {
         await _categoryService.DeleteByIdAsync(id, cancellationToken);
         return NoContent();
+    }
+
+    /// <summary>
+    ///     Создать подкатегорию по идентификатору категории.
+    /// </summary>
+    /// <param name="id">Идентификатор категории.</param>
+    /// <param name="dto">Модель создания подкатегории</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <response code="201">Подкатегория успешно создана.</response>
+    /// <response code="400">Некорректный запрос.</response>
+    /// <returns>Идентификатор созданной подкатегории <see cref="Guid" />.</returns>
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [HttpPost("{id}/SubCategory")]
+    public async Task<IActionResult> CreateAsync(Guid id, SubCategoryCreateDto dto,
+        CancellationToken cancellationToken)
+    {
+        var result = await _subCategoryService.CreateByCategoryIdAsync(id, dto, cancellationToken);
+        return Created(nameof(CreateAsync), result);
     }
 }

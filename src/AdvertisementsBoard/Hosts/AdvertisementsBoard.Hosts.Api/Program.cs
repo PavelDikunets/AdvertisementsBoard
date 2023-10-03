@@ -3,6 +3,7 @@ using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Categories;
+using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Hosts.Api.Controllers;
 using AdvertisementsBoard.Infrastructure.ComponentRegistrar;
 using Microsoft.AspNetCore.Diagnostics;
@@ -18,6 +19,10 @@ builder.Services.AddSwaggerGen(s =>
 {
     var includeDocsTypesMarkers = new[]
     {
+        typeof(SubCategoryDto),
+        typeof(SubCategoryInfoDto),
+        typeof(SubCategoryCreateDto),
+        typeof(SubCategoryUpdateDto),
         typeof(CategoryDto),
         typeof(CategoryInfoDto),
         typeof(CategoryCreateDto),

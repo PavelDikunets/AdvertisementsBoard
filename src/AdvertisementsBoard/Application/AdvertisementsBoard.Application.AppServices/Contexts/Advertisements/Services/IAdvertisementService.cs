@@ -29,10 +29,12 @@ public interface IAdvertisementService
     ///     Создать объявление.
     /// </summary>
     /// <param name="categoryId">Идентификатор категории.</param>
+    /// <param name="subCategoryId">Идентификатор подкатегории.</param>
     /// <param name="dto">Модель создания объявления <see cref="AdvertisementCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного объявления <see cref="Guid" />.</returns>
-    Task<Guid> CreateAsync(Guid categoryId, AdvertisementCreateDto dto, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(Guid categoryId, Guid subCategoryId, AdvertisementCreateDto dto,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить объявление по идентификатору.
