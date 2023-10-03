@@ -22,24 +22,26 @@ public interface IAdvertisementService
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageNumber">Номер страницы.</param>
     /// <returns>Массив объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
-    public Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
+    Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber);
 
     /// <summary>
     ///     Создать объявление.
     /// </summary>
+    /// <param name="categoryId">Идентификатор категории.</param>
     /// <param name="dto">Модель создания объявления <see cref="AdvertisementCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного объявления <see cref="Guid" />.</returns>
-    public Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(Guid categoryId, AdvertisementCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Редактировать объявление.
+    ///     Обновить объявление по идентификатору.
     /// </summary>
-    /// <param name="dto">Модель обновления существующего объявления <see cref="AdvertisementUpdateDto" />.</param>
+    /// <param name="id">Идентификатор объявления</param>
+    /// <param name="dto"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
-    public Task<AdvertisementInfoDto> UpdateAsync(AdvertisementUpdateDto dto,
+    Task<AdvertisementUpdateDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -47,5 +49,5 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

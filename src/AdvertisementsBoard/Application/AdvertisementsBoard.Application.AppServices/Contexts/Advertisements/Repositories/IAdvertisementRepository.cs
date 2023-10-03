@@ -1,5 +1,4 @@
-﻿using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Domain.Advertisements;
+﻿using AdvertisementsBoard.Domain.Advertisements;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 
@@ -13,8 +12,8 @@ public interface IAdvertisementRepository
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
-    public Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Сущность объявления <see cref="Advertisement" />.</returns>
+    Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить постраничные объявления.
@@ -22,8 +21,8 @@ public interface IAdvertisementRepository
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageNumber">Номер страницы.</param>
     /// <param name="pageSize">Размер страницы.</param>
-    /// <returns>Массив моделей объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
-    public Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
+    /// <returns>Перечеслитель сущностей объявлений <see cref="Advertisement" />.</returns>
+    Task<IEnumerable<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
         int pageSize);
 
     /// <summary>
@@ -31,19 +30,20 @@ public interface IAdvertisementRepository
     /// </summary>
     /// <param name="entity">Сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<Guid> CreateAsync(Advertisement entity, CancellationToken cancellationToken);
+    /// <returns>Идентификатор созданного объявления.</returns>
+    Task<Guid> CreateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Редактировать объявление.
     /// </summary>
-    /// <param name="updatedEntity"></param>
+    /// <param name="updatedEntity">Обновленная сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task UpdateAsync(Advertisement updatedEntity, CancellationToken cancellationToken);
+    Task UpdateAsync(Advertisement updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

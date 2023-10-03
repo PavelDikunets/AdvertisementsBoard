@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Configurations;
 
 /// <summary>
-///     Конфигурация таблицы Advertisement.
+///     Конфигурация таблицы Advertisements.
 /// </summary>
 public class AdvertisementConfiguration : IEntityTypeConfiguration<Advertisement>
 {

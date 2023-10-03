@@ -36,4 +36,14 @@ public class AdvertisementInfoDto
     ///     Коллекция вложений.
     /// </summary>
     public List<AttachmentInfoDto> Attachments { get; set; }
+
+    /// <summary>
+    ///     Идентификатор категории.
+    /// </summary>
+    public Guid CategoryId { get; set; }
+
+    /// <summary>
+    ///     Наименование категории.
+    /// </summary>
+    public string CategoryName { get; set; }
 }

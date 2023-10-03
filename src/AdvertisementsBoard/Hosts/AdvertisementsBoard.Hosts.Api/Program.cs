@@ -2,6 +2,7 @@ using System.Text.Json;
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Attachments;
+using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Hosts.Api.Controllers;
 using AdvertisementsBoard.Infrastructure.ComponentRegistrar;
 using Microsoft.AspNetCore.Diagnostics;
@@ -17,9 +18,12 @@ builder.Services.AddSwaggerGen(s =>
 {
     var includeDocsTypesMarkers = new[]
     {
+        typeof(CategoryDto),
+        typeof(CategoryInfoDto),
+        typeof(CategoryCreateDto),
+        typeof(CategoryUpdateDto),
         typeof(AttachmentInfoDto),
         typeof(AttachmentUploadDto),
-        typeof(AdvertisementDto),
         typeof(AdvertisementInfoDto),
         typeof(AdvertisementCreateDto),
         typeof(AdvertisementUpdateDto),
@@ -62,6 +66,14 @@ app.UseExceptionHandler(errorApp =>
                 var result = JsonSerializer.Serialize(new { error = ex.Message });
                 await context.Response.WriteAsync(result).ConfigureAwait(false);
             }
+            else if (ex is AlreadyExistsException)
+            {
+                context.Response.StatusCode = 400;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize(new { error = ex.Message });
+                await context.Response.WriteAsync(result).ConfigureAwait(false);
+            }
         }
     });
 });
@@ -73,8 +85,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

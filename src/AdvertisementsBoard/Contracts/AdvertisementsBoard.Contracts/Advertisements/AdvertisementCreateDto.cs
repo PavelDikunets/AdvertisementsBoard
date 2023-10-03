@@ -36,12 +36,6 @@ public class AdvertisementCreateDto
     public string[] TagNames { get; set; }
 
     /// <summary>
-    ///     Наименование категории
-    /// </summary>
-    [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
-    public string CategoryName { get; set; }
-
-    /// <summary>
     ///     Статус активности.
     /// </summary>
     public bool IsActive { get; set; }

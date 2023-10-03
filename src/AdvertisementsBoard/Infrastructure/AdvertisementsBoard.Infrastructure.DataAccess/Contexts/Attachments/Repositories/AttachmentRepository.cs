@@ -25,16 +25,13 @@ public class AttachmentRepository : IAttachmentRepository
     }
 
     /// <inheritdoc />
-    public async Task<Attachment[]> GetAllByIdAsync(Guid advertisementId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Attachment>> GetAllByAdvertisementIdAsync(Guid id,
+        CancellationToken cancellationToken)
     {
-        var entities = _repository.GetAll().Where(e => e.AdvertisementId == advertisementId);
+        var entities = await _repository.GetAll().Where(a => a.AdvertisementId == id)
+            .ToArrayAsync(cancellationToken);
 
-        var models = entities.Select(e => new Attachment
-        {
-            Url = e.Url
-        });
-
-        return await models.ToArrayAsync(cancellationToken);
+        return entities;
     }
 
     /// <inheritdoc />
@@ -45,19 +42,15 @@ public class AttachmentRepository : IAttachmentRepository
     }
 
     /// <inheritdoc />
-    public async Task<Guid> UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken)
+    public async Task UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(updatedEntity.Id, cancellationToken);
-        entity.Url = updatedEntity.Url;
-        await _repository.UpdateAsync(entity, cancellationToken);
-        return entity.Id;
+        await _repository.UpdateAsync(updatedEntity, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _repository.GetByIdAsync(id, cancellationToken);
         await _repository.DeleteAsync(entity, cancellationToken);
-        return true;
     }
 }

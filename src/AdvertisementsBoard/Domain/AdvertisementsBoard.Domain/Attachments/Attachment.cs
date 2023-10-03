@@ -3,6 +3,9 @@ using AdvertisementsBoard.Domain.Base;
 
 namespace AdvertisementsBoard.Domain.Attachments;
 
+/// <summary>
+///     Сущность вложения.
+/// </summary>
 public class Attachment : BaseEntity
 {
     /// <summary>
@@ -16,7 +19,7 @@ public class Attachment : BaseEntity
     public Guid AdvertisementId { get; set; }
 
     /// <summary>
-    ///     Объявление.
+    ///     Сущность объявления.
     /// </summary>
     public virtual Advertisement Advertisement { get; set; }
 }
