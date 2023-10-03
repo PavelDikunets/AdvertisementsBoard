@@ -1,4 +1,5 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
+using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Attachments;
@@ -10,20 +11,24 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Se
 public class AdvertisementService : IAdvertisementService
 {
     private readonly IAdvertisementRepository _advertisementRepository;
+    private readonly ICategoryService _categoryService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AdvertisementService" />.
     /// </summary>
     /// <param name="advertisementRepository">Репозиторий для работы с объявлениями.</param>
-    public AdvertisementService(IAdvertisementRepository advertisementRepository)
+    /// <param name="categoryService"></param>
+    public AdvertisementService(IAdvertisementRepository advertisementRepository,
+        ICategoryService categoryService)
     {
         _advertisementRepository = advertisementRepository;
+        _categoryService = categoryService;
     }
 
     /// <inheritdoc />
     public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await GetAdvertisementFromRepositoryByIdAsync(id, cancellationToken);
+        var entity = await FindByIdAsync(id, cancellationToken);
 
         var dto = new AdvertisementInfoDto
         {
@@ -32,6 +37,8 @@ public class AdvertisementService : IAdvertisementService
             Price = entity.Price,
             TagNames = entity.TagNames,
             IsActive = entity.IsActive,
+            CategoryId = entity.CategoryId,
+            CategoryName = entity.Category.Name,
             Attachments = entity.Attachments.Select(s => new AttachmentInfoDto
             {
                 Url = s.Url
@@ -41,40 +48,48 @@ public class AdvertisementService : IAdvertisementService
         return dto;
     }
 
+    /// <inheritdoc />
     public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber)
     {
-        var advertisements = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
-        var dto = advertisements.Select(a => new AdvertisementShortInfoDto
+        var entity = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
+
+        var dto = entity.Select(a => new AdvertisementShortInfoDto
         {
             Id = a.Id,
             Title = a.Title,
-            Price = a.Price
+            Price = a.Price,
+            CategoryName = a.Category.Name
         }).ToArray();
 
         return dto;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Guid categoryId, AdvertisementCreateDto dto,
+        CancellationToken cancellationToken)
     {
-        var entity = new Advertisement
+        await _categoryService.GetByIdAsync(categoryId, cancellationToken);
+
+        var advertisementEntity = new Advertisement
         {
             Title = dto.Title,
             Description = dto.Description,
             Price = dto.Price,
             TagNames = dto.TagNames,
+            IsActive = dto.IsActive,
+            CategoryId = categoryId
         };
 
-        var result = await _advertisementRepository.CreateAsync(entity, cancellationToken);
-        return result;
+        var id = await _advertisementRepository.CreateAsync(advertisementEntity, cancellationToken);
+        return id;
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementInfoDto> UpdateAsync(AdvertisementUpdateDto dto,
+    public async Task<AdvertisementUpdateDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto dto,
         CancellationToken cancellationToken)
     {
-        var entity = await GetAdvertisementFromRepositoryByIdAsync(dto.Id, cancellationToken);
+        var entity = await FindByIdAsync(id, cancellationToken);
 
         entity.Title = dto.Title;
         entity.Description = dto.Description;
@@ -82,38 +97,34 @@ public class AdvertisementService : IAdvertisementService
         entity.TagNames = dto.TagNames;
         entity.IsActive = dto.IsActive;
 
+
         await _advertisementRepository.UpdateAsync(entity, cancellationToken);
 
-        var updateddDto = new AdvertisementInfoDto
+        var updateDto = new AdvertisementUpdateDto
         {
             Title = entity.Title,
             Description = entity.Description,
             Price = entity.Price,
             TagNames = entity.TagNames,
-            IsActive = entity.IsActive,
-            Attachments = entity.Attachments.Select(a => new AttachmentInfoDto
-            {
-                Url = a.Url
-            }).ToList()
+            IsActive = entity.IsActive
         };
-        return updateddDto;
+        return updateDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await GetAdvertisementFromRepositoryByIdAsync(id, cancellationToken);
+        var entity = await FindByIdAsync(id, cancellationToken);
+
         await _advertisementRepository.DeleteByIdAsync(entity.Id, cancellationToken);
     }
 
 
-    private async Task<Advertisement> GetAdvertisementFromRepositoryByIdAsync(Guid id,
-        CancellationToken cancellationToken)
+    private async Task<Advertisement> FindByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
 
         if (entity == null) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
-
         return entity;
     }
 }

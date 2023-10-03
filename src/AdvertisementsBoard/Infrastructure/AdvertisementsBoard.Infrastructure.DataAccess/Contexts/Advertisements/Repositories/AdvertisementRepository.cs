@@ -23,6 +23,7 @@ public class AdvertisementRepository : IAdvertisementRepository
         var entity = await _repository.GetAll()
             .Where(e => e.Id == id)
             .Include(a => a.Attachments)
+            .Include(c => c.Category)
             .FirstOrDefaultAsync(cancellationToken);
         return entity;
     }
@@ -38,7 +39,8 @@ public class AdvertisementRepository : IAdvertisementRepository
             .OrderBy(a => a.Id)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
-            .ToListAsync(cancellationToken);
+            .Include(c => c.Category)
+            .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />

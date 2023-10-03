@@ -2,10 +2,13 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Reposi
 using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
-using AdvertisementsBoard.Application.AppServices.Contexts.Files.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
+using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
+using AdvertisementsBoard.Application.AppServices.Files.Services;
 using AdvertisementsBoard.Infrastructure.DataAccess;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Categories.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Interfaces;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +39,7 @@ public static class ComponentReqistrar
         services.AddTransient<IFileService, FileService>();
         services.AddScoped<IAdvertisementService, AdvertisementService>();
         services.AddScoped<IAttachmentService, AttachmentService>();
+        services.AddScoped<ICategoryService, CategoryService>();
     }
 
     /// <summary>
@@ -47,5 +51,6 @@ public static class ComponentReqistrar
         services.AddScoped(typeof(IBaseDbRepository<>), typeof(BaseDbRepository<>));
         services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
     }
 }
