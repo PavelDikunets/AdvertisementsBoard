@@ -1,5 +1,4 @@
-﻿using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Domain.Attachments;
+﻿using AdvertisementsBoard.Domain.Attachments;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 
@@ -10,35 +9,36 @@ public interface IAttachmentRepository
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementDto" /></returns>
+    /// <returns>Сущность вложения <see cref="Attachment" />.</returns>
     Task<Attachment> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить все вложения у объявления.
+    ///     Получить все вложения по идентификатору объявления.
     /// </summary>
-    /// <param name="advertisementId">Идентификтор объявления.</param>
+    /// <param name="id">Идентификтор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Массив вложений <see cref="Attachment" />.</returns>
-    public Task<Attachment[]> GetAllByIdAsync(Guid advertisementId, CancellationToken cancellationToken);
+    Task<IEnumerable<Attachment>> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать вложение.
     /// </summary>
-    /// <param name="updatedEntity">Сущность вложения.</param>
+    /// <param name="updatedEntity">Обновленная сущность вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<Guid> CreateAsync(Attachment updatedEntity, CancellationToken cancellationToken);
+    /// <returns>Идентификатор созданной сущности вложения.</returns>
+    Task<Guid> CreateAsync(Attachment updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Редактировать вложение.
+    ///     Обновить вложение.
     /// </summary>
+    /// <param name="updatedEntity">Обновленная сущность вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <param name="updatedEntity">Сущность вложения.</param>
-    public Task<Guid> UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken);
+    Task UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

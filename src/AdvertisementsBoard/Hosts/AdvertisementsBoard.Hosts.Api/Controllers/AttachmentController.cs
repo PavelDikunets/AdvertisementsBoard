@@ -44,35 +44,18 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Загрузить вложение.
+    ///     Редактировать вложение.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="dto">Модель вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <response code="201">Вложение успешно загружено.</response>
-    /// <returns>Идентификатор загруженного вложения <see cref="Guid" />.</returns>
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [HttpPost]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadAsync([Required] Guid id, [FromForm] AttachmentUploadDto dto,
-        CancellationToken cancellationToken)
-    {
-        var result = await _attachmentService.UploadByIdAsync(id, dto, cancellationToken);
-        return Created(nameof(UploadAsync), result);
-    }
-
-    /// <summary>
-    ///     Редактировать вложение.
-    /// </summary>
-    /// <param name="id">Идентификатор объявления.</param>
-    /// <param name="dto">Модель вложения.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <response code="200">Вложение успешно обновлено.</response>
     /// <response code="404">Вложение не найдено.</response>
     /// <returns>Идентификатор вложения <see cref="Guid" />.</returns>
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AttachmentInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [HttpPut]
-    public async Task<IActionResult> UpdateAsync([Required] Guid id, [FromForm] AttachmentUploadDto dto,
+    public async Task<IActionResult> UpdateByIdAsync([Required] Guid id, [FromForm] AttachmentUploadDto dto,
         CancellationToken cancellationToken)
     {
         var result = await _attachmentService.UpdateByIdAsync(id, dto, cancellationToken);

@@ -36,12 +36,6 @@ public class AdvertisementCreateDto
     public string[] TagNames { get; set; }
 
     /// <summary>
-    ///     Идентификатор категории.
-    /// </summary>
-    [Required]
-    public Guid CategoryId { get; set; }
-
-    /// <summary>
     ///     Статус активности.
     /// </summary>
     public bool IsActive { get; set; }
