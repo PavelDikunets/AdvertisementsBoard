@@ -12,7 +12,7 @@ public interface IAttachmentService
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель вложения <see cref="AttachmentInfoDto" />.</returns>
+    /// <returns>Модель с информацией о вложении.</returns>
     Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -20,27 +20,26 @@ public interface IAttachmentService
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив вложений <see cref="AttachmentInfoDto" />.</returns>
-    Task<AttachmentInfoDto[]> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Массив моделей вложений с краткой информацией.</returns>
+    Task<AttachmentShortInfoDto[]> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Загрузить вложение по идентификатору объявления.
     /// </summary>
-    /// <param name="id">Идентификатор объявления.</param>
     /// <param name="dto">Модель загрузки вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор вложения <see cref="Guid" />.</returns>
-    Task<Guid> UploadByAdvertisementIdAsync(Guid id, AttachmentUploadDto dto,
+    /// <returns>Идентификатор загруженного вложения.</returns>
+    Task<Guid> UploadByAdvertisementIdAsync(AttachmentUploadDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить вложение.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
-    /// <param name="uploadDto">Модель загрузки вложения.</param>
+    /// <param name="uploadDto">Модель обновления вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель вложений <see cref="AttachmentInfoDto" />.</returns>
-    Task<AttachmentInfoDto> UpdateByIdAsync(Guid id, AttachmentUploadDto uploadDto,
+    /// <returns>Модель с обновленным вложением.</returns>
+    Task<AttachmentShortInfoDto> UpdateByIdAsync(Guid id, AttachmentUpdateDto uploadDto,
         CancellationToken cancellationToken);
 
     /// <summary>

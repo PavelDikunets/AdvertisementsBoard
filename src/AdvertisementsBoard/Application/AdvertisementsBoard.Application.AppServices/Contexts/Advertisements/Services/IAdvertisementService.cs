@@ -12,7 +12,7 @@ public interface IAdvertisementService
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
+    /// <returns>Модель с информацией об объявлении.</returns>
     Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -21,29 +21,26 @@ public interface IAdvertisementService
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageNumber">Номер страницы.</param>
-    /// <returns>Массив объявлений <see cref="AdvertisementShortInfoDto" />.</returns>
+    /// <returns>Массив моделей объявлений с краткой информацией.</returns>
     Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber);
 
     /// <summary>
     ///     Создать объявление.
     /// </summary>
-    /// <param name="categoryId">Идентификатор категории.</param>
-    /// <param name="subCategoryId">Идентификатор подкатегории.</param>
-    /// <param name="dto">Модель создания объявления <see cref="AdvertisementCreateDto" />.</param>
+    /// <param name="dto">Модель создания объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор созданного объявления <see cref="Guid" />.</returns>
-    Task<Guid> CreateAsync(Guid categoryId, Guid subCategoryId, AdvertisementCreateDto dto,
-        CancellationToken cancellationToken);
+    /// <returns>Идентификатор созданного объявления.</returns>
+    Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить объявление по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления</param>
-    /// <param name="dto"></param>
+    /// <param name="dto">Модель обновления объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
-    Task<AdvertisementUpdateDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto dto,
+    /// <returns>Модель обновленного объявления.</returns>
+    Task<AdvertisementUpdatedDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -52,4 +49,11 @@ public interface IAdvertisementService
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Проверить, существует ли объявление с указанным идентификатором.
+    /// </summary>
+    /// <param name="id">Идентификатор объявления.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
 }
