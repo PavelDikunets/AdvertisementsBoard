@@ -3,7 +3,6 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Contracts.Errors;
-using AdvertisementsBoard.Contracts.SubCategories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdvertisementsBoard.Hosts.Api.Controllers;
@@ -32,17 +31,17 @@ public class CategoryController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить категорию по идентификатору.
+    ///     Получить категорию.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель категории <see cref="CategoryInfoDto" />.</returns>
     /// <response code="200">Категория найдена.</response>
     /// <response code="404">Категория не найдена.</response>
-    [HttpGet]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(CategoryInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByIdAsync([Required] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var result = await _categoryService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
@@ -53,8 +52,8 @@ public class CategoryController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Категории найдены.</response>
-    /// <returns>Массив категорий <see cref="CategoryInfoDto" /></returns>
-    [ProducesResponseType(typeof(CategoryInfoDto[]), StatusCodes.Status200OK)]
+    /// <returns>Массив категорий с краткой информацией <see cref="CategoryShortInfoDto" />.</returns>
+    [ProducesResponseType(typeof(CategoryShortInfoDto[]), StatusCodes.Status200OK)]
     [HttpGet("Get-all")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -80,7 +79,7 @@ public class CategoryController : ControllerBase
     }
 
     /// <summary>
-    ///     Обновить категорию по идентификатору.
+    ///     Обновить категорию.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="dto">Модель обновления категории.</param>
@@ -92,8 +91,8 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(typeof(CategoryUpdateDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [HttpPut]
-    public async Task<IActionResult> UpdateByIdAsync([Required] Guid id, CategoryUpdateDto dto,
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateByIdAsync(Guid id, CategoryUpdateDto dto,
         CancellationToken cancellationToken)
     {
         var result = await _categoryService.UpdateByIdAsync(id, dto, cancellationToken);
@@ -101,36 +100,17 @@ public class CategoryController : ControllerBase
     }
 
     /// <summary>
-    ///     Удалить категорию по идентификатору.
+    ///     Удалить категорию.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="204">Категория успешно удалена.</response>
     /// <response code="404">Категория не найдена.</response>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [HttpDelete]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
         await _categoryService.DeleteByIdAsync(id, cancellationToken);
         return NoContent();
-    }
-
-    /// <summary>
-    ///     Создать подкатегорию по идентификатору категории.
-    /// </summary>
-    /// <param name="id">Идентификатор категории.</param>
-    /// <param name="dto">Модель создания подкатегории</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <response code="201">Подкатегория успешно создана.</response>
-    /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Идентификатор созданной подкатегории <see cref="Guid" />.</returns>
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [HttpPost("{id}/SubCategory")]
-    public async Task<IActionResult> CreateAsync(Guid id, SubCategoryCreateDto dto,
-        CancellationToken cancellationToken)
-    {
-        var result = await _subCategoryService.CreateByCategoryIdAsync(id, dto, cancellationToken);
-        return Created(nameof(CreateAsync), result);
     }
 }

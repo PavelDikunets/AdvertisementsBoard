@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
-using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
+﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
 using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,31 +15,28 @@ namespace AdvertisementsBoard.Hosts.Api.Controllers;
 public class AdvertisementController : ControllerBase
 {
     private readonly IAdvertisementService _advertisementService;
-    private readonly IAttachmentService _attachmentService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AdvertisementController" />
     /// </summary>
     /// <param name="advertisementService">Сервис для работы с объявлениями.</param>
-    /// <param name="attachmentService">Серив для работы с вложениями.</param>
-    public AdvertisementController(IAdvertisementService advertisementService, IAttachmentService attachmentService)
+    public AdvertisementController(IAdvertisementService advertisementService)
     {
         _advertisementService = advertisementService;
-        _attachmentService = attachmentService;
     }
 
     /// <summary>
-    ///     Получить объявление по идентификатору.
+    ///     Получить объявление.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления <see cref="AdvertisementInfoDto" />.</returns>
     /// <response code="200">Объявление найдено.</response>
     /// <response code="404">Объявление не найдено.</response>
-    [HttpGet]
     [ProducesResponseType(typeof(AdvertisementInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByIdAsync([Required] Guid id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var result = await _advertisementService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
@@ -55,7 +49,7 @@ public class AdvertisementController : ControllerBase
     /// <param name="pageNumber">Номер страницы.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <response code="200">Объявления найдены.</response>
-    /// <returns>Массив объявлений <see cref="AdvertisementShortInfoDto" /></returns>
+    /// <returns>Массив объявлений с краткой информацией. <see cref="AdvertisementShortInfoDto" /></returns>
     [ProducesResponseType(typeof(AdvertisementShortInfoDto[]), StatusCodes.Status200OK)]
     [HttpGet("Get-all-paged")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageNumber = 0,
@@ -66,42 +60,41 @@ public class AdvertisementController : ControllerBase
     }
 
     /// <summary>
-    ///     Создать объявление по идентификатору категории и идентификатору подкатегории.
+    ///     Создать объявление.
     /// </summary>
-    /// <param name="categoryId">Идентификатор категории.</param>
-    /// <param name="subCategoryId">Индетификатор подкатегории.</param>
     /// <param name="dto">Модель создания объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Объявление успешно создано.</response>
-    /// <response code="404">Категория не найдена.</response>
+    /// <response code="404">Не найдено.</response>
     /// <returns>Идентификатор созданного объявления <see cref="Guid" />.</returns>
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([Required] Guid categoryId, [Required] Guid subCategoryId,
-        AdvertisementCreateDto dto,
+    public async Task<IActionResult> CreateAsync(AdvertisementCreateDto dto,
         CancellationToken cancellationToken)
     {
-        var result = await _advertisementService.CreateAsync(categoryId, subCategoryId, dto, cancellationToken);
+        var result =
+            await _advertisementService.CreateAsync(dto, cancellationToken);
         return Created(nameof(CreateAsync), result);
     }
 
     /// <summary>
-    ///     Обновить объявление по идентификатору.
+    ///     Обновить объявление.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="dto">Модель объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <response code="404">Объявление не найдено.</response>
+    /// <response code="404">Не найдено.</response>
     /// <response code="200">Объявление успешно обновлено.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Модель обновления объявления <see cref="AdvertisementUpdateDto" />.</returns>
-    [ProducesResponseType(typeof(AdvertisementUpdateDto), StatusCodes.Status200OK)]
+    /// <response code="403">Доступ запрещен.</response>
+    /// <returns>Модель обновленного объявления <see cref="AdvertisementUpdatedDto" />.</returns>
+    [ProducesResponseType(typeof(AdvertisementUpdatedDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [HttpPut]
-    public async Task<IActionResult> UpdateByIdAsync([Required] Guid id,
-        AdvertisementUpdateDto dto,
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateByIdAsync(Guid id, AdvertisementUpdateDto dto,
         CancellationToken cancellationToken)
     {
         var result = await _advertisementService.UpdateByIdAsync(id, dto, cancellationToken);
@@ -109,54 +102,17 @@ public class AdvertisementController : ControllerBase
     }
 
     /// <summary>
-    ///     Удалить объявление по идентификатору.
+    ///     Удалить объявление.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="204">Объявление успешно удалено.</response>
     /// <response code="404">Объявление не найдено.</response>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteByIdAsync([Required] Guid id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         await _advertisementService.DeleteByIdAsync(id, cancellationToken);
         return NoContent();
-    }
-
-    /// <summary>
-    ///     Получить все вложения для объявления по его идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор объявления.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив вложений <see cref="AttachmentInfoDto" />></returns>
-    /// <response code="200">Вложения для объявления успешно получены.</response>
-    /// <response code="404">Объявление не найдено.</response>
-    [HttpGet("{id:guid}/Attachments")]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(AttachmentInfoDto[]), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAttachmentsByAdvertisementId([Required] Guid id,
-        CancellationToken cancellationToken)
-    {
-        var result = await _attachmentService.GetAllByAdvertisementIdAsync(id, cancellationToken);
-        return Ok(result);
-    }
-
-    /// <summary>
-    ///     Загрузить вложения для объявления по его идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор объявления.</param>
-    /// <param name="dto">Модель вложения.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <response code="201">Вложение успешно загружено.</response>
-    /// <response code="404">Объявление не найдено.</response>
-    /// <returns>Идентификатор загруженного вложения <see cref="Guid" />.</returns>
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [HttpPost("{id:guid}/Attachments")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadAsync([Required] Guid id, [FromForm] AttachmentUploadDto dto,
-        CancellationToken cancellationToken)
-    {
-        var result = await _attachmentService.UploadByAdvertisementIdAsync(id, dto, cancellationToken);
-        return Created(nameof(UploadAsync), result);
     }
 }

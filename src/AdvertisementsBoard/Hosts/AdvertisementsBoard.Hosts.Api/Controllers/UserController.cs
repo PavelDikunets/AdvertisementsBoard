@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Contracts.Errors;
 using AdvertisementsBoard.Contracts.Users;
@@ -18,7 +17,7 @@ public class UserController : ControllerBase
     private readonly IUserService _userService;
 
     /// <summary>
-    /// Инициализирует экземпляр <see cref="UserController"/>
+    ///     Инициализирует экземпляр <see cref="UserController" />
     /// </summary>
     /// <param name="userService">Сервис для работы с пользователями.</param>
     public UserController(IUserService userService)
@@ -27,17 +26,17 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить пользователя по идентификатору.
+    ///     Получить пользователя.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель информации о пользователе <see cref="UserInfoDto" />.</returns>
+    /// <returns>Модель пользователя <see cref="UserInfoDto" />.</returns>
     /// <response code="200">Пользователь найден.</response>
     /// <response code="404">Пользователь не найден.</response>
     [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [HttpGet]
-    public async Task<IActionResult> GetByIdAsync([Required] Guid id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var result = await _userService.GetByIdAsync(id, cancellationToken);
         return Ok(result);
@@ -48,8 +47,8 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Пользователи найдены.</response>
-    /// <returns>Массив моделей информации о пользователях <see cref="UserInfoDto" /></returns>
-    [ProducesResponseType(typeof(UserInfoDto[]), StatusCodes.Status200OK)]
+    /// <returns>Массив моделей пользователей <see cref="UserInfoDto" /></returns>
+    [ProducesResponseType(typeof(UserShortInfoDto[]), StatusCodes.Status200OK)]
     [HttpGet("Get-all")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -75,7 +74,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///     Обновить пользователя по идентификатору.
+    ///     Обновить пользователя.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="dto">Модель обновления пользователя.</param>
@@ -84,11 +83,11 @@ public class UserController : ControllerBase
     /// <response code="200">Пользователь успешно обновлен.</response>
     /// <response code="400">Некорректный запрос.</response>
     /// <returns>Модель обновления пользователя <see cref="UserUpdateDto" />.</returns>
-    [ProducesResponseType(typeof(UserUpdateDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [HttpPut]
-    public async Task<IActionResult> UpdateByIdAsync([Required] Guid id, UserUpdateDto dto,
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateByIdAsync(Guid id, UserUpdateDto dto,
         CancellationToken cancellationToken)
     {
         var result = await _userService.UpdateByIdAsync(id, dto, cancellationToken);
@@ -96,15 +95,15 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///     Удалить пользователя по идентификатору.
+    ///     Удалить пользователя.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="204">Пользователь успешно удален.</response>
     /// <response code="404">Пользователь не найден.</response>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteByIdAsync([Required] Guid id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         await _userService.DeleteByIdAsync(id, cancellationToken);
         return NoContent();
