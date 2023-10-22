@@ -1,9 +1,10 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
-using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Advertisements;
+using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
 
@@ -11,124 +12,88 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Se
 public class AdvertisementService : IAdvertisementService
 {
     private readonly IAdvertisementRepository _advertisementRepository;
-    private readonly ICategoryService _categoryService;
+    private readonly IMapper _mapper;
+    private readonly ISubCategoryService _subCategoryService;
+    private readonly IUserService _userService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AdvertisementService" />.
     /// </summary>
     /// <param name="advertisementRepository">Репозиторий для работы с объявлениями.</param>
-    /// <param name="categoryService"></param>
-    public AdvertisementService(IAdvertisementRepository advertisementRepository,
-        ICategoryService categoryService)
+    /// <param name="mapper">Маппер.</param>
+    /// <param name="userService">Сервис для работы с пользователями.</param>
+    /// <param name="subCategoryService">Сервис для работы с подкатегориями.</param>
+    public AdvertisementService(IAdvertisementRepository advertisementRepository, IMapper mapper,
+        IUserService userService,
+        ISubCategoryService subCategoryService)
     {
         _advertisementRepository = advertisementRepository;
-        _categoryService = categoryService;
+        _mapper = mapper;
+        _userService = userService;
+        _subCategoryService = subCategoryService;
     }
 
     /// <inheritdoc />
     public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        var dto = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = new AdvertisementInfoDto
-        {
-            Title = entity.Title,
-            Description = entity.Description,
-            Price = entity.Price,
-            TagNames = entity.TagNames,
-            IsActive = entity.IsActive,
-            CategoryId = entity.CategoryId,
-            CategoryName = entity.Category.Name,
-            SubCategoryId = entity.SubCategoryId,
-            SubCategoryName = entity.SubCategory.Name,
-            Attachments = entity.Attachments.Select(s => new AttachmentInfoDto
-            {
-                Url = s.Url
-            }).ToList()
-        };
+        if (dto == null) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
 
-        return dto;
+        var infoDto = _mapper.Map<AdvertisementInfoDto>(dto);
+        return infoDto;
     }
 
     /// <inheritdoc />
     public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber)
     {
-        var entity = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
-
-        var dto = entity.Select(a => new AdvertisementShortInfoDto
-        {
-            Id = a.Id,
-            Title = a.Title,
-            Price = a.Price,
-            CategoryName = a.Category.Name,
-            SubCategoryName = a.SubCategory.Name
-        }).ToArray();
-
-        return dto;
+        var dtos = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
+        return dtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(Guid categoryId, Guid subCategoryId, AdvertisementCreateDto dto,
-        CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {
-        await _categoryService.GetByIdAsync(categoryId, cancellationToken);
+        await _userService.TryFindByIdAsync(dto.UserId, cancellationToken);
+        await _subCategoryService.TryFindByIdAsync(dto.SubCategoryId, cancellationToken);
 
-        var advertisementEntity = new Advertisement
-        {
-            Title = dto.Title,
-            Description = dto.Description,
-            Price = dto.Price,
-            TagNames = dto.TagNames,
-            IsActive = dto.IsActive,
-            CategoryId = categoryId,
-            SubCategoryId = subCategoryId
-        };
+        var entity = _mapper.Map<Advertisement>(dto);
 
-        var id = await _advertisementRepository.CreateAsync(advertisementEntity, cancellationToken);
+        var id = await _advertisementRepository.CreateAsync(entity, cancellationToken);
         return id;
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementUpdateDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto dto,
+    public async Task<AdvertisementUpdatedDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        await TryFindByIdAsync(id, cancellationToken);
 
-        entity.Title = dto.Title;
-        entity.Description = dto.Description;
-        entity.Price = dto.Price;
-        entity.TagNames = dto.TagNames;
-        entity.IsActive = dto.IsActive;
+        var currentDto = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
 
+        if (currentDto.User.Id != updateDto.UserId)
+            throw new ForbiddenException("Нет прав на изменение этого объявления.");
 
-        await _advertisementRepository.UpdateAsync(entity, cancellationToken);
+        _mapper.Map(updateDto, currentDto);
+        var entity = _mapper.Map<Advertisement>(currentDto);
 
-        var updateDto = new AdvertisementUpdateDto
-        {
-            Title = entity.Title,
-            Description = entity.Description,
-            Price = entity.Price,
-            TagNames = entity.TagNames,
-            IsActive = entity.IsActive
-        };
-        return updateDto;
+        var updatedDto = await _advertisementRepository.UpdateAsync(entity, cancellationToken);
+        return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
-
-        await _advertisementRepository.DeleteByIdAsync(entity.Id, cancellationToken);
+        await TryFindByIdAsync(id, cancellationToken);
+        await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
 
-    private async Task<Advertisement> FindByIdAsync(Guid id, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
-
-        if (entity == null) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
-        return entity;
+        var exists = await _advertisementRepository.TryFindByIdAsync(id, cancellationToken);
+        if (!exists) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
     }
 }

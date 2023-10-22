@@ -2,6 +2,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositori
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Domain.Categories;
+using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
 
@@ -9,92 +10,79 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Servic
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IMapper _mapper;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="CategoryService" />
     /// </summary>
     /// <param name="categoryRepository">Репозиторий для работы с категориями.</param>
-    public CategoryService(ICategoryRepository categoryRepository)
+    /// <param name="mapper">Маппер.</param>
+    public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
     {
         _categoryRepository = categoryRepository;
+        _mapper = mapper;
     }
 
     /// <inheritdoc />
     public async Task<CategoryInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        var dto = await _categoryRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = new CategoryInfoDto
-        {
-            Name = entity.Name
-        };
-        return dto;
+        if (dto == null) throw new NotFoundException($"Категория с идентификатором {id} не найдена.");
+
+        var infoDto = _mapper.Map<CategoryInfoDto>(dto);
+        return infoDto;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<CategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
     {
-        var entities = await _categoryRepository.GetAllAsync(cancellationToken);
-
-        var dtos = entities.Select(c => new CategoryDto
-        {
-            Id = c.Id,
-            Name = c.Name
-        }).ToArray();
-
+        var dtos = await _categoryRepository.GetAllAsync(cancellationToken);
         return dtos;
     }
-
 
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)
     {
         await CheckIfExistsByNameAsync(dto.Name, cancellationToken);
 
-        var entity = new Category
-        {
-            Name = dto.Name
-        };
+        var entity = _mapper.Map<Category>(dto);
 
         var id = await _categoryRepository.CreateAsync(entity, cancellationToken);
-
         return id;
     }
 
-
     /// <inheritdoc />
-    public async Task<CategoryUpdateDto> UpdateByIdAsync(Guid id, CategoryUpdateDto dto,
+    public async Task<CategoryUpdateDto> UpdateByIdAsync(Guid id, CategoryUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        await TryFindByIdAsync(id, cancellationToken);
 
-        await CheckIfExistsByNameAsync(dto.Name, cancellationToken);
+        await CheckIfExistsByNameAsync(updateDto.Name, cancellationToken);
 
-        entity.Name = dto.Name;
+        var currentDto = await _categoryRepository.GetByIdAsync(id, cancellationToken);
 
-        await _categoryRepository.UpdateAsync(entity, cancellationToken);
+        _mapper.Map(updateDto, currentDto);
 
-        var updateDto = new CategoryUpdateDto
-        {
-            Name = entity.Name
-        };
+        var entity = _mapper.Map<Category>(currentDto);
 
-        return updateDto;
+        var updatedDto = await _categoryRepository.UpdateAsync(entity, cancellationToken);
+        return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
+        await TryFindByIdAsync(id, cancellationToken);
         await _categoryRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
 
-    private async Task<Category> FindByIdAsync(Guid id, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _categoryRepository.GetByIdAsync(id, cancellationToken);
-
-        if (entity == null) throw new NotFoundException($"Категория с идентификатором {id} не найдена.");
-        return entity;
+        var exists = await _categoryRepository.TryFindByIdAsync(id, cancellationToken);
+        if (!exists) throw new NotFoundException($"Категория с идентификатором {id} не найдена.");
     }
 
     private async Task CheckIfExistsByNameAsync(string name, CancellationToken cancellationToken)

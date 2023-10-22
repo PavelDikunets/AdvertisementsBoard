@@ -1,108 +1,114 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.PasswordHasher;
 using AdvertisementsBoard.Contracts.Users;
 using AdvertisementsBoard.Domain.Users;
+using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 
 /// <inheritdoc />
 public class UserService : IUserService
 {
+    private readonly IMapper _mapper;
+    private readonly IPasswordHasherService _passwordHasherService;
     private readonly IUserRepository _userRepository;
 
     /// <summary>
-    /// Инициализирует экземпляр <see cref="UserService"/>
+    ///     Инициализирует экземпляр <see cref="UserService" />
     /// </summary>
     /// <param name="userRepository">Репозиторий для работы с пользователями.</param>
-    public UserService(IUserRepository userRepository)
+    /// <param name="mapper">Маппер.</param>
+    /// <param name="passwordHasherService">Хешер паролей.</param>
+    public UserService(IUserRepository userRepository, IMapper mapper, IPasswordHasherService passwordHasherService)
     {
         _userRepository = userRepository;
+        _mapper = mapper;
+        _passwordHasherService = passwordHasherService;
     }
 
     /// <inheritdoc />
     public async Task<UserInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
-        
-        var dto = new UserInfoDto
-        {
-            Name = entity.Name,
-            Email = entity.Email
-        };
-        return dto;
+        var dto = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+        if (dto == null) throw new NotFoundException($"Пользователь с идентификатором {id} не найден.");
+
+        var infoDto = _mapper.Map<UserInfoDto>(dto);
+        return infoDto;
     }
 
     /// <inheritdoc />
-    public async Task<UserInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<UserShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
     {
-        var entities = await _userRepository.GetAllAsync(cancellationToken);
-
-        var dtos = entities.Select(u => new UserInfoDto
-        {
-            Name = u.Name,
-            Email = u.Email
-        }).ToArray();
-
+        var dtos = await _userRepository.GetAllAsync(cancellationToken);
         return dtos;
     }
 
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(UserCreateDto dto, CancellationToken cancellationToken)
     {
-        if (dto.Password != dto.ConfirmPassword) throw new PasswordMismatchException("Пароли не совпадают.");
+        await ComparePasswordsAsync(dto.Password, dto.ConfirmPassword, cancellationToken);
 
         await CheckIfExistsByEmailAsync(dto.Email, cancellationToken);
+        var userDto = _mapper.Map<UserDto>(dto);
 
-        var entity = new User
-        {
-            Name = dto.Name,
-            Email = dto.Email,
-            Password = dto.Password
-        };
+        userDto.PasswordHash = _passwordHasherService.HashPassword(dto.Password);
+
+        var entity = _mapper.Map<User>(userDto);
 
         var id = await _userRepository.CreateAsync(entity, cancellationToken);
-
         return id;
     }
 
     /// <inheritdoc />
-    public async Task<UserInfoDto> UpdateByIdAsync(Guid id, UserUpdateDto dto, CancellationToken cancellationToken)
+    public async Task<UserInfoDto> UpdateByIdAsync(Guid id, UserUpdateDto updateDto,
+        CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        await TryFindByIdAsync(id, cancellationToken);
 
-        await CheckIfExistsByEmailAsync(dto.Email, cancellationToken);
+        var currentDto = await _userRepository.GetByIdAsync(id, cancellationToken);
 
-        entity.Name = dto.Name;
+        if (!_passwordHasherService.VerifyPassword(currentDto.PasswordHash, updateDto.CurrentPassword))
+            throw new PasswordException("Текущий пароль неверный.");
 
-        await _userRepository.UpdateAsync(entity, cancellationToken);
+        await ComparePasswordsAsync(updateDto.NewPassword, updateDto.ConfirmPassword, cancellationToken);
 
-        var updateDto = new UserInfoDto
-        {
-            Name = entity.Name
-        };
+        _mapper.Map(updateDto, currentDto);
 
-        return updateDto;
+        currentDto.PasswordHash = _passwordHasherService.HashPassword(updateDto.NewPassword);
+
+        var entity = _mapper.Map<User>(currentDto);
+
+        var updatedDto = await _userRepository.UpdateAsync(entity, cancellationToken);
+        return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
+        await TryFindByIdAsync(id, cancellationToken);
         await _userRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
 
-    private async Task<User> FindByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _userRepository.GetByIdAsync(id, cancellationToken);
-
-        if (entity == null) throw new NotFoundException($"Пользователь с идентификатором {id} не найден.");
-        return entity;
+        var exists = await _userRepository.TryFindByIdAsync(id, cancellationToken);
+        if (!exists) throw new NotFoundException($"Пользователь с идентификатором {id} не найден.");
     }
 
     private async Task CheckIfExistsByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var exists = await _userRepository.CheckIfExistsByNameAndEmailAsync(email, cancellationToken);
+        var exists = await _userRepository.CheckIfExistsByEmailAsync(email, cancellationToken);
+        if (exists)
+            throw new AlreadyExistsException($"Пользователь с адресом электронной почты {email} уже существует.");
+    }
 
-        if (exists) throw new AlreadyExistsException($"Пользователь с адресом электронной почты {email} уже существует.");
+    private static Task ComparePasswordsAsync(string password, string confirmPassword,
+        CancellationToken cancellationToken)
+    {
+        if (password != confirmPassword) throw new PasswordException("Пароли не совпадают.");
+        return Task.CompletedTask;
     }
 }
