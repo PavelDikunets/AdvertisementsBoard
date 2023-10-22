@@ -83,9 +83,17 @@ app.UseExceptionHandler(errorApp =>
                 var result = JsonSerializer.Serialize(new { message = ex.Message });
                 await context.Response.WriteAsync(result).ConfigureAwait(false);
             }
-            else if (ex is PasswordMismatchException)
+            else if (ex is PasswordException)
             {
                 context.Response.StatusCode = 400;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize(new { message = ex.Message });
+                await context.Response.WriteAsync(result).ConfigureAwait(false);
+            }
+            else if (ex is ForbiddenException)
+            {
+                context.Response.StatusCode = 403;
                 context.Response.ContentType = "application/json";
 
                 var result = JsonSerializer.Serialize(new { message = ex.Message });
