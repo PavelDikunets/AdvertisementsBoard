@@ -1,4 +1,7 @@
 using AdvertisementsBoard.Contracts.Attachments;
+using AdvertisementsBoard.Contracts.Categories;
+using AdvertisementsBoard.Contracts.SubCategories;
+using AdvertisementsBoard.Contracts.Users;
 
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
@@ -33,27 +36,22 @@ public class AdvertisementInfoDto
     public bool IsActive { get; set; }
 
     /// <summary>
-    ///     Коллекция вложений.
+    ///     Список моделей вложений с информацией.
     /// </summary>
     public List<AttachmentInfoDto> Attachments { get; set; }
 
     /// <summary>
-    ///     Идентификатор категории.
+    ///     Модель информации о категории.
     /// </summary>
-    public Guid CategoryId { get; set; }
+    public CategoryInfoDto Category { get; set; }
 
     /// <summary>
-    ///     Наименование категории.
+    ///     Модель информации о подкатегории.
     /// </summary>
-    public string CategoryName { get; set; }
+    public SubCategoryInfoDto SubCategory { get; set; }
 
     /// <summary>
-    ///     Идентификатор подкатегории.
+    ///     Модель информации о пользователе.
     /// </summary>
-    public Guid SubCategoryId { get; set; }
-
-    /// <summary>
-    ///     Наименоваие подкатегории.
-    /// </summary>
-    public string SubCategoryName { get; set; }
+    public UserInfoDto User { get; set; }
 }

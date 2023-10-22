@@ -9,6 +9,12 @@ namespace AdvertisementsBoard.Contracts.Attachments;
 public class AttachmentUploadDto
 {
     /// <summary>
+    ///     Идентификатор объявления.
+    /// </summary>
+    [Required]
+    public Guid AdvertisementId { get; set; }
+
+    /// <summary>
     ///     Форма загрузки файла.
     /// </summary>
     [Required]

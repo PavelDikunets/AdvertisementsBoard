@@ -1,7 +1,7 @@
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Domain.Base;
-using AdvertisementsBoard.Domain.Categories;
 using AdvertisementsBoard.Domain.SubCategories;
+using AdvertisementsBoard.Domain.Users;
 
 namespace AdvertisementsBoard.Domain.Advertisements;
 
@@ -36,16 +36,6 @@ public class Advertisement : BaseEntity
     public bool IsActive { get; set; }
 
     /// <summary>
-    ///     Идентификатор категории.
-    /// </summary>
-    public Guid CategoryId { get; set; }
-
-    /// <summary>
-    ///     Категория объявления.
-    /// </summary>
-    public virtual Category Category { get; set; }
-
-    /// <summary>
     ///     Список вложений.
     /// </summary>
     public virtual List<Attachment> Attachments { get; set; }
@@ -59,4 +49,14 @@ public class Advertisement : BaseEntity
     ///     Подкатегория.
     /// </summary>
     public virtual SubCategory SubCategory { get; set; }
+
+    /// <summary>
+    ///     Идентификатор пользователя.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
+    ///     Пользователь.
+    /// </summary>
+    public virtual User User { get; set; }
 }
