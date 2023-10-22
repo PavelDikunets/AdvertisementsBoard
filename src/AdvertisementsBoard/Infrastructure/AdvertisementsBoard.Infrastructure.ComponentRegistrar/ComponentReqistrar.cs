@@ -9,6 +9,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Service
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Application.AppServices.Files.Services;
+using AdvertisementsBoard.Application.AppServices.PasswordHasher;
 using AdvertisementsBoard.Infrastructure.DataAccess;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
@@ -16,7 +17,9 @@ using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Categories.Reposito
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.SubCategories.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Users.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Interfaces;
+using AdvertisementsBoard.Infrastructure.Mappings.MapConfiguration;
 using AdvertisementsBoard.Infrastructure.Repositories;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,14 +43,14 @@ public static class ComponentReqistrar
                 .Configure((DbContextOptionsBuilder<BaseDbContext>)dbOptions));
 
         services.AddScoped((Func<IServiceProvider, DbContext>)(sp => sp.GetRequiredService<BaseDbContext>()));
-
-
         services.AddTransient<IFileService, FileService>();
         services.AddScoped<IAdvertisementService, AdvertisementService>();
         services.AddScoped<IAttachmentService, AttachmentService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ISubCategoryService, SubCategoryService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddSingleton<IMapper>(new Mapper(MapperConfigurator.GetMapperConfiguration()));
+        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
     }
 
     /// <summary>

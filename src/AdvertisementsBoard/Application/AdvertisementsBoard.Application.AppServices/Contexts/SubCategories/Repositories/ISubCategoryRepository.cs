@@ -1,3 +1,4 @@
+using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Domain.SubCategories;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Repositories;
@@ -12,22 +13,22 @@ public interface ISubCategoryRepository
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Сущность подкатегории <see cref="SubCategory" />.</returns>
-    Task<SubCategory> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Модель подкатегории.</returns>
+    Task<SubCategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все подкатегории.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Перечеслитель сущностей подкатегорий <see cref="SubCategory" />.</returns>
-    Task<IEnumerable<SubCategory>> GetAllAsync(CancellationToken cancellationToken);
+    /// <returns>Массив моделей подкатегорий с краткой информацией.</returns>
+    Task<SubCategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать подкатегорию.
     /// </summary>
-    /// <param name="entity">Сущность подкатегории <see cref="SubCategory" />.</param>
+    /// <param name="entity">Сущность подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор созданной подкатегории <see cref="Guid" />.</returns>
+    /// <returns>Идентификатор созданной подкатегории.</returns>
     Task<Guid> CreateAsync(SubCategory entity, CancellationToken cancellationToken);
 
     /// <summary>
@@ -35,7 +36,8 @@ public interface ISubCategoryRepository
     /// </summary>
     /// <param name="updatedEntity">Обновленная сущность подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    Task UpdateAsync(SubCategory updatedEntity, CancellationToken cancellationToken);
+    /// <returns>Модель с обновленной подкатегорией.</returns>
+    Task<SubCategoryUpdateDto> UpdateAsync(SubCategory updatedEntity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить подкатегорию по идентификатору.
@@ -45,10 +47,18 @@ public interface ISubCategoryRepository
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить подкатегорию на существование по имени.
+    ///     Проверить, существует ли подкатегория с указанным идентификатором.
+    /// </summary>
+    /// <param name="id">Идентификатор подкатегории.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Возвращает true, если подкатегория существует, и false в противном случае.</returns>
+    Task<bool> TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Проверить, существует ли подкатегория с указанным именем.
     /// </summary>
     /// <param name="name">Наименование подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns></returns>
+    /// <returns>Возвращает true, если наименование подкатегории существует, и false в противном случае.</returns>
     Task<bool> CheckIfExistsByNameAsync(string name, CancellationToken cancellationToken);
 }

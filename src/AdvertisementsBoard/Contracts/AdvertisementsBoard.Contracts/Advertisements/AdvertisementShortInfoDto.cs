@@ -1,3 +1,4 @@
+using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Base;
 
 namespace AdvertisementsBoard.Contracts.Advertisements;
@@ -18,12 +19,7 @@ public class AdvertisementShortInfoDto : BaseDto
     public decimal Price { get; set; }
 
     /// <summary>
-    ///     Наименование категории
+    ///     Модель с краткой информацией о вложении.
     /// </summary>
-    public string CategoryName { get; set; }
-
-    /// <summary>
-    ///     Наименование подкатегории.
-    /// </summary>
-    public string SubCategoryName { get; set; }
+    public AttachmentShortInfoDto Attachment { get; set; }
 }

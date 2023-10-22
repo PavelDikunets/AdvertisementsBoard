@@ -11,4 +11,9 @@ public class SubCategoryDto : BaseDto
     ///     Наименование подкатегории.
     /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    ///     Идентификатор категории.
+    /// </summary>
+    public Guid CategoryId { get; set; }
 }

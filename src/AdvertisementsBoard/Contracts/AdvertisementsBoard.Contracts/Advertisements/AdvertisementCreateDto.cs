@@ -31,6 +31,7 @@ public class AdvertisementCreateDto
     /// <summary>
     ///     Наименование тегов.
     /// </summary>
+    [Required]
     [MaxLength(6, ErrorMessage = "Максимальное количество {0}: {1}")]
     [MinLength(1, ErrorMessage = "Минимальное количество {0}: {1}")]
     public string[] TagNames { get; set; }
@@ -38,5 +39,18 @@ public class AdvertisementCreateDto
     /// <summary>
     ///     Статус активности.
     /// </summary>
+    [Required]
     public bool IsActive { get; set; }
+
+    /// <summary>
+    ///     Идентификатор подкатегории.
+    /// </summary>
+    [Required]
+    public Guid SubCategoryId { get; set; }
+
+    /// <summary>
+    ///     Идентификатор пользователя.
+    /// </summary>
+    [Required]
+    public Guid UserId { get; set; }
 }

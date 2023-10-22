@@ -3,6 +3,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Reposit
 using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Domain.SubCategories;
+using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 
@@ -10,6 +11,7 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Ser
 public class SubCategoryService : ISubCategoryService
 {
     private readonly ICategoryService _categoryService;
+    private readonly IMapper _mapper;
     private readonly ISubCategoryRepository _subCategoryRepository;
 
     /// <summary>
@@ -17,90 +19,77 @@ public class SubCategoryService : ISubCategoryService
     /// </summary>
     /// <param name="subCategoryRepository">Репозиторий для работы с подкатегориями.</param>
     /// <param name="categoryService">Сервис для работы с категориями.</param>
-    public SubCategoryService(ISubCategoryRepository subCategoryRepository, ICategoryService categoryService)
+    /// <param name="mapper">Маппер.</param>
+    public SubCategoryService(ISubCategoryRepository subCategoryRepository, ICategoryService categoryService,
+        IMapper mapper)
     {
         _subCategoryRepository = subCategoryRepository;
         _categoryService = categoryService;
+        _mapper = mapper;
     }
 
     /// <inheritdoc />
     public async Task<SubCategoryInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        var dto = await _subCategoryRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = new SubCategoryInfoDto
-        {
-            Name = entity.Name
-        };
-        return dto;
+        if (dto == null) throw new NotFoundException($"Подкатегория с идентификатором {id} не найдена.");
+
+        var infoDto = _mapper.Map<SubCategoryInfoDto>(dto);
+        return infoDto;
     }
 
     /// <inheritdoc />
-    public async Task<SubCategoryDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<SubCategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
     {
-        var entities = await _subCategoryRepository.GetAllAsync(cancellationToken);
-
-        var dtos = entities.Select(c => new SubCategoryDto
-        {
-            Id = c.Id,
-            Name = c.Name
-        }).ToArray();
-
+        var dtos = await _subCategoryRepository.GetAllAsync(cancellationToken);
         return dtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateByCategoryIdAsync(Guid categoryId, SubCategoryCreateDto dto,
+    public async Task<Guid> CreateAsync(SubCategoryCreateDto dto,
         CancellationToken cancellationToken)
     {
-        await _categoryService.GetByIdAsync(categoryId, cancellationToken);
+        await _categoryService.TryFindByIdAsync(dto.CategoryId, cancellationToken);
 
         await CheckIfExistsByNameAsync(dto.Name, cancellationToken);
 
-        var entity = new SubCategory
-        {
-            CategoryId = categoryId,
-            Name = dto.Name
-        };
+        var entity = _mapper.Map<SubCategory>(dto);
 
         var id = await _subCategoryRepository.CreateAsync(entity, cancellationToken);
-
         return id;
     }
 
     /// <inheritdoc />
-    public async Task<SubCategoryUpdateDto> UpdateByIdAsync(Guid id, SubCategoryUpdateDto dto,
+    public async Task<SubCategoryUpdateDto> UpdateByIdAsync(Guid id, SubCategoryUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        var entity = await FindByIdAsync(id, cancellationToken);
+        await TryFindByIdAsync(id, cancellationToken);
 
-        await CheckIfExistsByNameAsync(dto.Name, cancellationToken);
+        await CheckIfExistsByNameAsync(updateDto.Name, cancellationToken);
 
-        entity.Name = dto.Name;
+        var currentDto = await _subCategoryRepository.GetByIdAsync(id, cancellationToken);
 
-        await _subCategoryRepository.UpdateAsync(entity, cancellationToken);
+        _mapper.Map(updateDto, currentDto);
 
-        var updateDto = new SubCategoryUpdateDto
-        {
-            Name = entity.Name
-        };
+        var entity = _mapper.Map<SubCategory>(currentDto);
 
-        return updateDto;
+        var updatedDto = await _subCategoryRepository.UpdateAsync(entity, cancellationToken);
+        return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
+        await TryFindByIdAsync(id, cancellationToken);
         await _subCategoryRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
 
-    private async Task<SubCategory> FindByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _subCategoryRepository.GetByIdAsync(id, cancellationToken);
-
-        if (entity == null) throw new NotFoundException($"Подкатегория с идентификатором {id} не найдена.");
-        return entity;
+        var exists = await _subCategoryRepository.TryFindByIdAsync(id, cancellationToken);
+        if (!exists) throw new NotFoundException($"Подкатегория с идентификатором {id} не найдена.");
     }
 
     private async Task CheckIfExistsByNameAsync(string name, CancellationToken cancellationToken)

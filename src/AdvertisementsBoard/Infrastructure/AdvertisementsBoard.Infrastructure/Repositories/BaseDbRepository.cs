@@ -42,6 +42,8 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
     {
         var result = await DbSet.FindAsync(id, cancellationToken);
 
+        if (result == null) throw new ArgumentNullException(nameof(result));
+
         return result;
     }
 
