@@ -1,12 +1,12 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AdvertisementsBoard.Application.AppServices.PasswordHasher;
+namespace AdvertisementsBoard.Application.AppServices.Passwords.Services;
 
-/// <inheritdoc/>>
-public class PasswordHasherService : IPasswordHasherService
+/// <inheritdoc />
+public class PasswordService : IPasswordService
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public string HashPassword(string password)
     {
         // Вычисляется хэш, записывается в массив байтов.
@@ -19,7 +19,7 @@ public class PasswordHasherService : IPasswordHasherService
         return builder.ToString();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public bool VerifyPassword(string hashedPassword, string passwordToCheck)
     {
         // Вычисляется хэш, записывается в массив байтов.
@@ -31,5 +31,11 @@ public class PasswordHasherService : IPasswordHasherService
 
         // Сравнивает два хеша.
         return hashedPassword == builder.ToString();
+    }
+
+    /// <inheritdoc />
+    public bool ComparePasswords(string password1, string password2)
+    {
+        return string.Equals(password1, password2);
     }
 }

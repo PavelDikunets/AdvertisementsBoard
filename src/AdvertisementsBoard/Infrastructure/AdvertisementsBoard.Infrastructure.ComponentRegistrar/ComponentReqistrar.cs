@@ -9,7 +9,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Service
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Application.AppServices.Files.Services;
-using AdvertisementsBoard.Application.AppServices.PasswordHasher;
+using AdvertisementsBoard.Application.AppServices.Passwords.Services;
 using AdvertisementsBoard.Infrastructure.DataAccess;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
@@ -50,7 +50,7 @@ public static class ComponentReqistrar
         services.AddScoped<ISubCategoryService, SubCategoryService>();
         services.AddScoped<IUserService, UserService>();
         services.AddSingleton<IMapper>(new Mapper(MapperConfigurator.GetMapperConfiguration()));
-        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+        services.AddScoped<IPasswordService, PasswordService>();
     }
 
     /// <summary>
