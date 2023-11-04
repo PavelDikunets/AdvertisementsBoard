@@ -1,5 +1,10 @@
 using System.Text.Json;
-using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.Categories.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.Users.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Passwords.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Categories;
@@ -21,21 +26,38 @@ builder.Services.AddSwaggerGen(s =>
     var includeDocsTypesMarkers = new[]
     {
         typeof(UserInfoDto),
+        typeof(UserShortInfoDto),
         typeof(UserCreateDto),
         typeof(UserUpdateDto),
-        typeof(SubCategoryDto),
+        typeof(UserUpdatedDto),
+
         typeof(SubCategoryInfoDto),
+        typeof(SubCategoryShortInfoDto),
         typeof(SubCategoryCreateDto),
         typeof(SubCategoryUpdateDto),
-        typeof(CategoryDto),
+        typeof(SubCategoryUpdatedDto),
+
         typeof(CategoryInfoDto),
+        typeof(CategoryShortInfoDto),
         typeof(CategoryCreateDto),
         typeof(CategoryUpdateDto),
+        typeof(CategoryUpdatedDto),
+
         typeof(AttachmentInfoDto),
+        typeof(AttachmentShortInfoDto),
         typeof(AttachmentUploadDto),
+        typeof(AttachmentUpdateDto),
+        typeof(AttachmentUpdatedDto),
+
         typeof(AdvertisementInfoDto),
+        typeof(AdvertisementShortInfoDto),
         typeof(AdvertisementCreateDto),
         typeof(AdvertisementUpdateDto),
+        typeof(AdvertisementUpdatedDto),
+
+        typeof(UserController),
+        typeof(SubCategoryController),
+        typeof(CategoryController),
         typeof(AttachmentController),
         typeof(AdvertisementController)
     };
@@ -62,42 +84,63 @@ app.UseExceptionHandler(errorApp =>
         {
             var ex = error.Error;
 
-            if (ex is InvalidOperationException)
+            switch (ex)
             {
-                var result = JsonSerializer.Serialize(new { message = ex.Message });
-                await context.Response.WriteAsync(result).ConfigureAwait(false);
-            }
-            else if (ex is NotFoundException)
-            {
-                context.Response.StatusCode = 404;
-                context.Response.ContentType = "application/json";
+                case InvalidOperationException:
+                {
+                    var result = JsonSerializer.Serialize(new { message = ex.Message });
+                    await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    break;
+                }
+                case AdvertisementNotFoundByIdException or AttachmentNotFoundByIdException
+                    or CategoryNotFoundByIdException
+                    or SubCategoryNotFoundByIdException or UserNotFoundByIdException:
+                {
+                    context.Response.StatusCode = 404;
+                    context.Response.ContentType = "application/json";
 
-                var result = JsonSerializer.Serialize(new { message = ex.Message });
-                await context.Response.WriteAsync(result).ConfigureAwait(false);
-            }
-            else if (ex is AlreadyExistsException)
-            {
-                context.Response.StatusCode = 400;
-                context.Response.ContentType = "application/json";
+                    var result = JsonSerializer.Serialize(new { message = ex.Message });
+                    await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    break;
+                }
+                case CategoryAlreadyExistsException or SubCategoryAlreadyExistsException
+                    or UserAlreadyExistsByEmailException:
+                {
+                    context.Response.StatusCode = 400;
+                    context.Response.ContentType = "application/json";
 
-                var result = JsonSerializer.Serialize(new { message = ex.Message });
-                await context.Response.WriteAsync(result).ConfigureAwait(false);
-            }
-            else if (ex is PasswordException)
-            {
-                context.Response.StatusCode = 400;
-                context.Response.ContentType = "application/json";
+                    var result = JsonSerializer.Serialize(new { message = ex.Message });
+                    await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    break;
+                }
+                case PasswordMismatchException:
+                {
+                    context.Response.StatusCode = 400;
+                    context.Response.ContentType = "application/json";
 
-                var result = JsonSerializer.Serialize(new { message = ex.Message });
-                await context.Response.WriteAsync(result).ConfigureAwait(false);
-            }
-            else if (ex is ForbiddenException)
-            {
-                context.Response.StatusCode = 403;
-                context.Response.ContentType = "application/json";
+                    var result = JsonSerializer.Serialize(new { message = ex.Message });
+                    await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    break;
+                }
+                case AdvertisementForbiddenException:
+                {
+                    context.Response.StatusCode = 403;
+                    context.Response.ContentType = "application/json";
 
-                var result = JsonSerializer.Serialize(new { message = ex.Message });
-                await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    var result = JsonSerializer.Serialize(new { message = ex.Message });
+                    await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    break;
+                }
+                default:
+                {
+                    context.Response.StatusCode = 500;
+                    context.Response.ContentType = "application/json";
+
+                    var result = JsonSerializer.Serialize(new
+                        { message = ex.Message });
+                    await context.Response.WriteAsync(result).ConfigureAwait(false);
+                    break;
+                }
             }
         }
     });

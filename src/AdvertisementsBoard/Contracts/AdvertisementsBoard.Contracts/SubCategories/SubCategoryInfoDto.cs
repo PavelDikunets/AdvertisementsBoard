@@ -1,11 +1,9 @@
-using AdvertisementsBoard.Contracts.Base;
-
 namespace AdvertisementsBoard.Contracts.SubCategories;
 
 /// <summary>
 ///     Модель информации о подкатегории.
 /// </summary>
-public class SubCategoryInfoDto : BaseDto
+public class SubCategoryInfoDto
 {
     /// <summary>
     ///     Наименование подкатегории.

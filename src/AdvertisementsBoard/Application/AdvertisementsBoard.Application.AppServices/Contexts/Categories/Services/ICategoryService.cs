@@ -12,32 +12,32 @@ public interface ICategoryService
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с информацией о категории.</returns>
+    /// <returns>Модель с информацией о категории <see cref="CategoryInfoDto" />.</returns>
     Task<CategoryInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все категории.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив моделей категорий с кратким описанием.</returns>
-    Task<CategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
+    /// <returns>Список категорий с кратким описанием <see cref="CategoryShortInfoDto" />.</returns>
+    Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать категорию.
     /// </summary>
-    /// <param name="dto">Модель создания категории.</param>
+    /// <param name="dto">Модель создания категории <see cref="CategoryCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданной категории.</returns>
     Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Обновить категорию.
+    ///     Обновить категорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
-    /// <param name="updateDto">Модель обновления категории.</param>
+    /// <param name="dto">Модель обновления категории <see cref="CategoryUpdateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной категорией.</returns>
-    Task<CategoryUpdateDto> UpdateByIdAsync(Guid id, CategoryUpdateDto updateDto, CancellationToken cancellationToken);
+    /// <returns>Модель обновленной категорией <see cref="CategoryUpdatedDto" />.</returns>
+    Task<CategoryUpdatedDto> UpdateByIdAsync(Guid id, CategoryUpdateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить категорию по идентификатору.
@@ -47,10 +47,9 @@ public interface ICategoryService
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить, существует ли категория с указанным идентификатором.
+    ///     Проверка категории на существование по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор категории.</param>
+    /// <param name="categoryId">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если категория существует, и false в противном случае.</returns>
-    Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task EnsureCategoryExistsByIdAsync(Guid categoryId, CancellationToken cancellationToken);
 }

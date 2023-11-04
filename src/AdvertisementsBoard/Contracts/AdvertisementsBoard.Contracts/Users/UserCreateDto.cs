@@ -21,7 +21,7 @@ public class UserCreateDto
     [EmailAddress(ErrorMessage = "Недействительный адрес электронной почты.")]
     [StringLength(32, ErrorMessage = "Длина {0} не должна превышать {1} символов.")]
     [RegularExpression(@"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-        ErrorMessage = "Недействительный адрес электронной почты")]
+        ErrorMessage = "Неверный формат электронной почты.")]
     public string Email { get; set; }
 
     /// <summary>

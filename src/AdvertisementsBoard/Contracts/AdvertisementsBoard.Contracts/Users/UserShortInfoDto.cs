@@ -3,7 +3,7 @@ using AdvertisementsBoard.Contracts.Base;
 namespace AdvertisementsBoard.Contracts.Users;
 
 /// <summary>
-///     Модель информации о пользователе.
+///     Модель с краткой информацией о пользователе.
 /// </summary>
 public class UserShortInfoDto : BaseDto
 {

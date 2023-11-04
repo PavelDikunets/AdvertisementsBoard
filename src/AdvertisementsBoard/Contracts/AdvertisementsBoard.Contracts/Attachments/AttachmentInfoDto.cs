@@ -1,11 +1,9 @@
-﻿using AdvertisementsBoard.Contracts.Base;
-
-namespace AdvertisementsBoard.Contracts.Attachments;
+﻿namespace AdvertisementsBoard.Contracts.Attachments;
 
 /// <summary>
 ///     Модель вложения.
 /// </summary>
-public class AttachmentInfoDto : BaseDto
+public class AttachmentInfoDto
 {
     /// <summary>
     ///     Url файла.

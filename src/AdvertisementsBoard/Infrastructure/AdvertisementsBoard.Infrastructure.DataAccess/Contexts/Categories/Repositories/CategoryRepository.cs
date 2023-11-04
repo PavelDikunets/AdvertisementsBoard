@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Domain.Categories;
@@ -29,36 +30,42 @@ public class CategoryRepository : ICategoryRepository
     public async Task<CategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var dto = await _repository.GetAll()
+            .Where(c => c.Id == id)
+            .Include(s => s.SubCategories)
             .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
 
         return dto;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var dtos = await _repository.GetAll()
             .ProjectTo<CategoryShortInfoDto>(_mapper.ConfigurationProvider)
-            .ToArrayAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
 
         return dtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(Category entity, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)
     {
+        var entity = _mapper.Map<Category>(dto);
+
         await _repository.AddAsync(entity, cancellationToken);
         return entity.Id;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryUpdateDto> UpdateAsync(Category updatedEntity, CancellationToken cancellationToken)
+    public async Task<CategoryUpdatedDto> UpdateAsync(CategoryDto dto, CancellationToken cancellationToken)
     {
-        await _repository.UpdateAsync(updatedEntity, cancellationToken);
+        var entity = _mapper.Map<Category>(dto);
 
-        var dto = _mapper.Map<CategoryUpdateDto>(updatedEntity);
-        return dto;
+        await _repository.UpdateAsync(entity, cancellationToken);
+
+        var updatedDto = _mapper.Map<CategoryUpdatedDto>(entity);
+        return updatedDto;
     }
 
     /// <inheritdoc />
@@ -69,16 +76,19 @@ public class CategoryRepository : ICategoryRepository
     }
 
     /// <inheritdoc />
-    public async Task<bool> TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DoesCategoryExistWhereAsync(Expression<Func<Category, bool>> filter,
+        CancellationToken cancellationToken)
     {
-        var result = await _repository.GetAll().AnyAsync(c => c.Id == id, cancellationToken);
-        return result;
+        var exists = await _repository.FindAnyAsync(filter, cancellationToken);
+        return exists;
     }
 
-    /// <inheritdoc />
-    public async Task<bool> CheckIfExistsByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<CategoryDto> GetWhereAsync(Expression<Func<Category, bool>> filter,
+        CancellationToken cancellationToken)
     {
-        var result = await _repository.GetAll().AnyAsync(c => c.Name == name, cancellationToken);
-        return result;
+        var dto = await _repository.GetAllFiltered(filter)
+            .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+        return dto;
     }
 }

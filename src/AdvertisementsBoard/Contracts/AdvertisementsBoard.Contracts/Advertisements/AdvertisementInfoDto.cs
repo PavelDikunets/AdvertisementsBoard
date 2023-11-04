@@ -38,20 +38,20 @@ public class AdvertisementInfoDto
     /// <summary>
     ///     Список моделей вложений с информацией.
     /// </summary>
-    public List<AttachmentInfoDto> Attachments { get; set; }
+    public List<AttachmentShortInfoDto> Attachments { get; set; }
 
     /// <summary>
     ///     Модель информации о категории.
     /// </summary>
-    public CategoryInfoDto Category { get; set; }
+    public CategoryShortInfoDto Category { get; set; }
 
     /// <summary>
     ///     Модель информации о подкатегории.
     /// </summary>
-    public SubCategoryInfoDto SubCategory { get; set; }
+    public SubCategoryShortInfoDto SubCategory { get; set; }
 
     /// <summary>
     ///     Модель информации о пользователе.
     /// </summary>
-    public UserInfoDto User { get; set; }
+    public UserShortInfoDto User { get; set; }
 }

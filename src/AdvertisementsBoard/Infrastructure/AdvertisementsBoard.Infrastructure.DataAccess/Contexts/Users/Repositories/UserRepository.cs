@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
 using AdvertisementsBoard.Contracts.Users;
 using AdvertisementsBoard.Domain.Users;
@@ -28,38 +29,41 @@ public class UserRepository : IUserRepository
     /// <inheritdoc />
     public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAll()
-            .Where(u => u.Id == id)
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
+        var entity = await _repository.GetByIdAsync(id, cancellationToken);
 
+        var dto = _mapper.Map<UserDto>(entity);
         return dto;
     }
 
     /// <inheritdoc />
-    public async Task<UserShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var dtos = await _repository.GetAll()
+            .AsNoTracking()
             .ProjectTo<UserShortInfoDto>(_mapper.ConfigurationProvider)
-            .ToArrayAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
 
         return dtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(User entity, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(UserDto dto, CancellationToken cancellationToken)
     {
+        var entity = _mapper.Map<User>(dto);
+
         await _repository.AddAsync(entity, cancellationToken);
         return entity.Id;
     }
 
     /// <inheritdoc />
-    public async Task<UserInfoDto> UpdateAsync(User updatedEntity, CancellationToken cancellationToken)
+    public async Task<UserUpdatedDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken)
     {
-        await _repository.UpdateAsync(updatedEntity, cancellationToken);
+        var entity = _mapper.Map<User>(dto);
 
-        var dto = _mapper.Map<UserInfoDto>(updatedEntity);
-        return dto;
+        await _repository.UpdateAsync(entity, cancellationToken);
+
+        var updatedDto = _mapper.Map<UserUpdatedDto>(entity);
+        return updatedDto;
     }
 
     /// <inheritdoc />
@@ -69,16 +73,19 @@ public class UserRepository : IUserRepository
         await _repository.DeleteAsync(entity, cancellationToken);
     }
 
-    public async Task<bool> TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var result = await _repository.GetAll().AnyAsync(u => u.Id == id, cancellationToken);
-        return result;
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> CheckIfExistsByEmailAsync(string userEmail,
+    public async Task<bool> DoesUserExistWhereAsync(Expression<Func<User, bool>> filter,
         CancellationToken cancellationToken)
     {
-        return await _repository.GetAll().AnyAsync(u => u.Email == userEmail, cancellationToken);
+        var exists = await _repository.FindAnyAsync(filter, cancellationToken);
+        return exists;
+    }
+
+    public async Task<UserDto> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken)
+    {
+        var dto = await _repository.GetAllFiltered(filter)
+            .AsNoTracking()
+            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+        return dto;
     }
 }

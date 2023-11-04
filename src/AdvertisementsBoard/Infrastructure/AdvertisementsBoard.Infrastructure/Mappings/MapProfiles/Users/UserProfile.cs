@@ -10,43 +10,18 @@ namespace AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Users;
 public class UserProfile : Profile
 {
     /// <summary>
-    ///     Конструктор, настраивающий маппинг между моделями UserDtos и User.
+    ///     Конструктор, настраивающий маппинг между моделями для пользователей.
     /// </summary>
     public UserProfile()
     {
-        CreateMap<UserUpdateDto, UserDto>()
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .IgnoreAllNonExisting();
+        CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<User, UserShortInfoDto>();
+        CreateMap<User, UserUpdatedDto>();
 
-        CreateMap<UserCreateDto, UserDto>()
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Email, map => map.MapFrom(src => src.Email))
-            .IgnoreAllNonExisting();
+        CreateMap<UserDto, UserInfoDto>();
+        CreateMap<UserDto, UserShortInfoDto>();
 
-        CreateMap<UserCreateDto, User>()
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Email, map => map.MapFrom(src => src.Email))
-            .IgnoreAllNonExisting();
-
-        CreateMap<User, UserShortInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name));
-
-        CreateMap<UserDto, UserInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Email, map => map.MapFrom(src => src.Email));
-
-        CreateMap<User, UserInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Email, map => map.MapFrom(src => src.Email));
-
-        CreateMap<User, UserDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Email, map => map.MapFrom(src => src.Email))
-            .ForMember(dest => dest.PasswordHash, map => map.MapFrom(src => src.PasswordHash))
-            .ReverseMap();
+        CreateMap<UserUpdateDto, UserDto>().IgnoreAllNonExisting();
+        CreateMap<UserCreateDto, UserDto>().IgnoreAllNonExisting();
     }
 }

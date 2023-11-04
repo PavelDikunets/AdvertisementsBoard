@@ -47,8 +47,8 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Пользователи найдены.</response>
-    /// <returns>Массив моделей пользователей <see cref="UserInfoDto" /></returns>
-    [ProducesResponseType(typeof(UserShortInfoDto[]), StatusCodes.Status200OK)]
+    /// <returns>Список моделей пользователей <see cref="UserShortInfoDto" />.</returns>
+    [ProducesResponseType(typeof(List<UserShortInfoDto>), StatusCodes.Status200OK)]
     [HttpGet("Get-all")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -82,8 +82,8 @@ public class UserController : ControllerBase
     /// <response code="404">Пользователь не найден.</response>
     /// <response code="200">Пользователь успешно обновлен.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Модель обновления пользователя <see cref="UserUpdateDto" />.</returns>
-    [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
+    /// <returns>Модель c обновленной информацией о пользователе <see cref="UserUpdatedDto" />.</returns>
+    [ProducesResponseType(typeof(UserUpdatedDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [HttpPut("{id:guid}")]

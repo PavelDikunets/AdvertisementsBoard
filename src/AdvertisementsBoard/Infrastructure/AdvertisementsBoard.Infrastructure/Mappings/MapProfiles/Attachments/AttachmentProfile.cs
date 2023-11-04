@@ -10,24 +10,18 @@ namespace AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Attachments;
 public class AttachmentProfile : Profile
 {
     /// <summary>
-    ///     Конструктор, настраивающий маппинг между моделями AttachmentDtos и Attachment.
+    ///     Конструктор, настраивающий маппинг между моделями для вложений.
     /// </summary>
     public AttachmentProfile()
     {
-        CreateMap<AttachmentUpdateDto, AttachmentDto>()
-            .IgnoreAllNonExisting();
+        CreateMap<Attachment, AttachmentDto>().ReverseMap();
+        CreateMap<Attachment, AttachmentShortInfoDto>();
+        CreateMap<Attachment, AttachmentUpdatedDto>();
 
-        CreateMap<Attachment, AttachmentShortInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Url, map => map.MapFrom(src => src.Url));
+        CreateMap<AttachmentDto, AttachmentInfoDto>();
+        CreateMap<AttachmentDto, AttachmentShortInfoDto>();
 
-        CreateMap<AttachmentDto, AttachmentInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Url, map => map.MapFrom(src => src.Url));
-
-        CreateMap<Attachment, AttachmentDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Url, map => map.MapFrom(src => src.Url))
-            .ReverseMap();
+        CreateMap<AttachmentUploadDto, AttachmentDto>().IgnoreAllNonExisting();
+        CreateMap<AttachmentUpdateDto, AttachmentDto>().IgnoreAllNonExisting();
     }
 }
