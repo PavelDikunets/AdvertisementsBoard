@@ -41,9 +41,6 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
     public async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var result = await DbSet.FindAsync(id, cancellationToken);
-
-        if (result == null) throw new ArgumentNullException(nameof(result));
-
         return result;
     }
 
@@ -72,5 +69,11 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
 
         DbSet.Remove(model);
         await DbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> FindAnyAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken)
+    {
+        if (filter == null) throw new ArgumentNullException(nameof(filter));
+        return await DbSet.AnyAsync(filter, cancellationToken);
     }
 }
