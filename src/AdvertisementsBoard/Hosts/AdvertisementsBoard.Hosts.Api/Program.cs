@@ -13,13 +13,24 @@ using AdvertisementsBoard.Contracts.Users;
 using AdvertisementsBoard.Hosts.Api.Controllers;
 using AdvertisementsBoard.Infrastructure.ComponentRegistrar;
 using Microsoft.AspNetCore.Diagnostics;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Elasticsearch()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddServices();
 builder.Services.AddRepositories();
 
 builder.Services.AddControllers();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen(s =>
 {
