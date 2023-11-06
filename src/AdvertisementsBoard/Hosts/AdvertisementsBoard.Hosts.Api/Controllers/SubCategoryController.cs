@@ -47,8 +47,8 @@ public class SubCategoryController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Подкатегории найдены.</response>
-    /// <returns>Массив подкатегорий с краткой информацией <see cref="SubCategoryShortInfoDto" />.</returns>
-    [ProducesResponseType(typeof(SubCategoryShortInfoDto[]), StatusCodes.Status200OK)]
+    /// <returns>Список подкатегорий с краткой информацией <see cref="SubCategoryShortInfoDto" />.</returns>
+    [ProducesResponseType(typeof(List<SubCategoryShortInfoDto>), StatusCodes.Status200OK)]
     [HttpGet("Get-all")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -83,8 +83,8 @@ public class SubCategoryController : ControllerBase
     /// <response code="404">Подкатегории не найдена.</response>
     /// <response code="200">Подкатегории успешно обновлена.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Модель обновления подкатегории <see cref="SubCategoryUpdateDto" />.</returns>
-    [ProducesResponseType(typeof(SubCategoryUpdateDto), StatusCodes.Status200OK)]
+    /// <returns>Модель с обновленной информацией о подкатегории <see cref="SubCategoryUpdatedDto" />.</returns>
+    [ProducesResponseType(typeof(SubCategoryUpdatedDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [HttpPut("{id:guid}")]

@@ -52,4 +52,12 @@ public interface IBaseDbRepository<TEntity> where TEntity : class
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns></returns>
     Task DeleteAsync(TEntity model, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Найти сущность по фильтру.
+    /// </summary>
+    /// <param name="filter">Фильтр.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns></returns>
+    Task<bool> FindAnyAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken);
 }

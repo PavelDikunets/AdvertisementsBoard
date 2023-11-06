@@ -12,15 +12,15 @@ public interface ISubCategoryService
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с информацией о подкатегории.</returns>
+    /// <returns>Модель с информацией о подкатегории <see cref="SubCategoryInfoDto" />.</returns>
     Task<SubCategoryInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все подкатегории.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив моделей подкатегорий с краткой информацией.</returns>
-    Task<SubCategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
+    /// <returns>Список подкатегорий с краткой информацией <see cref="SubCategoryShortInfoDto" />.</returns>
+    Task<List<SubCategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать подкатегорию.
@@ -31,13 +31,13 @@ public interface ISubCategoryService
     Task<Guid> CreateAsync(SubCategoryCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Обновить подкатегорию.
+    ///     Обновить подкатегорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
-    /// <param name="updateDto">Модель обновления подкатегории.</param>
+    /// <param name="dto">Модель обновления подкатегории <see cref="SubCategoryUpdateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной подкатегорией.</returns>
-    Task<SubCategoryUpdateDto> UpdateByIdAsync(Guid id, SubCategoryUpdateDto updateDto,
+    /// <returns>Модель с обновленной подкатегорией <see cref="SubCategoryUpdatedDto" />.</returns>
+    Task<SubCategoryUpdatedDto> UpdateByIdAsync(Guid id, SubCategoryUpdateDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -48,10 +48,9 @@ public interface ISubCategoryService
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить, существует ли подкатегория с указанным идентификатором.
+    ///     Проверка подкатегории на существование по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если подкатегория существует, и false в противном случае.</returns>
-    Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task EnsureSubCategoryExistsByIdAsync(Guid id, CancellationToken cancellationToken);
 }

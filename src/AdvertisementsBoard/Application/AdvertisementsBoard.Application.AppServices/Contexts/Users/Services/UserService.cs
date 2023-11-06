@@ -1,17 +1,19 @@
+using AdvertisementsBoard.Application.AppServices.Contexts.Users.ErrorExceptions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
-using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
-using AdvertisementsBoard.Application.AppServices.PasswordHasher;
+using AdvertisementsBoard.Application.AppServices.Passwords.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Passwords.Services;
 using AdvertisementsBoard.Contracts.Users;
-using AdvertisementsBoard.Domain.Users;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 
 /// <inheritdoc />
 public class UserService : IUserService
 {
+    private readonly ILogger<UserService> _logger;
     private readonly IMapper _mapper;
-    private readonly IPasswordHasherService _passwordHasherService;
+    private readonly IPasswordService _passwordService;
     private readonly IUserRepository _userRepository;
 
     /// <summary>
@@ -19,96 +21,151 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="userRepository">Репозиторий для работы с пользователями.</param>
     /// <param name="mapper">Маппер.</param>
-    /// <param name="passwordHasherService">Хешер паролей.</param>
-    public UserService(IUserRepository userRepository, IMapper mapper, IPasswordHasherService passwordHasherService)
+    /// <param name="passwordService">Сервис для работы с паролями.</param>
+    /// <param name="logger"></param>
+    public UserService(IUserRepository userRepository, IMapper mapper, IPasswordService passwordService,
+        ILogger<UserService> logger)
     {
         _userRepository = userRepository;
+        _passwordService = passwordService;
         _mapper = mapper;
-        _passwordHasherService = passwordHasherService;
+        _logger = logger;
     }
 
     /// <inheritdoc />
     public async Task<UserInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _userRepository.GetByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Получение пользователя по Id: '{Id}'.", id);
 
-        if (dto == null) throw new NotFoundException($"Пользователь с идентификатором {id} не найден.");
+        var dto = await TryGetByIdAsync(id, cancellationToken);
 
         var infoDto = _mapper.Map<UserInfoDto>(dto);
+
+        _logger.LogInformation("Пользователь успешно получен по Id: '{Id}'.", id);
+
         return infoDto;
     }
 
     /// <inheritdoc />
-    public async Task<UserShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Получение коллекции пользователей.");
+
         var dtos = await _userRepository.GetAllAsync(cancellationToken);
+
+        _logger.LogInformation("Коллекция категорий успешно получена.");
+
         return dtos;
     }
 
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(UserCreateDto dto, CancellationToken cancellationToken)
     {
-        await ComparePasswordsAsync(dto.Password, dto.ConfirmPassword, cancellationToken);
+        _logger.LogInformation("Создание пользователя '{Name}'.", dto.Name);
 
-        await CheckIfExistsByEmailAsync(dto.Email, cancellationToken);
+        if (!_passwordService.ComparePasswords(dto.Password, dto.ConfirmPassword))
+        {
+            _logger.LogInformation("Пароли не совпадают.");
+            throw new PasswordMismatchException();
+        }
+
+        await CheckUserExistsByEmailAsync(dto.Email, cancellationToken);
+
         var userDto = _mapper.Map<UserDto>(dto);
 
-        userDto.PasswordHash = _passwordHasherService.HashPassword(dto.Password);
+        userDto.PasswordHash = _passwordService.HashPassword(dto.Password);
 
-        var entity = _mapper.Map<User>(userDto);
+        var id = await _userRepository.CreateAsync(userDto, cancellationToken);
 
-        var id = await _userRepository.CreateAsync(entity, cancellationToken);
+        _logger.LogInformation("Пользователь '{Name}' Id: '{Id}' успешно создан.", userDto.Name, id);
+
         return id;
     }
 
     /// <inheritdoc />
-    public async Task<UserInfoDto> UpdateByIdAsync(Guid id, UserUpdateDto updateDto,
+    public async Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        await TryFindByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Обновление пользователя по Id: '{Id}'.", id);
 
-        var currentDto = await _userRepository.GetByIdAsync(id, cancellationToken);
+        var currentDto = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
+        if (currentDto == null)
+        {
+            _logger.LogInformation("Пользователь не найден по Id: '{Id}'.", id);
+            throw new UserNotFoundByIdException(id);
+        }
 
-        if (!_passwordHasherService.VerifyPassword(currentDto.PasswordHash, updateDto.CurrentPassword))
-            throw new PasswordException("Текущий пароль неверный.");
+        if (!_passwordService.VerifyPassword(currentDto.PasswordHash, updateDto.CurrentPassword))
+        {
+            _logger.LogInformation("Текущий пароль неверный.");
+            throw new IncorrectCurrentPasswordException();
+        }
 
-        await ComparePasswordsAsync(updateDto.NewPassword, updateDto.ConfirmPassword, cancellationToken);
+        if (!_passwordService.ComparePasswords(updateDto.NewPassword, updateDto.ConfirmPassword))
+        {
+            _logger.LogInformation("Пароли не совпадают.");
+            throw new PasswordMismatchException();
+        }
+
+        var currentUserName = currentDto.Name;
 
         _mapper.Map(updateDto, currentDto);
 
-        currentDto.PasswordHash = _passwordHasherService.HashPassword(updateDto.NewPassword);
+        currentDto.PasswordHash = _passwordService.HashPassword(updateDto.NewPassword);
 
-        var entity = _mapper.Map<User>(currentDto);
+        var updatedDto = await _userRepository.UpdateAsync(currentDto, cancellationToken);
 
-        var updatedDto = await _userRepository.UpdateAsync(entity, cancellationToken);
+        _logger.LogInformation("Пользователь '{Name}' успешно обновлен на '{updatedName}' Id: '{Id}'.",
+            currentUserName, updatedDto.Name, id);
+
         return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        await TryFindByIdAsync(id, cancellationToken);
-        await _userRepository.DeleteByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Удаление пользователя по Id: '{Id}'.", id);
+
+        var dto = await TryGetByIdAsync(id, cancellationToken);
+
+        await _userRepository.DeleteByIdAsync(dto.Id, cancellationToken);
+
+        _logger.LogWarning("Пользователь удален по Id: '{Id}'.", id);
+    }
+
+    /// <inheritdoc />
+    public async Task EnsureUserExistsByIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Запрос существования пользователя по Id: '{Id}'.", userId);
+
+        var exist = await _userRepository.DoesUserExistWhereAsync(u => u.Id == userId, cancellationToken);
+
+        if (!exist)
+        {
+            _logger.LogInformation("Пользователь не найден по Id: '{Id}'.", userId);
+            throw new UserNotFoundByIdException(userId);
+        }
     }
 
 
-    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
+    private async Task<UserDto> TryGetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var exists = await _userRepository.TryFindByIdAsync(id, cancellationToken);
-        if (!exists) throw new NotFoundException($"Пользователь с идентификатором {id} не найден.");
+        var dto = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+        if (dto != null) return dto;
+
+        _logger.LogInformation("Пользователь не найден по Id: '{Id}'", id);
+        throw new UserNotFoundByIdException(id);
     }
 
-    private async Task CheckIfExistsByEmailAsync(string email, CancellationToken cancellationToken)
-    {
-        var exists = await _userRepository.CheckIfExistsByEmailAsync(email, cancellationToken);
-        if (exists)
-            throw new AlreadyExistsException($"Пользователь с адресом электронной почты {email} уже существует.");
-    }
 
-    private static Task ComparePasswordsAsync(string password, string confirmPassword,
-        CancellationToken cancellationToken)
+    private async Task CheckUserExistsByEmailAsync(string userEmail, CancellationToken cancellationToken)
     {
-        if (password != confirmPassword) throw new PasswordException("Пароли не совпадают.");
-        return Task.CompletedTask;
+        var exist = await _userRepository.DoesUserExistWhereAsync(u => u.Email == userEmail, cancellationToken);
+        if (exist)
+        {
+            _logger.LogInformation("Такой адрес электронной почты уже используется");
+            throw new UserAlreadyExistsByEmailException();
+        }
     }
 }

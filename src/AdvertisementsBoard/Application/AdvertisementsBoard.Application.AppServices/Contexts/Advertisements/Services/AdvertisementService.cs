@@ -1,10 +1,10 @@
-﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
+﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.ErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
-using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
-using AdvertisementsBoard.Domain.Advertisements;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
 
@@ -12,6 +12,7 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Se
 public class AdvertisementService : IAdvertisementService
 {
     private readonly IAdvertisementRepository _advertisementRepository;
+    private readonly ILogger<AdvertisementService> _logger;
     private readonly IMapper _mapper;
     private readonly ISubCategoryService _subCategoryService;
     private readonly IUserService _userService;
@@ -23,44 +24,64 @@ public class AdvertisementService : IAdvertisementService
     /// <param name="mapper">Маппер.</param>
     /// <param name="userService">Сервис для работы с пользователями.</param>
     /// <param name="subCategoryService">Сервис для работы с подкатегориями.</param>
+    /// <param name="logger">Логирование сервиса <see cref="AdvertisementService" />.</param>
     public AdvertisementService(IAdvertisementRepository advertisementRepository, IMapper mapper,
         IUserService userService,
-        ISubCategoryService subCategoryService)
+        ISubCategoryService subCategoryService, ILogger<AdvertisementService> logger)
     {
         _advertisementRepository = advertisementRepository;
         _mapper = mapper;
         _userService = userService;
         _subCategoryService = subCategoryService;
+        _logger = logger;
     }
 
     /// <inheritdoc />
     public async Task<AdvertisementInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Получение объявления по Id: '{Id}'.", id);
+
         var dto = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
 
-        if (dto == null) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
+        if (dto == null)
+        {
+            _logger.LogInformation("Объявление не найдено по Id: '{Id}'", id);
+            throw new AdvertisementNotFoundByIdException(id);
+        }
 
         var infoDto = _mapper.Map<AdvertisementInfoDto>(dto);
+
+        _logger.LogInformation("Объявление успешно получено по Id: '{Id}'.", id);
+
         return infoDto;
     }
 
     /// <inheritdoc />
-    public async Task<AdvertisementShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken, int pageSize,
+    public async Task<List<AdvertisementShortInfoDto>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber)
     {
+        _logger.LogInformation("Получение коллекции объявлений.");
+
         var dtos = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
+
+        _logger.LogInformation("Коллекция объявлений успешно получена.");
+
         return dtos;
     }
 
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
     {
-        await _userService.TryFindByIdAsync(dto.UserId, cancellationToken);
-        await _subCategoryService.TryFindByIdAsync(dto.SubCategoryId, cancellationToken);
+        _logger.LogInformation("Создание объявления '{Title}'.", dto.Title);
 
-        var entity = _mapper.Map<Advertisement>(dto);
+        await _userService.EnsureUserExistsByIdAsync(dto.UserId, cancellationToken);
 
-        var id = await _advertisementRepository.CreateAsync(entity, cancellationToken);
+        await _subCategoryService.EnsureSubCategoryExistsByIdAsync(dto.SubCategoryId, cancellationToken);
+
+        var id = await _advertisementRepository.CreateAsync(dto, cancellationToken);
+
+        _logger.LogInformation("Объявление '{Title}' Id: '{Id}' успешно создано.", dto.Title, id);
+
         return id;
     }
 
@@ -68,32 +89,59 @@ public class AdvertisementService : IAdvertisementService
     public async Task<AdvertisementUpdatedDto> UpdateByIdAsync(Guid id, AdvertisementUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        await TryFindByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Обновление объявления по Id: '{Id}'.", id);
 
-        var currentDto = await _advertisementRepository.GetByIdAsync(id, cancellationToken);
+        await _userService.EnsureUserExistsByIdAsync(updateDto.UserId, cancellationToken);
+
+        var currentDto = await _advertisementRepository.GetWhereAsync(a => a.Id == id, cancellationToken);
+
+        if (currentDto == null)
+        {
+            _logger.LogInformation("Объявление не найдено по Id: '{Id}'", id);
+            throw new AdvertisementNotFoundByIdException(id);
+        }
 
         if (currentDto.User.Id != updateDto.UserId)
-            throw new ForbiddenException("Нет прав на изменение этого объявления.");
+        {
+            _logger.LogInformation("Нет прав на изменение этого объявления.");
+            throw new AdvertisementForbiddenException();
+        }
+
+        var currentTitle = currentDto.Title;
 
         _mapper.Map(updateDto, currentDto);
-        var entity = _mapper.Map<Advertisement>(currentDto);
 
-        var updatedDto = await _advertisementRepository.UpdateAsync(entity, cancellationToken);
+        var updatedDto = await _advertisementRepository.UpdateAsync(currentDto, cancellationToken);
+
+        _logger.LogInformation("Объявление '{Title}' успешно обновлено на '{updatedTitle}' Id: '{Id}'.",
+            currentTitle, updatedDto.Title, id);
+
         return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        await TryFindByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Удаление объявления по Id: '{Id}'.", id);
+
+        await EnsureAdvertisementExistsByIdAsync(id, cancellationToken);
+
         await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
+
+        _logger.LogWarning("Объявление удалено по Id: '{Id}'.", id);
     }
 
-
     /// <inheritdoc />
-    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task EnsureAdvertisementExistsByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var exists = await _advertisementRepository.TryFindByIdAsync(id, cancellationToken);
-        if (!exists) throw new NotFoundException($"Объявление с идентификатором {id} не найдено.");
+        _logger.LogInformation("Запрос существования объявления по Id: '{Id}'.", id);
+
+        var exist =
+            await _advertisementRepository.DoesAdvertisementExistWhereAsync(a => a.Id == id, cancellationToken);
+        if (!exist)
+        {
+            _logger.LogInformation("Объявление не найдено по Id: '{Id}'", id);
+            throw new AdvertisementNotFoundByIdException(id);
+        }
     }
 }

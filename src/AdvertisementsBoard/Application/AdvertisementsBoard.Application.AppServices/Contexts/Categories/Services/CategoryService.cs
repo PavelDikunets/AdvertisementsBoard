@@ -1,8 +1,8 @@
+using AdvertisementsBoard.Application.AppServices.Contexts.Categories.ErrorExceptions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
-using AdvertisementsBoard.Application.AppServices.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Categories;
-using AdvertisementsBoard.Domain.Categories;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
 
@@ -10,6 +10,7 @@ namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Servic
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ILogger<CategoryService> _logger;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -17,77 +18,129 @@ public class CategoryService : ICategoryService
     /// </summary>
     /// <param name="categoryRepository">Репозиторий для работы с категориями.</param>
     /// <param name="mapper">Маппер.</param>
-    public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
+    /// <param name="logger">Логирование сервиса <see cref="CategoryService" />.</param>
+    public CategoryService(ICategoryRepository categoryRepository, IMapper mapper, ILogger<CategoryService> logger)
     {
         _categoryRepository = categoryRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <inheritdoc />
     public async Task<CategoryInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _categoryRepository.GetByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Получение категории по Id: '{Id}'.", id);
 
-        if (dto == null) throw new NotFoundException($"Категория с идентификатором {id} не найдена.");
+        var dto = await TryGetByIdAsync(id, cancellationToken);
 
         var infoDto = _mapper.Map<CategoryInfoDto>(dto);
+
+        _logger.LogInformation("Категория успешно получена по Id: '{Id}'.", id);
+
         return infoDto;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Получение коллекции категорий.");
+
         var dtos = await _categoryRepository.GetAllAsync(cancellationToken);
+
+        _logger.LogInformation("Коллекция категорий успешно получена.");
+
         return dtos;
     }
 
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)
     {
-        await CheckIfExistsByNameAsync(dto.Name, cancellationToken);
+        _logger.LogInformation("Создание категории '{Name}'.", dto.Name);
 
-        var entity = _mapper.Map<Category>(dto);
+        await EnsureCategoryExistsByNameAsync(dto.Name, cancellationToken);
 
-        var id = await _categoryRepository.CreateAsync(entity, cancellationToken);
+        var id = await _categoryRepository.CreateAsync(dto, cancellationToken);
+
+        _logger.LogInformation("Категория '{Name}' Id: '{Id}' успешно создана.", dto.Name, id);
+
         return id;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryUpdateDto> UpdateByIdAsync(Guid id, CategoryUpdateDto updateDto,
+    public async Task<CategoryUpdatedDto> UpdateByIdAsync(Guid id, CategoryUpdateDto dto,
         CancellationToken cancellationToken)
     {
-        await TryFindByIdAsync(id, cancellationToken);
+        _logger.LogInformation("Обновление категории по Id: '{Id}'.", id);
 
-        await CheckIfExistsByNameAsync(updateDto.Name, cancellationToken);
+        await EnsureCategoryExistsByNameAsync(dto.Name, cancellationToken);
 
-        var currentDto = await _categoryRepository.GetByIdAsync(id, cancellationToken);
+        var currentDto = await _categoryRepository.GetWhereAsync(c => c.Id == id, cancellationToken);
 
-        _mapper.Map(updateDto, currentDto);
+        if (currentDto == null)
+        {
+            _logger.LogInformation("Категория не найдена по Id: '{Id}'.", id);
+            throw new CategoryNotFoundByIdException(id);
+        }
 
-        var entity = _mapper.Map<Category>(currentDto);
+        var currentCategoryName = currentDto.Name;
 
-        var updatedDto = await _categoryRepository.UpdateAsync(entity, cancellationToken);
+        _mapper.Map(dto, currentDto);
+
+        var updatedDto = await _categoryRepository.UpdateAsync(currentDto, cancellationToken);
+
+        _logger.LogInformation("Подкатегория '{Name}' успешно обновлена на '{updatedName}' Id: '{Id}'.",
+            currentCategoryName, updatedDto.Name, id);
+
         return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        await TryFindByIdAsync(id, cancellationToken);
-        await _categoryRepository.DeleteByIdAsync(id, cancellationToken);
-    }
+        _logger.LogInformation("Удаление категории по Id: '{Id}'.", id);
 
+        var dto = await TryGetByIdAsync(id, cancellationToken);
+
+        await _categoryRepository.DeleteByIdAsync(dto.Id, cancellationToken);
+
+        _logger.LogWarning("Категория удалена по Id: '{Id}'.", id);
+    }
 
     /// <inheritdoc />
-    public async Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task EnsureCategoryExistsByIdAsync(Guid categoryId,
+        CancellationToken cancellationToken)
     {
-        var exists = await _categoryRepository.TryFindByIdAsync(id, cancellationToken);
-        if (!exists) throw new NotFoundException($"Категория с идентификатором {id} не найдена.");
+        _logger.LogInformation("Запрос существования категории по Id: '{Id}'.", categoryId);
+
+        var exist = await _categoryRepository.DoesCategoryExistWhereAsync(s => s.Id == categoryId,
+            cancellationToken);
+        if (!exist)
+        {
+            _logger.LogInformation("Категория не найдена по Id: '{Id}'.", categoryId);
+            throw new CategoryNotFoundByIdException(categoryId);
+        }
     }
 
-    private async Task CheckIfExistsByNameAsync(string name, CancellationToken cancellationToken)
+
+    private async Task<CategoryDto> TryGetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var exists = await _categoryRepository.CheckIfExistsByNameAsync(name, cancellationToken);
-        if (exists) throw new AlreadyExistsException($"Категория с именем {name} уже существует.");
+        var dto = await _categoryRepository.GetByIdAsync(id, cancellationToken);
+
+        if (dto != null) return dto;
+
+        _logger.LogInformation("Подкатегория не найдена по Id: '{Id}'", id);
+        throw new CategoryNotFoundByIdException(id);
+    }
+
+
+    private async Task EnsureCategoryExistsByNameAsync(string categoryName, CancellationToken cancellationToken)
+    {
+        var exist = await _categoryRepository.DoesCategoryExistWhereAsync(s => s.Name == categoryName,
+            cancellationToken);
+        if (exist)
+        {
+            _logger.LogInformation("Категория '{Name}' уже существует.", categoryName);
+            throw new CategoryAlreadyExistsException(categoryName);
+        }
     }
 }

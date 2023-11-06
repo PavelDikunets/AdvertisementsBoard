@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
-using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +16,14 @@ namespace AdvertisementsBoard.Hosts.Api.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
-    private readonly ISubCategoryService _subCategoryService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="CategoryController" />
     /// </summary>
     /// <param name="categoryService">Сервис для работы с категориями.</param>
-    /// <param name="subCategoryService">Сервис для работы с подкатегориями.</param>
-    public CategoryController(ICategoryService categoryService, ISubCategoryService subCategoryService)
+    public CategoryController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
-        _subCategoryService = subCategoryService;
     }
 
     /// <summary>
@@ -52,8 +48,8 @@ public class CategoryController : ControllerBase
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Категории найдены.</response>
-    /// <returns>Массив категорий с краткой информацией <see cref="CategoryShortInfoDto" />.</returns>
-    [ProducesResponseType(typeof(CategoryShortInfoDto[]), StatusCodes.Status200OK)]
+    /// <returns>Список категорий с краткой информацией <see cref="CategoryShortInfoDto" />.</returns>
+    [ProducesResponseType(typeof(List<CategoryShortInfoDto>), StatusCodes.Status200OK)]
     [HttpGet("Get-all")]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -87,8 +83,8 @@ public class CategoryController : ControllerBase
     /// <response code="404">Категория не найдена.</response>
     /// <response code="200">Категория успешно обновлена.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <returns>Модель обновления категории <see cref="CategoryUpdateDto" />.</returns>
-    [ProducesResponseType(typeof(CategoryUpdateDto), StatusCodes.Status200OK)]
+    /// <returns>Модель с обновленной информацией о категории <see cref="CategoryUpdatedDto" />.</returns>
+    [ProducesResponseType(typeof(CategoryUpdatedDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [HttpPut("{id:guid}")]

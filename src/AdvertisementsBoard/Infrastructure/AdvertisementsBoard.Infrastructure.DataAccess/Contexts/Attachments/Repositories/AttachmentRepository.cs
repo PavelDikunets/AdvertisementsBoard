@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
@@ -30,41 +31,42 @@ public class AttachmentRepository : IAttachmentRepository
     /// <inheritdoc />
     public async Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAll()
-            .ProjectTo<AttachmentDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+        var entity = await _repository.GetByIdAsync(id, cancellationToken);
 
+        var dto = _mapper.Map<AttachmentDto>(entity);
         return dto;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentShortInfoDto[]> GetAllByAdvertisementIdAsync(Guid id,
+    public async Task<List<AttachmentShortInfoDto>> GetAllByAdvertisementIdAsync(Guid id,
         CancellationToken cancellationToken)
     {
         var dtos = await _repository.GetAll()
             .Where(a => a.AdvertisementId == id)
             .ProjectTo<AttachmentShortInfoDto>(_mapper.ConfigurationProvider)
-            .ToArrayAsync(cancellationToken);
-
+            .ToListAsync(cancellationToken);
         return dtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(Attachment entity, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken)
     {
-        await _repository.AddAsync(entity, cancellationToken);
+        var entity = _mapper.Map<Attachment>(dto);
 
+        await _repository.AddAsync(entity, cancellationToken);
         return entity.Id;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentShortInfoDto> UpdateByIdAsync(Attachment updatedEntity,
+    public async Task<AttachmentUpdatedDto> UpdateAsync(AttachmentDto dto,
         CancellationToken cancellationToken)
     {
-        await _repository.UpdateAsync(updatedEntity, cancellationToken);
+        var entity = _mapper.Map<Attachment>(dto);
 
-        var dto = _mapper.Map<AttachmentShortInfoDto>(updatedEntity);
-        return dto;
+        await _repository.UpdateAsync(entity, cancellationToken);
+
+        var updatedDto = _mapper.Map<AttachmentUpdatedDto>(entity);
+        return updatedDto;
     }
 
     /// <inheritdoc />
@@ -74,10 +76,13 @@ public class AttachmentRepository : IAttachmentRepository
         await _repository.DeleteAsync(entity, cancellationToken);
     }
 
-    /// <inheritdoc />
-    public async Task<bool> TryFindByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AttachmentDto> GetWhereAsync(Expression<Func<Attachment, bool>> filter,
+        CancellationToken cancellationToken)
     {
-        var result = await _repository.GetAll().AnyAsync(a => a.Id == id, cancellationToken);
-        return result;
+        var dto = await _repository.GetAllFiltered(filter)
+            .ProjectTo<AttachmentDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return dto;
     }
 }

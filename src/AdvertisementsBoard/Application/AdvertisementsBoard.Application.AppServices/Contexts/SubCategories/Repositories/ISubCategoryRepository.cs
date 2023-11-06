@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Domain.SubCategories;
 
@@ -13,31 +14,31 @@ public interface ISubCategoryRepository
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель подкатегории.</returns>
+    /// <returns>Модель подкатегории <see cref="SubCategoryDto" />.</returns>
     Task<SubCategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все подкатегории.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив моделей подкатегорий с краткой информацией.</returns>
-    Task<SubCategoryShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
+    /// <returns>Список подкатегорий с краткой информацией <see cref="SubCategoryShortInfoDto" />.</returns>
+    Task<List<SubCategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать подкатегорию.
     /// </summary>
-    /// <param name="entity">Сущность подкатегории.</param>
+    /// <param name="dto">Модель создания подкатегории <see cref="SubCategoryCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданной подкатегории.</returns>
-    Task<Guid> CreateAsync(SubCategory entity, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(SubCategoryCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить подкатегорию.
     /// </summary>
-    /// <param name="updatedEntity">Обновленная сущность подкатегории.</param>
+    /// <param name="dto">Модель подкатегории <see cref="SubCategoryDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной подкатегорией.</returns>
-    Task<SubCategoryUpdateDto> UpdateAsync(SubCategory updatedEntity, CancellationToken cancellationToken);
+    /// <returns>Модель с обновленной подкатегорией <see cref="SubCategoryUpdatedDto" />.</returns>
+    Task<SubCategoryUpdatedDto> UpdateAsync(SubCategoryDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить подкатегорию по идентификатору.
@@ -47,18 +48,20 @@ public interface ISubCategoryRepository
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить, существует ли подкатегория с указанным идентификатором.
+    ///     Проверить, существует ли подкатегория с указанным фильтром.
     /// </summary>
-    /// <param name="id">Идентификатор подкатегории.</param>
+    /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если подкатегория существует, и false в противном случае.</returns>
-    Task<bool> TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Возвращает true, если категория существует, и false в противном случае.</returns>
+    Task<bool> DoesCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> filter,
+        CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить, существует ли подкатегория с указанным именем.
+    ///     Получить подкатегорию по фильтру.
     /// </summary>
-    /// <param name="name">Наименование подкатегории.</param>
+    /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если наименование подкатегории существует, и false в противном случае.</returns>
-    Task<bool> CheckIfExistsByNameAsync(string name, CancellationToken cancellationToken);
+    /// <returns>Модель подкатегории <see cref="SubCategoryDto" />.</returns>
+    Task<SubCategoryDto> GetWhereAsync(Expression<Func<SubCategory, bool>> filter,
+        CancellationToken cancellationToken);
 }

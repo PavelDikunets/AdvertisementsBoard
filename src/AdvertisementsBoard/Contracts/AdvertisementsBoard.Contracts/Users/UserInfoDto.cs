@@ -1,11 +1,9 @@
-using AdvertisementsBoard.Contracts.Base;
-
 namespace AdvertisementsBoard.Contracts.Users;
 
 /// <summary>
 ///     Модель информации о пользователе.
 /// </summary>
-public class UserInfoDto : BaseDto
+public class UserInfoDto
 {
     /// <summary>
     ///     Имя пользователя.

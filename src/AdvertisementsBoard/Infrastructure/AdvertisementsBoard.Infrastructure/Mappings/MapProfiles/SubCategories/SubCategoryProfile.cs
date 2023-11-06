@@ -10,28 +10,18 @@ namespace AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.SubCategories;
 public class SubCategoryProfile : Profile
 {
     /// <summary>
-    ///     Конструктор, настраивающий маппинг между моделями SubCategoryDtos и SubCategory.
+    ///     Конструктор, настраивающий маппинг между моделями для подкатегорий.
     /// </summary>
     public SubCategoryProfile()
     {
-        CreateMap<SubCategory, SubCategoryUpdateDto>()
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name));
+        CreateMap<SubCategory, SubCategoryDto>().ReverseMap();
+        CreateMap<SubCategory, SubCategoryShortInfoDto>();
+        CreateMap<SubCategory, SubCategoryUpdatedDto>();
 
-        CreateMap<SubCategoryUpdateDto, SubCategoryDto>()
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .IgnoreAllNonExisting();
+        CreateMap<SubCategoryDto, SubCategoryInfoDto>();
+        CreateMap<SubCategoryDto, SubCategoryShortInfoDto>();
 
-        CreateMap<SubCategory, SubCategoryShortInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name));
-
-        CreateMap<SubCategoryDto, SubCategoryInfoDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name));
-
-        CreateMap<SubCategory, SubCategoryDto>()
-            .ForMember(dest => dest.Id, map => map.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, map => map.MapFrom(src => src.Name))
-            .ReverseMap();
+        CreateMap<SubCategoryUpdateDto, SubCategoryDto>().IgnoreAllNonExisting();
+        CreateMap<SubCategoryCreateDto, SubCategory>().IgnoreAllNonExisting();
     }
 }

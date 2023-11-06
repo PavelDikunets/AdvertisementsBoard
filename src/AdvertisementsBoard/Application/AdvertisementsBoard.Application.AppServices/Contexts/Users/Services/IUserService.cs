@@ -12,32 +12,32 @@ public interface IUserService
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с информацией о пользователе.</returns>
+    /// <returns>Модель с информацией о пользователе <see cref="UserInfoDto" />.</returns>
     Task<UserInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить всех пользователей.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив моделей пользователей с краткой информацией.</returns>
-    Task<UserShortInfoDto[]> GetAllAsync(CancellationToken cancellationToken);
+    /// <returns>Список пользователей с краткой информацией <see cref="UserShortInfoDto" />.</returns>
+    Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать пользователя.
     /// </summary>
-    /// <param name="dto">Модель создания пользователя.</param>
+    /// <param name="dto">Модель создания пользователя <see cref="UserCreateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного пользователя.</returns>
     Task<Guid> CreateAsync(UserCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Обновить пользователя.
+    ///     Обновить пользователя по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="updatedDto">Модель обновления пользователя.</param>
+    /// <param name="updatedDto">Модель обновления пользователя <see cref="UserUpdateDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленным пользователем.</returns>
-    Task<UserInfoDto> UpdateByIdAsync(Guid id, UserUpdateDto updatedDto,
+    /// <returns>Модель с обновленной информацией о пользователе <see cref="UserUpdatedDto" />.</returns>
+    Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserUpdateDto updatedDto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -48,10 +48,9 @@ public interface IUserService
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить, существует ли пользователь с указанным идентификатором.
+    ///     Проверка пользователя на существование по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если пользователь существует, и false в противном случае.</returns>
-    Task TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <param name="cancellationToken">окен отмены операции.</param>
+    public Task EnsureUserExistsByIdAsync(Guid id, CancellationToken cancellationToken);
 }

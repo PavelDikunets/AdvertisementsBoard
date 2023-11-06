@@ -1,4 +1,5 @@
-﻿using AdvertisementsBoard.Contracts.Attachments;
+﻿using System.Linq.Expressions;
+using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
@@ -13,7 +14,7 @@ public interface IAttachmentRepository
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель вложения.</returns>
+    /// <returns>Модель вложения <see cref="AttachmentDto" />.</returns>
     Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -21,24 +22,24 @@ public interface IAttachmentRepository
     /// </summary>
     /// <param name="id">Идентификтор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив моделей вложений с краткой информацией.</returns>
-    Task<AttachmentShortInfoDto[]> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Список вложений с краткой информацией <see cref="AttachmentShortInfoDto" />.</returns>
+    Task<List<AttachmentShortInfoDto>> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать вложение.
     /// </summary>
-    /// <param name="updatedEntity">Обновленная сущность вложения.</param>
+    /// <param name="dto">Модель вложения <see cref="AttachmentDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного вложения.</returns>
-    Task<Guid> CreateAsync(Attachment updatedEntity, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить вложение.
     /// </summary>
-    /// <param name="updatedEntity">Обновленная сущность вложения.</param>
+    /// <param name="dto">Модель вложения <see cref="AttachmentDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленным вложением.</returns>
-    Task<AttachmentShortInfoDto> UpdateByIdAsync(Attachment updatedEntity, CancellationToken cancellationToken);
+    /// <returns>Модель с обновленным вложением <see cref="AttachmentUpdatedDto" />.</returns>
+    Task<AttachmentUpdatedDto> UpdateAsync(AttachmentDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить вложение по идентификатору.
@@ -48,10 +49,10 @@ public interface IAttachmentRepository
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверить, существует ли вложение с указанным идентификатором.
+    ///     Получить вложение по фильтру.
     /// </summary>
-    /// <param name="id">Идентификатор вложения.</param>
+    /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если вложение существует, и false в противном случае.</returns>
-    Task<bool> TryFindByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Модель вложения <see cref="AttachmentDto" />.</returns>
+    Task<AttachmentDto> GetWhereAsync(Expression<Func<Attachment, bool>> filter, CancellationToken cancellationToken);
 }

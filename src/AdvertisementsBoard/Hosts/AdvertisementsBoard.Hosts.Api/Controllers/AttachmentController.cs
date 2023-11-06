@@ -48,12 +48,12 @@ public class AttachmentController : ControllerBase
     /// </summary>
     /// <param name="advertisementId">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Массив вложений <see cref="AttachmentInfoDto" />></returns>
     /// <response code="200">Вложения для объявления успешно получены.</response>
     /// <response code="404">Объявление не найдено.</response>
+    /// <returns>Список вложений <see cref="AttachmentInfoDto" />.</returns>
     [HttpGet("Get-all")]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(AttachmentInfoDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<AttachmentInfoDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAttachmentsByAdvertisementId([Required] Guid advertisementId,
         CancellationToken cancellationToken)
     {
@@ -64,7 +64,7 @@ public class AttachmentController : ControllerBase
     /// <summary>
     ///     Загрузить вложения к объявлению.
     /// </summary>
-    /// <param name="dto">Модель вложения.</param>
+    /// <param name="dto">Модель загрузки вложения <see cref="AttachmentUploadDto" />.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Вложение успешно загружено.</response>
     /// <response code="404">Объявление не найдено.</response>
@@ -87,8 +87,8 @@ public class AttachmentController : ControllerBase
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Вложение успешно обновлено.</response>
     /// <response code="404">Вложение не найдено.</response>
-    /// <returns>Идентификатор вложения <see cref="Guid" />.</returns>
-    [ProducesResponseType(typeof(AttachmentShortInfoDto), StatusCodes.Status200OK)]
+    /// <returns>Модель c обновленной информацией о вложении <see cref="AttachmentUpdatedDto" />.</returns>
+    [ProducesResponseType(typeof(AttachmentUpdatedDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateByIdAsync(Guid id, [FromForm] AttachmentUpdateDto dto,
