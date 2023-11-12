@@ -9,4 +9,9 @@ public class UserUpdatedDto
     ///     Имя пользователя.
     /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    ///     Номер телефона.
+    /// </summary>
+    public string PhoneNumber { get; set; }
 }
