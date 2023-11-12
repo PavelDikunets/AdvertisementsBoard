@@ -1,4 +1,4 @@
-namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.ErrorExceptions;
+namespace AdvertisementsBoard.Common.ErrorExceptions.AdvertisementErrorExceptions;
 
 /// <summary>
 ///     Исключение, когда доступ на изменение объявления запрещен.
@@ -8,7 +8,7 @@ public class AdvertisementForbiddenException : Exception
     /// <summary>
     ///     Инициализирует экземпляр класса <see cref="AdvertisementForbiddenException" /> с указанием сообщения об ошибке.
     /// </summary>
-    public AdvertisementForbiddenException() : base("Нет прав на изменение этого объявления.")
+    public AdvertisementForbiddenException() : base("Нет прав на изменение объявления.")
     {
     }
 }

@@ -55,4 +55,12 @@ public class AdvertisementDto : BaseDto
     ///     Модель пользователя.
     /// </summary>
     public UserDto User { get; set; }
+
+    /// <summary>
+    /// </summary>
+    public Guid SubCategoryId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    public Guid UserId { get; set; }
 }

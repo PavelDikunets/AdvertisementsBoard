@@ -12,45 +12,49 @@ public interface IUserService
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с информацией о пользователе <see cref="UserInfoDto" />.</returns>
+    /// <returns>Модель с информацией о пользователе.</returns>
     Task<UserInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить всех пользователей.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Список пользователей с краткой информацией <see cref="UserShortInfoDto" />.</returns>
+    /// <returns>Список пользователей с краткой информацией.</returns>
     Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
-
-    /// <summary>
-    ///     Создать пользователя.
-    /// </summary>
-    /// <param name="dto">Модель создания пользователя <see cref="UserCreateDto" />.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор созданного пользователя.</returns>
-    Task<Guid> CreateAsync(UserCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить пользователя по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="updatedDto">Модель обновления пользователя <see cref="UserUpdateDto" />.</param>
+    /// <param name="dto">Модель редактирования пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной информацией о пользователе <see cref="UserUpdatedDto" />.</returns>
-    Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserUpdateDto updatedDto,
-        CancellationToken cancellationToken);
+    /// <returns>Модель пользователя.</returns>
+    Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserEditDto dto, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Удалить пользователя по идентификатору.
+    ///     Назначить роль пользователю.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="roleDto">Модель с ролью пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Модель с ролью пользователя.</returns>
+    Task<UserRoleDto> SetRoleByIdAsync(Guid id, UserRoleDto roleDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Проверка пользователя на существование по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="cancellationToken">окен отмены операции.</param>
-    public Task EnsureUserExistsByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если пользовать сущесвтует, false в противном случае</returns>
+    /// >
+    Task DoesUserExistByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Проверят, является ли пользователь автором объявления.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="userIdFromAdvertisement">Идентификатор пользователя, полученный из объявления.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если пользователь является автором объявления, false в противном случае.</returns>
+    Task<bool> ValidateUserAsync(Guid userId, Guid userIdFromAdvertisement, CancellationToken cancellationToken);
 }

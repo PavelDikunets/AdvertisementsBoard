@@ -9,12 +9,15 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
         <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj"/>
+        <ProjectReference Include="..\..\Infrastructure\AdvertisementsBoard.Infrastructure\AdvertisementsBoard.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="12.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3"/>
     </ItemGroup>
 
 </Project>

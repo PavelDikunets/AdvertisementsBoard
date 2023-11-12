@@ -16,12 +16,11 @@ public class CategoryProfile : Profile
     {
         CreateMap<Category, CategoryDto>().ReverseMap();
         CreateMap<Category, CategoryShortInfoDto>();
-        CreateMap<Category, CategoryUpdatedDto>();
 
         CreateMap<CategoryDto, CategoryInfoDto>();
         CreateMap<CategoryDto, CategoryShortInfoDto>();
 
-        CreateMap<CategoryUpdateDto, CategoryDto>().IgnoreAllNonExisting();
+        CreateMap<CategoryEditDto, CategoryDto>().IgnoreAllNonExisting();
         CreateMap<CategoryCreateDto, Category>().IgnoreAllNonExisting();
     }
 }

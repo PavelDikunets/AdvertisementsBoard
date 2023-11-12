@@ -37,20 +37,8 @@ public class AdvertisementCreateDto
     public string[] TagNames { get; set; }
 
     /// <summary>
-    ///     Статус активности.
-    /// </summary>
-    [Required]
-    public bool IsActive { get; set; }
-
-    /// <summary>
     ///     Идентификатор подкатегории.
     /// </summary>
     [Required]
     public Guid SubCategoryId { get; set; }
-
-    /// <summary>
-    ///     Идентификатор пользователя.
-    /// </summary>
-    [Required]
-    public Guid UserId { get; set; }
 }

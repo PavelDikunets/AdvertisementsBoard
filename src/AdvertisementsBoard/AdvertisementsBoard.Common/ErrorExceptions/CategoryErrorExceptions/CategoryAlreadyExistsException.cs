@@ -1,4 +1,4 @@
-namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.ErrorExceptions;
+namespace AdvertisementsBoard.Common.ErrorExceptions.CategoryErrorExceptions;
 
 /// <summary>
 ///     Исключение, когда категория уже существует с таким наименованием.

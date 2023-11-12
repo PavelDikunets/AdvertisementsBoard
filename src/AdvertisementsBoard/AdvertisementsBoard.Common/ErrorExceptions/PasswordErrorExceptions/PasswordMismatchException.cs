@@ -1,4 +1,4 @@
-namespace AdvertisementsBoard.Application.AppServices.Passwords.ErrorExceptions;
+namespace AdvertisementsBoard.Common.ErrorExceptions.PasswordErrorExceptions;
 
 /// <summary>
 ///     Исключение, когда пароли не совпадают.

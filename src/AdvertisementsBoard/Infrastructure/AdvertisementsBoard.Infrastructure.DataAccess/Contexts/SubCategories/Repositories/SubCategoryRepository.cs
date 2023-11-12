@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Repositories;
+using AdvertisementsBoard.Common.ErrorExceptions.SubCategoryErrorExceptions;
 using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Domain.SubCategories;
 using AdvertisementsBoard.Infrastructure.Repositories;
@@ -29,24 +30,24 @@ public class SubCategoryRepository : ISubCategoryRepository
     /// <inheritdoc />
     public async Task<SubCategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(id, cancellationToken);
+        var subCategory = await TryGetByIdAsync(id, cancellationToken);
 
-        var dto = _mapper.Map<SubCategoryDto>(entity);
+        var dto = _mapper.Map<SubCategoryDto>(subCategory);
         return dto;
     }
 
     /// <inheritdoc />
     public async Task<List<SubCategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var dtos = await _repository.GetAll()
+        var listSubCategories = await _repository.GetAll()
             .ProjectTo<SubCategoryShortInfoDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return dtos;
+        return listSubCategories;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(SubCategoryCreateDto dto, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(SubCategoryDto dto, CancellationToken cancellationToken)
     {
         var entity = _mapper.Map<SubCategory>(dto);
 
@@ -55,36 +56,52 @@ public class SubCategoryRepository : ISubCategoryRepository
     }
 
     /// <inheritdoc />
-    public async Task<SubCategoryUpdatedDto> UpdateAsync(SubCategoryDto dto, CancellationToken cancellationToken)
+    public async Task<SubCategoryInfoDto> UpdateAsync(SubCategoryDto dto, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<SubCategory>(dto);
+        var subCategory = _mapper.Map<SubCategory>(dto);
 
-        await _repository.UpdateAsync(entity, cancellationToken);
+        await _repository.UpdateAsync(subCategory, cancellationToken);
 
-        return _mapper.Map<SubCategoryUpdatedDto>(entity);
+        var updatedDto = _mapper.Map<SubCategoryInfoDto>(subCategory);
+        return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(id, cancellationToken);
-        await _repository.DeleteAsync(entity, cancellationToken);
+        var subCategory = await TryGetByIdAsync(id, cancellationToken);
+
+        await _repository.DeleteAsync(subCategory, cancellationToken);
     }
 
 
+    public async Task<SubCategoryDto> FindWhereAsync(Expression<Func<SubCategory, bool>> predicate,
+        CancellationToken cancellationToken)
+    {
+        var subCategory = await _repository.GetAllFiltered(predicate)
+            .Include(s => s.Category)
+            .ProjectTo<SubCategoryDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (subCategory == null) throw new SubCategoryNotFoundException();
+
+        return subCategory;
+    }
+
     /// <inheritdoc />
-    public async Task<bool> DoesCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> predicate,
+    public async Task<bool> DoesSubCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> predicate,
         CancellationToken cancellationToken)
     {
         return await _repository.FindAnyAsync(predicate, cancellationToken);
     }
 
-    public async Task<SubCategoryDto> GetWhereAsync(Expression<Func<SubCategory, bool>> predicate,
-        CancellationToken cancellationToken)
+
+    private async Task<SubCategory> TryGetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAllFiltered(predicate)
-            .ProjectTo<SubCategoryDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
-        return dto;
+        var subCategory = await _repository.GetByIdAsync(id, cancellationToken);
+
+        if (subCategory == null) throw new SubCategoryNotFoundException(id);
+
+        return subCategory;
     }
 }

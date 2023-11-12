@@ -1,3 +1,5 @@
+using AdvertisementsBoard.Common.Enums.Users;
+using AdvertisementsBoard.Domain.Accounts;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Domain.Base;
 
@@ -9,22 +11,39 @@ namespace AdvertisementsBoard.Domain.Users;
 public class User : BaseEntity
 {
     /// <summary>
+    ///     Никнейм пользователя.
+    /// </summary>
+    /// public string NickName { get; set; }
+    /// <summary>
     ///     Имя пользователя.
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    ///     Адрес электронной почты.
+    ///     Номер телефона.
     /// </summary>
-    public string Email { get; set; }
+    public string PhoneNumber { get; set; }
 
     /// <summary>
-    ///     Хэш пароля.
+    ///     Перечисление ролей пользователя.
     /// </summary>
-    public string PasswordHash { get; set; }
+    public UserRole Role { get; set; }
 
     /// <summary>
     ///     Список объявлений.
     /// </summary>
     public virtual List<Advertisement> Advertisements { get; set; }
+
+    /// <summary>
+    ///     Аккаунт пользователя.
+    /// </summary>
+    public virtual Account Account { get; set; }
+
+    /// <summary>
+    /// </summary>
+    public Guid AccountId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    public string NickName { get; set; }
 }

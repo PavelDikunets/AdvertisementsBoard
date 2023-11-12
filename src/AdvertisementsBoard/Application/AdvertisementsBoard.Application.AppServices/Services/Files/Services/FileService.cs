@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace AdvertisementsBoard.Application.AppServices.Files.Services;
+namespace AdvertisementsBoard.Application.AppServices.Services.Files.Services;
 
 /// <inheritdoc />
 public class FileService : IFileService

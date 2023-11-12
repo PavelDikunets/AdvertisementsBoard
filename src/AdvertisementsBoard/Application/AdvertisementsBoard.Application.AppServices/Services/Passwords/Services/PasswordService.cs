@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
+using AdvertisementsBoard.Common.ErrorExceptions.AccountErrorExceptions;
+using AdvertisementsBoard.Common.ErrorExceptions.PasswordErrorExceptions;
 
-namespace AdvertisementsBoard.Application.AppServices.Passwords.Services;
+namespace AdvertisementsBoard.Application.AppServices.Services.Passwords.Services;
 
 /// <inheritdoc />
 public class PasswordService : IPasswordService
@@ -20,7 +22,7 @@ public class PasswordService : IPasswordService
     }
 
     /// <inheritdoc />
-    public bool VerifyPassword(string hashedPassword, string passwordToCheck)
+    public void ComparePasswordHashWithPassword(string hashedPassword, string passwordToCheck)
     {
         // Вычисляется хэш, записывается в массив байтов.
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(passwordToCheck));
@@ -30,12 +32,16 @@ public class PasswordService : IPasswordService
         foreach (var t in bytes) builder.Append(t.ToString("x2"));
 
         // Сравнивает два хеша.
-        return hashedPassword == builder.ToString();
+        var success = hashedPassword == builder.ToString();
+
+        if (!success) throw new InvalidSignInCredentialsException();
     }
 
     /// <inheritdoc />
-    public bool ComparePasswords(string password1, string password2)
+    public void ComparePasswords(string password1, string password2)
     {
-        return string.Equals(password1, password2);
+        var success = string.Equals(password1, password2);
+
+        if (!success) throw new PasswordMismatchException();
     }
 }

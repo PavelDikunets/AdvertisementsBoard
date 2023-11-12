@@ -5,7 +5,7 @@ namespace AdvertisementsBoard.Contracts.Advertisements;
 /// <summary>
 ///     Модель обновления объявления.
 /// </summary>
-public class AdvertisementUpdateDto
+public class AdvertisementEditDto
 {
     /// <summary>
     ///     Заголовок.
@@ -41,10 +41,4 @@ public class AdvertisementUpdateDto
     /// </summary>
     [Required]
     public bool IsActive { get; set; }
-
-    /// <summary>
-    ///     Идентификатор пользователя.
-    /// </summary>
-    [Required]
-    public Guid UserId { get; set; }
 }

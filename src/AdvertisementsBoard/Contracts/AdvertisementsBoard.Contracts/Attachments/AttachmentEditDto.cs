@@ -6,7 +6,7 @@ namespace AdvertisementsBoard.Contracts.Attachments;
 /// <summary>
 ///     Модель обновления вложения.
 /// </summary>
-public class AttachmentUpdateDto
+public class AttachmentEditDto
 {
     /// <summary>
     ///     Форма загрузки файла.

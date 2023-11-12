@@ -1,5 +1,3 @@
-using AdvertisementsBoard.Contracts.SubCategories;
-
 namespace AdvertisementsBoard.Contracts.Categories;
 
 /// <summary>
@@ -11,9 +9,4 @@ public class CategoryInfoDto
     ///     Наименование категории.
     /// </summary>
     public string Name { get; set; }
-
-    /// <summary>
-    ///     Список подкатегорий.
-    /// </summary>
-    public List<SubCategoryShortInfoDto> SubCategories { get; set; }
 }

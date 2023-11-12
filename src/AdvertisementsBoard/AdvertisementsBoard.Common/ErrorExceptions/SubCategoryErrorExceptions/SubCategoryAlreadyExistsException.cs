@@ -1,4 +1,4 @@
-namespace AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.ErrorExceptions;
+namespace AdvertisementsBoard.Common.ErrorExceptions.SubCategoryErrorExceptions;
 
 /// <summary>
 ///     Исключение, когда подкатегория уже существует с таким же наименованием.

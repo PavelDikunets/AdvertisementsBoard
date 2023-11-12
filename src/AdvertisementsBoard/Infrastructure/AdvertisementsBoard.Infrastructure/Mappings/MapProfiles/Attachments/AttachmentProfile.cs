@@ -16,12 +16,11 @@ public class AttachmentProfile : Profile
     {
         CreateMap<Attachment, AttachmentDto>().ReverseMap();
         CreateMap<Attachment, AttachmentShortInfoDto>();
-        CreateMap<Attachment, AttachmentUpdatedDto>();
 
         CreateMap<AttachmentDto, AttachmentInfoDto>();
         CreateMap<AttachmentDto, AttachmentShortInfoDto>();
 
         CreateMap<AttachmentUploadDto, AttachmentDto>().IgnoreAllNonExisting();
-        CreateMap<AttachmentUpdateDto, AttachmentDto>().IgnoreAllNonExisting();
+        CreateMap<AttachmentEditDto, AttachmentDto>().IgnoreAllNonExisting();
     }
 }

@@ -54,7 +54,7 @@ public interface IBaseDbRepository<TEntity> where TEntity : class
     Task DeleteAsync(TEntity model, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Найти сущность по фильтру.
+    ///     Найти сущность по фильтру.
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>

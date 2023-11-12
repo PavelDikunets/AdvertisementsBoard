@@ -16,12 +16,11 @@ public class SubCategoryProfile : Profile
     {
         CreateMap<SubCategory, SubCategoryDto>().ReverseMap();
         CreateMap<SubCategory, SubCategoryShortInfoDto>();
-        CreateMap<SubCategory, SubCategoryUpdatedDto>();
 
         CreateMap<SubCategoryDto, SubCategoryInfoDto>();
         CreateMap<SubCategoryDto, SubCategoryShortInfoDto>();
 
-        CreateMap<SubCategoryUpdateDto, SubCategoryDto>().IgnoreAllNonExisting();
-        CreateMap<SubCategoryCreateDto, SubCategory>().IgnoreAllNonExisting();
+        CreateMap<SubCategoryEditDto, SubCategoryDto>().IgnoreAllNonExisting();
+        CreateMap<SubCategoryCreateDto, SubCategoryDto>().IgnoreAllNonExisting();
     }
 }

@@ -14,7 +14,7 @@ public class SubCategoryConfiguration : IEntityTypeConfiguration<SubCategory>
         builder.ToTable("SubCategories");
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedOnAdd();
-        builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
+        builder.Property(p => p.Name).HasMaxLength(30).IsRequired();
 
         builder.HasMany(p => p.Advertisements)
             .WithOne(b => b.SubCategory)

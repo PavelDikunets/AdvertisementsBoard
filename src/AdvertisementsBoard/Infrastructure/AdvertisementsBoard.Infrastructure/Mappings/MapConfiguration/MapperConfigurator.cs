@@ -1,3 +1,4 @@
+using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Accounts;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Advertisements;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Attachments;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Categories;
@@ -25,6 +26,7 @@ public static class MapperConfigurator
             cfg.AddProfile<CategoryProfile>();
             cfg.AddProfile<SubCategoryProfile>();
             cfg.AddProfile<UserProfile>();
+            cfg.AddProfile<AccountProfile>();
         });
         configuration.AssertConfigurationIsValid();
         return configuration;
