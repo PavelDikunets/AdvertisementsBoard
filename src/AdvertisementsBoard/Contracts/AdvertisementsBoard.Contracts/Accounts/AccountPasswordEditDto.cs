@@ -1,19 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AdvertisementsBoard.Contracts.Users;
+namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
-///     Модель обновления пользователя.
+/// Модель изменения пароля.
 /// </summary>
-public class UserUpdateDto
+public class AccountPasswordEditDto
 {
-    /// <summary>
-    ///     Имя пользователя.
-    /// </summary>
-    [Required(ErrorMessage = "Поле {0} не может быть пустым.")]
-    [StringLength(32, MinimumLength = 2, ErrorMessage = "Поле {0} должно содержать от {2} до {1} символов.")]
-    public string Name { get; set; }
-
     /// <summary>
     ///     Текущий пароль.
     /// </summary>
