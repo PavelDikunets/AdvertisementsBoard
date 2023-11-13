@@ -3,11 +3,12 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="12.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0"/>
     </ItemGroup>
@@ -15,10 +16,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Contracts\AdvertisementsBoard.Contracts\AdvertisementsBoard.Contracts.csproj"/>
         <ProjectReference Include="..\..\Domain\AdvertisementsBoard.Domain\AdvertisementsBoard.Domain.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Mappings\"/>
     </ItemGroup>
 
 </Project>

@@ -1,18 +1,13 @@
-using System.Text.Json;
-using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.ErrorExceptions;
-using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.ErrorExceptions;
-using AdvertisementsBoard.Application.AppServices.Contexts.Categories.ErrorExceptions;
-using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.ErrorExceptions;
-using AdvertisementsBoard.Application.AppServices.Contexts.Users.ErrorExceptions;
-using AdvertisementsBoard.Application.AppServices.Passwords.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Contracts.Users;
 using AdvertisementsBoard.Hosts.Api.Controllers;
+using AdvertisementsBoard.Hosts.Api.Middlewares;
 using AdvertisementsBoard.Infrastructure.ComponentRegistrar;
-using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,45 +20,74 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddServices();
+builder.Services.AddServices(builder.Configuration);
+
 builder.Services.AddRepositories();
 
 builder.Services.AddControllers();
 
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen(s =>
 {
+    s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"Jwt Authorization header using the Bearer scheme.
+                      Enter 'Bearer' [space] and then your token in the text inpit below.
+                      Example: 'Bearer secretKey'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = JwtBearerDefaults.AuthenticationScheme
+    });
+
+    s.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "OAuth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+
+    #region Настройка документации Swagger
+
     var includeDocsTypesMarkers = new[]
     {
         typeof(UserInfoDto),
         typeof(UserShortInfoDto),
         typeof(UserCreateDto),
-        typeof(UserUpdateDto),
+        typeof(UserEditDto),
         typeof(UserUpdatedDto),
+        typeof(UserRoleDto),
 
         typeof(SubCategoryInfoDto),
         typeof(SubCategoryShortInfoDto),
         typeof(SubCategoryCreateDto),
-        typeof(SubCategoryUpdateDto),
-        typeof(SubCategoryUpdatedDto),
+        typeof(SubCategoryEditDto),
 
         typeof(CategoryInfoDto),
         typeof(CategoryShortInfoDto),
         typeof(CategoryCreateDto),
-        typeof(CategoryUpdateDto),
-        typeof(CategoryUpdatedDto),
+        typeof(CategoryEditDto),
 
         typeof(AttachmentInfoDto),
         typeof(AttachmentShortInfoDto),
         typeof(AttachmentUploadDto),
-        typeof(AttachmentUpdateDto),
-        typeof(AttachmentUpdatedDto),
+        typeof(AttachmentEditDto),
 
         typeof(AdvertisementInfoDto),
         typeof(AdvertisementShortInfoDto),
         typeof(AdvertisementCreateDto),
-        typeof(AdvertisementUpdateDto),
+        typeof(AdvertisementEditDto),
         typeof(AdvertisementUpdatedDto),
 
         typeof(UserController),
@@ -79,91 +103,25 @@ builder.Services.AddSwaggerGen(s =>
         if (File.Exists(xmlPath))
             s.IncludeXmlComments(xmlPath);
     }
+
+    #endregion
 });
 
 var app = builder.Build();
 
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-
-        var error = context.Features.Get<IExceptionHandlerFeature>();
-        if (error != null)
-        {
-            var ex = error.Error;
-
-            switch (ex)
-            {
-                case InvalidOperationException:
-                {
-                    var result = JsonSerializer.Serialize(new { message = ex.Message });
-                    await context.Response.WriteAsync(result).ConfigureAwait(false);
-                    break;
-                }
-                case AdvertisementNotFoundByIdException or AttachmentNotFoundByIdException
-                    or CategoryNotFoundByIdException
-                    or SubCategoryNotFoundByIdException or UserNotFoundByIdException:
-                {
-                    context.Response.StatusCode = 404;
-                    context.Response.ContentType = "application/json";
-
-                    var result = JsonSerializer.Serialize(new { message = ex.Message });
-                    await context.Response.WriteAsync(result).ConfigureAwait(false);
-                    break;
-                }
-                case CategoryAlreadyExistsException or SubCategoryAlreadyExistsException
-                    or UserAlreadyExistsByEmailException:
-                {
-                    context.Response.StatusCode = 400;
-                    context.Response.ContentType = "application/json";
-
-                    var result = JsonSerializer.Serialize(new { message = ex.Message });
-                    await context.Response.WriteAsync(result).ConfigureAwait(false);
-                    break;
-                }
-                case PasswordMismatchException:
-                {
-                    context.Response.StatusCode = 400;
-                    context.Response.ContentType = "application/json";
-
-                    var result = JsonSerializer.Serialize(new { message = ex.Message });
-                    await context.Response.WriteAsync(result).ConfigureAwait(false);
-                    break;
-                }
-                case AdvertisementForbiddenException:
-                {
-                    context.Response.StatusCode = 403;
-                    context.Response.ContentType = "application/json";
-
-                    var result = JsonSerializer.Serialize(new { message = ex.Message });
-                    await context.Response.WriteAsync(result).ConfigureAwait(false);
-                    break;
-                }
-                default:
-                {
-                    context.Response.StatusCode = 500;
-                    context.Response.ContentType = "application/json";
-
-                    var result = JsonSerializer.Serialize(new
-                        { message = ex.Message });
-                    await context.Response.WriteAsync(result).ConfigureAwait(false);
-                    break;
-                }
-            }
-        }
-    });
-});
+app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
 app.UseStaticFiles();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+
+app.UseMiddleware<BlockUserMiddleware>();
 
 app.UseAuthorization();
 
