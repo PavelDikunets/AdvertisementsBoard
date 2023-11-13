@@ -6,12 +6,17 @@ namespace AdvertisementsBoard.Contracts.Users;
 public class UserInfoDto
 {
     /// <summary>
+    ///     Никнейм.
+    /// </summary>
+    public string NickName { get; set; }
+
+    /// <summary>
     ///     Имя пользователя.
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    ///     Адрес электронной почты.
+    ///     Номер телефона.
     /// </summary>
-    public string Email { get; set; }
+    public string PhoneNumber { get; set; }
 }

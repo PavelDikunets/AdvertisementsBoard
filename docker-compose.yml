@@ -10,12 +10,13 @@ services:
     build:
       context: .
       dockerfile: src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/Dockerfile
+    entrypoint: [ "/wait-for-it.sh", "database:5432", "--", "/wait-for-it.sh", "-t", "60", "elasticsearch:9200", "--" ]
+    command: [ "dotnet", "AdvertisementsBoard.Hosts.Api.dll" ]
     environment:
       - "ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}"
       - "ASPNETCORE_URLS=http://+:5259"
       - "ConnectionStrings__PostgresDb=Server=${POSTGRES_SERVER};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Port=${POSTGRES_PORT}"
       - "Serilog__WriteTo__2__Args__nodeUris=http://${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}@elasticsearch:9200"
-    command: [ "./wait-for-it.sh", "database:5432", "--", "dotnet", "AdvertisementsBoard.Hosts.Api.dll" ]
     volumes:
       - ./wwwroot:/app/wwwroot
     ports:
@@ -31,10 +32,11 @@ services:
     build:
       context: .
       dockerfile: src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Migrator/Dockerfile
+    entrypoint: [ "/wait-for-it.sh", "database:5432", "--" ]
+    command: [ "dotnet", "AdvertisementsBoard.Hosts.Migrator.dll" ]
     environment:
       - "ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}"
       - "ConnectionStrings__PostgresDb=Server=${POSTGRES_SERVER};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Port=${POSTGRES_PORT}"
-    command: [ "./wait-for-it.sh", "database:5432", "--", "dotnet", "AdvertisementsBoard.Hosts.Migrator.dll" ]
     ports:
       - "5230:5230"
     networks:

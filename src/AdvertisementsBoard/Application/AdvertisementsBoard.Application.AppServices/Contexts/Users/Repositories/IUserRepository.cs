@@ -21,31 +21,16 @@ public interface IUserRepository
     ///     Получить всех пользователей.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Список пользователей с краткой информацией <see cref="UserShortInfoDto" />.</returns>
+    /// <returns>Список пользователей с краткой информацией.</returns>
     Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
-
-    /// <summary>
-    ///     Создать пользователя.
-    /// </summary>
-    /// <param name="dto">Модель пользователя <see cref="UserDto" />.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор созданного пользователя.</returns>
-    Task<Guid> CreateAsync(UserDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить пользователя.
     /// </summary>
-    /// <param name="dto">Модель пользователя <see cref="UserDto" />.</param>
+    /// <param name="dto">Модель пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной информацией пользователя <see cref="UserUpdatedDto" />.</returns>
+    /// <returns>Модель с обновленной информацией пользователя.</returns>
     Task<UserUpdatedDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken);
-
-    /// <summary>
-    ///     Удалить пользователя по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Проверить, существует ли пользователь с указанным фильтром.
@@ -60,6 +45,6 @@ public interface IUserRepository
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель пользователя <see cref="UserDto" />.</returns>
+    /// <returns>Модель пользователя.</returns>
     Task<UserDto> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken);
 }

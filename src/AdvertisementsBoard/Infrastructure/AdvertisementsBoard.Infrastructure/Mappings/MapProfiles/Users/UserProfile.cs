@@ -18,10 +18,12 @@ public class UserProfile : Profile
         CreateMap<User, UserShortInfoDto>();
         CreateMap<User, UserUpdatedDto>();
 
-        CreateMap<UserDto, UserInfoDto>();
+        CreateMap<User, UserInfoDto>();
         CreateMap<UserDto, UserShortInfoDto>();
 
-        CreateMap<UserUpdateDto, UserDto>().IgnoreAllNonExisting();
+        CreateMap<User, UserCreatedDto>();
+        CreateMap<UserRoleDto, UserDto>().IgnoreAllNonExisting().ReverseMap();
+        CreateMap<UserEditDto, UserDto>().IgnoreAllNonExisting();
         CreateMap<UserCreateDto, UserDto>().IgnoreAllNonExisting();
     }
 }

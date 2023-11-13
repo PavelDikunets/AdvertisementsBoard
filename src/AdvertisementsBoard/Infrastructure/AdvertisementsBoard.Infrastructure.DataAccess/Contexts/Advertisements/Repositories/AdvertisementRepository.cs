@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
+using AdvertisementsBoard.Common.ErrorExceptions.AdvertisementErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Infrastructure.Repositories;
@@ -31,14 +32,9 @@ public class AdvertisementRepository : IAdvertisementRepository
     /// <inheritdoc />
     public async Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAll()
-            .Where(a => a.Id == id)
-            .Include(s => s.SubCategory)
-            .ThenInclude(c => c.Category)
-            .Include(a => a.Attachments)
-            .Include(u => u.User)
-            .ProjectTo<AdvertisementDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
+        var advertisement = await TryGetByIdAsync(id, cancellationToken);
+
+        var dto = _mapper.Map<AdvertisementDto>(advertisement);
 
         return dto;
     }
@@ -47,7 +43,7 @@ public class AdvertisementRepository : IAdvertisementRepository
     public async Task<List<AdvertisementShortInfoDto>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
         int pageSize)
     {
-        var dto = await _repository.GetAllFiltered(a => true)
+        var listAdvertisements = await _repository.GetAllFiltered(a => true)
             .Where(s => s.IsActive)
             .OrderBy(a => a.Title)
             .Skip(pageNumber * pageSize)
@@ -55,58 +51,73 @@ public class AdvertisementRepository : IAdvertisementRepository
             .ProjectTo<AdvertisementShortInfoDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return dto;
+        return listAdvertisements;
+    }
+
+    public async Task<List<AdvertisementShortInfoDto>> GetAllByUserIdAsync(Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var listAdvertisements = await _repository.GetAllFiltered(a => true)
+            .Where(a => a.UserId == userId)
+            .OrderBy(a => a.Title)
+            .ProjectTo<AdvertisementShortInfoDto>(_mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+
+        return listAdvertisements;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(AdvertisementDto dto, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<Advertisement>(dto);
+        var advertisement = _mapper.Map<Advertisement>(dto);
 
-        await _repository.AddAsync(entity, cancellationToken);
-        return entity.Id;
+        await _repository.AddAsync(advertisement, cancellationToken);
+        return advertisement.Id;
     }
 
     /// <inheritdoc />
     public async Task<AdvertisementUpdatedDto> UpdateAsync(AdvertisementDto dto,
         CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<Advertisement>(dto);
+        var advertisement = _mapper.Map<Advertisement>(dto);
 
-        await _repository.UpdateAsync(entity, cancellationToken);
+        await _repository.UpdateAsync(advertisement, cancellationToken);
 
-        var updatedDto = _mapper.Map<AdvertisementUpdatedDto>(entity);
+        var updatedDto = _mapper.Map<AdvertisementUpdatedDto>(advertisement);
         return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(id, cancellationToken);
+        var advert = await TryGetByIdAsync(id, cancellationToken);
 
-        await _repository.DeleteAsync(entity, cancellationToken);
+        await _repository.DeleteAsync(advert, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<bool> DoesAdvertisementExistWhereAsync(Expression<Func<Advertisement, bool>> filter,
+    public async Task<AdvertisementDto> FindWhereAsync(Expression<Func<Advertisement, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var exists = await _repository.FindAnyAsync(filter, cancellationToken);
-        return exists;
-    }
-
-    /// <inheritdoc />
-    public async Task<AdvertisementDto> GetWhereAsync(Expression<Func<Advertisement, bool>> filter,
-        CancellationToken cancellationToken)
-    {
-        var entity = await _repository.GetAllFiltered(filter)
+        var advertisement = await _repository.GetAllFiltered(filter)
             .AsNoTracking()
             .Include(s => s.SubCategory)
             .Include(s => s.User)
+            .ProjectTo<AdvertisementDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
 
-        var dto = _mapper.Map<AdvertisementDto>(entity);
+        if (advertisement == null) throw new AdvertisementNotFoundException();
 
-        return dto;
+        return advertisement;
+    }
+
+
+    private async Task<Advertisement> TryGetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var advertisement = await _repository.GetByIdAsync(id, cancellationToken);
+
+        if (advertisement == null) throw new AdvertisementNotFoundException(id);
+
+        return advertisement;
     }
 }

@@ -1,10 +1,10 @@
 ﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
-using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.ErrorExceptions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
-using AdvertisementsBoard.Application.AppServices.Files.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
+using AdvertisementsBoard.Application.AppServices.Services.Files.Services;
+using AdvertisementsBoard.Common.ErrorExceptions.AttachmentErrorExceptions;
 using AdvertisementsBoard.Contracts.Attachments;
 using AutoMapper;
-using Microsoft.Extensions.Logging;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 
@@ -14,8 +14,8 @@ public class AttachmentService : IAttachmentService
     private readonly IAdvertisementService _advertisementService;
     private readonly IAttachmentRepository _attachmentRepository;
     private readonly IFileService _fileService;
-    private readonly ILogger<AttachmentService> _logger;
     private readonly IMapper _mapper;
+    private readonly IUserService _userService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AttachmentService" />
@@ -24,115 +24,88 @@ public class AttachmentService : IAttachmentService
     /// <param name="advertisementService">Сервис для работы с объявлениями.</param>
     /// <param name="fileService">Сервис для работы с файлами.</param>
     /// <param name="mapper">Маппер.</param>
-    /// <param name="logger">Логирование сервиса <see cref="AttachmentService" />.</param>
+    /// <param name="userService"></param>
     public AttachmentService(IAttachmentRepository attachmentRepository, IFileService fileService,
-        IAdvertisementService advertisementService, IMapper mapper, ILogger<AttachmentService> logger)
+        IAdvertisementService advertisementService, IMapper mapper, IUserService userService)
     {
         _attachmentRepository = attachmentRepository;
         _advertisementService = advertisementService;
+        _userService = userService;
         _fileService = fileService;
         _mapper = mapper;
-        _logger = logger;
     }
 
     /// <inheritdoc />
     public async Task<AttachmentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Получение вложения по Id: '{Id}'.", id);
+        var attachment = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = await TryGetByIdAsync(id, cancellationToken);
-
-        var infoDto = _mapper.Map<AttachmentInfoDto>(dto);
-
-        _logger.LogInformation("Вложение успешно получено по Id: '{Id}'.", id);
-
-        return infoDto;
+        var dto = _mapper.Map<AttachmentInfoDto>(attachment);
+        return dto;
     }
 
     /// <inheritdoc />
     public async Task<List<AttachmentShortInfoDto>> GetAllByAdvertisementIdAsync(Guid advertisementId,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Получение коллекции вложений в объявлении с Id: '{AdvertisementId}'.", advertisementId);
+        var listAttachments =
+            await _attachmentRepository.GetAllByAdvertisementIdAsync(advertisementId, cancellationToken);
 
-        await _advertisementService.EnsureAdvertisementExistsByIdAsync(advertisementId, cancellationToken);
-
-        var dtos = await _attachmentRepository.GetAllByAdvertisementIdAsync(advertisementId, cancellationToken);
-
-        _logger.LogInformation("Коллекция вложений успешно получена.");
-
-        return dtos;
+        return listAttachments;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> UploadByAdvertisementIdAsync(AttachmentUploadDto uploadDto,
-        CancellationToken cancellationToken)
+    public async Task<Guid> UploadByAdvertisementIdAsync(Guid advertisementId, Guid userId,
+        AttachmentUploadDto uploadDto, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Создание вложения в объявлении с Id: '{AdvertisementId};.", uploadDto.AdvertisementId);
-
-        await _advertisementService.EnsureAdvertisementExistsByIdAsync(uploadDto.AdvertisementId, cancellationToken);
+        await ValidateUser(advertisementId, userId, cancellationToken);
 
         var dto = _mapper.Map<AttachmentDto>(uploadDto);
 
         var fileUrl = await _fileService.UploadFileAsync(uploadDto.File, cancellationToken);
-
+        dto.AdvertisementId = advertisementId;
         dto.Url = fileUrl;
 
         var id = await _attachmentRepository.CreateAsync(dto, cancellationToken);
-
-        _logger.LogInformation("Вложение Url: '{Url}' Id: '{Id}' успешно создано.", dto.Url, id);
-
         return id;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentUpdatedDto> UpdateByIdAsync(Guid id, AttachmentUpdateDto dto,
+    public async Task<AttachmentInfoDto> UpdateByIdAsync(Guid id, Guid userId, AttachmentEditDto editDto,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Обновление вложения по Id: '{Id}'.", id);
+        var currentAttachment = await _attachmentRepository.FindWhereAsync(a => a.Id == id, cancellationToken);
 
-        var currentDto = await _attachmentRepository.GetWhereAsync(a => a.Id == id, cancellationToken);
+        await ValidateUser(currentAttachment.AdvertisementId, userId, cancellationToken);
 
-        if (currentDto == null)
-        {
-            _logger.LogInformation("Вложение не найдено по Id: '{Id}'.", id);
-            throw new AttachmentNotFoundByIdException(id);
-        }
+        _mapper.Map(editDto, currentAttachment);
 
-        _mapper.Map(dto, currentDto);
+        var url = await _fileService.UploadFileAsync(editDto.File, cancellationToken);
+        currentAttachment.Url = url;
 
-        var url = await _fileService.UploadFileAsync(dto.File, cancellationToken);
+        var dto = await _attachmentRepository.UpdateAsync(currentAttachment, cancellationToken);
 
-        currentDto.Url = url;
-
-        var updatedDto = await _attachmentRepository.UpdateAsync(currentDto, cancellationToken);
-
-        _logger.LogInformation("Вложение успешно обновлено Url: '{updatedUrl}' Id: '{Id}'.",
-            updatedDto.Url, id);
-
+        var updatedDto = _mapper.Map<AttachmentInfoDto>(dto);
         return updatedDto;
     }
 
     /// <inheritdoc />
-    public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Удаление вложения по Id: '{Id}'.", id);
+        var attachment = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = await TryGetByIdAsync(id, cancellationToken);
+        await ValidateUser(attachment.AdvertisementId, userId, cancellationToken);
 
-        await _attachmentRepository.DeleteByIdAsync(dto.Id, cancellationToken);
-
-        _logger.LogWarning("Вложение удалено по Id: '{id}'.", id);
+        await _attachmentRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
 
-    private async Task<AttachmentDto> TryGetByIdAsync(Guid id, CancellationToken cancellationToken)
+    private async Task ValidateUser(Guid advertisementId, Guid userId, CancellationToken cancellationToken)
     {
-        var dto = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
+        var userIdFromAdvertisement = await _advertisementService.GetUserIdAsync(advertisementId, cancellationToken);
 
-        if (dto != null) return dto;
+        var isValid = await _userService.ValidateUserAsync(userId, userIdFromAdvertisement, cancellationToken);
 
-        _logger.LogInformation("Вложение не найдено по Id: '{Id}'", id);
-        throw new AttachmentNotFoundByIdException(id);
+        if (!isValid) throw new AttachmentForbiddenException();
     }
 }

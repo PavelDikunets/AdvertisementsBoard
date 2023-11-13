@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
+using AdvertisementsBoard.Common.ErrorExceptions.CategoryErrorExceptions;
 using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Domain.Categories;
 using AdvertisementsBoard.Infrastructure.Repositories;
@@ -29,23 +30,20 @@ public class CategoryRepository : ICategoryRepository
     /// <inheritdoc />
     public async Task<CategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAll()
-            .Where(c => c.Id == id)
-            .Include(s => s.SubCategories)
-            .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
+        var category = await TryGetByIdAsync(id, cancellationToken);
 
+        var dto = _mapper.Map<CategoryDto>(category);
         return dto;
     }
 
     /// <inheritdoc />
     public async Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var dtos = await _repository.GetAll()
+        var listCategories = await _repository.GetAll()
             .ProjectTo<CategoryShortInfoDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return dtos;
+        return listCategories;
     }
 
     /// <inheritdoc />
@@ -58,21 +56,22 @@ public class CategoryRepository : ICategoryRepository
     }
 
     /// <inheritdoc />
-    public async Task<CategoryUpdatedDto> UpdateAsync(CategoryDto dto, CancellationToken cancellationToken)
+    public async Task<CategoryInfoDto> UpdateAsync(CategoryDto dto, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<Category>(dto);
+        var category = _mapper.Map<Category>(dto);
 
-        await _repository.UpdateAsync(entity, cancellationToken);
+        await _repository.UpdateAsync(category, cancellationToken);
 
-        var updatedDto = _mapper.Map<CategoryUpdatedDto>(entity);
+        var updatedDto = _mapper.Map<CategoryInfoDto>(category);
         return updatedDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetByIdAsync(id, cancellationToken);
-        await _repository.DeleteAsync(entity, cancellationToken);
+        var category = await TryGetByIdAsync(id, cancellationToken);
+
+        await _repository.DeleteAsync(category, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -83,12 +82,24 @@ public class CategoryRepository : ICategoryRepository
         return exists;
     }
 
-    public async Task<CategoryDto> GetWhereAsync(Expression<Func<Category, bool>> filter,
+    public async Task<CategoryDto> FindWhereAsync(Expression<Func<Category, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var dto = await _repository.GetAllFiltered(filter)
+        var category = await _repository.GetAllFiltered(filter)
             .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
-        return dto;
+
+        if (category == null) throw new CategoryNotFoundException();
+
+        return category;
+    }
+
+    private async Task<Category> TryGetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var category = await _repository.GetByIdAsync(id, cancellationToken);
+
+        if (category == null) throw new CategoryNotFoundException(id);
+
+        return category;
     }
 }

@@ -14,31 +14,31 @@ public interface ISubCategoryRepository
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель подкатегории <see cref="SubCategoryDto" />.</returns>
+    /// <returns>Модель подкатегории.</returns>
     Task<SubCategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить все подкатегории.
+    ///     Получить все подкатегории в категории.
     /// </summary>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Список подкатегорий с краткой информацией <see cref="SubCategoryShortInfoDto" />.</returns>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Список подкатегорий в указанной категории.</returns>
     Task<List<SubCategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать подкатегорию.
     /// </summary>
-    /// <param name="dto">Модель создания подкатегории <see cref="SubCategoryCreateDto" />.</param>
+    /// <param name="dto">Модель создания подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданной подкатегории.</returns>
-    Task<Guid> CreateAsync(SubCategoryCreateDto dto, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(SubCategoryDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить подкатегорию.
     /// </summary>
-    /// <param name="dto">Модель подкатегории <see cref="SubCategoryDto" />.</param>
+    /// <param name="dto">Модель подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной подкатегорией <see cref="SubCategoryUpdatedDto" />.</returns>
-    Task<SubCategoryUpdatedDto> UpdateAsync(SubCategoryDto dto, CancellationToken cancellationToken);
+    /// <returns>Модель с обновленной подкатегорией.</returns>
+    Task<SubCategoryInfoDto> UpdateAsync(SubCategoryDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить подкатегорию по идентификатору.
@@ -53,7 +53,7 @@ public interface ISubCategoryRepository
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Возвращает true, если категория существует, и false в противном случае.</returns>
-    Task<bool> DoesCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> filter,
+    Task<bool> DoesSubCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> filter,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -61,7 +61,7 @@ public interface ISubCategoryRepository
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель подкатегории <see cref="SubCategoryDto" />.</returns>
-    Task<SubCategoryDto> GetWhereAsync(Expression<Func<SubCategory, bool>> filter,
+    /// <returns>Модель подкатегории.</returns>
+    Task<SubCategoryDto> FindWhereAsync(Expression<Func<SubCategory, bool>> filter,
         CancellationToken cancellationToken);
 }

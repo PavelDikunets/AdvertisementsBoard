@@ -53,5 +53,5 @@ public class AdvertisementInfoDto
     /// <summary>
     ///     Модель информации о пользователе.
     /// </summary>
-    public UserShortInfoDto User { get; set; }
+    public UserInfoDto User { get; set; }
 }
