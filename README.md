@@ -33,7 +33,7 @@ AdvertisementBoard - это веб-приложение, которое позв
 
 Следуйте этим шагам, чтобы запустить приложение:
 
-1. Клонируйте репозиторий с помощью команды `git clone https://github.com/yourname/AdvertisementBoard.git`
+1. Клонируйте репозиторий с помощью команды `git clone https://github.com/PavelDikunets/AdvertisementBoard.git`
 2. Перейдите в папку проекта с помощью команды `cd AdvertisementBoard`
 3. Запустите приложение с помощью команды ` docker-compose -f docker-compose.yml -f docker-compose.elk.yml up -d --build`
 5. Для доступа к API используйте адрес `http://localhost5259/swagger/index.html` Логин и пароль для администратора по умолчанию: admin@admin, adminadmin
