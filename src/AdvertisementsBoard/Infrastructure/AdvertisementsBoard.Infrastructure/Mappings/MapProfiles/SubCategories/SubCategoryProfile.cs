@@ -14,13 +14,9 @@ public class SubCategoryProfile : Profile
     /// </summary>
     public SubCategoryProfile()
     {
-        CreateMap<SubCategory, SubCategoryDto>().ReverseMap();
+        CreateMap<SubCategory, SubCategoryInfoDto>();
         CreateMap<SubCategory, SubCategoryShortInfoDto>();
 
-        CreateMap<SubCategoryDto, SubCategoryInfoDto>();
-        CreateMap<SubCategoryDto, SubCategoryShortInfoDto>();
-
-        CreateMap<SubCategoryEditDto, SubCategoryDto>().IgnoreAllNonExisting();
-        CreateMap<SubCategoryCreateDto, SubCategoryDto>().IgnoreAllNonExisting();
+        CreateMap<SubCategoryCreateDto, SubCategory>().IgnoreAllNonExisting();
     }
 }

@@ -14,21 +14,13 @@ public class AdvertisementProfile : Profile
     /// </summary>
     public AdvertisementProfile()
     {
-        CreateMap<Advertisement, AdvertisementDto>()
-            .ForMember(dest => dest.Category, map => map.MapFrom(src => src.SubCategory.Category));
-
+        CreateMap<Advertisement, AdvertisementUpdatedDto>();
+        CreateMap<Advertisement, AdvertisementInfoDto>();
         CreateMap<Advertisement, AdvertisementShortInfoDto>()
             .ForMember(dest => dest.Attachment, map => map.MapFrom(src => src.Attachments.FirstOrDefault()));
+        CreateMap<Advertisement, AdvertisementCreatedDto>();
 
-        CreateMap<Advertisement, AdvertisementUpdatedDto>();
-        CreateMap<AdvertisementDto, Advertisement>();
-        CreateMap<Advertisement, AdvertisementInfoDto>()
-            .ForMember(dest => dest.Category, map => map.MapFrom(src => src.SubCategory.Category));
-
-        CreateMap<AdvertisementDto, AdvertisementShortInfoDto>()
-            .ForMember(dest => dest.Attachment, map => map.MapFrom(src => src.Attachments.FirstOrDefault()));
-
-        CreateMap<AdvertisementCreateDto, AdvertisementDto>().IgnoreAllNonExisting();
-        CreateMap<AdvertisementEditDto, AdvertisementDto>().IgnoreAllNonExisting();
+        CreateMap<AdvertisementEditDto, Advertisement>().IgnoreAllNonExisting();
+        CreateMap<AdvertisementCreateDto, Advertisement>().IgnoreAllNonExisting();
     }
 }

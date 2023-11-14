@@ -7,6 +7,8 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositor
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
+using AdvertisementsBoard.Application.AppServices.Contexts.Comments.Repositories;
+using AdvertisementsBoard.Application.AppServices.Contexts.Comments.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Repositories;
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
@@ -18,6 +20,7 @@ using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Accounts.Repositori
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Categories.Repositories;
+using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Comments.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.SubCategories.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Users.Repositories;
 using AdvertisementsBoard.Infrastructure.DataAccess.Interfaces;
@@ -58,6 +61,7 @@ public static class ComponentReqistrar
         services.AddScoped<ISubCategoryService, SubCategoryService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<ICommentService, CommentService>();
         services.AddSingleton<IMapper>(new Mapper(MapperConfigurator.GetMapperConfiguration()));
         services.AddScoped<IPasswordService, PasswordService>();
 
@@ -86,7 +90,8 @@ public static class ComponentReqistrar
             });
 
         #endregion
-
+        
+        
         services.AddAuthorization(s =>
 
             // Политика для незаблокированных пользователей.
@@ -109,5 +114,6 @@ public static class ComponentReqistrar
         services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
     }
 }

@@ -14,13 +14,9 @@ public class CategoryProfile : Profile
     /// </summary>
     public CategoryProfile()
     {
-        CreateMap<Category, CategoryDto>().ReverseMap();
-        CreateMap<Category, CategoryShortInfoDto>();
-
-        CreateMap<CategoryDto, CategoryInfoDto>();
-        CreateMap<CategoryDto, CategoryShortInfoDto>();
-
-        CreateMap<CategoryEditDto, CategoryDto>().IgnoreAllNonExisting();
         CreateMap<CategoryCreateDto, Category>().IgnoreAllNonExisting();
+
+        CreateMap<Category, CategoryShortInfoDto>();
+        CreateMap<Category, CategoryInfoDto>();
     }
 }

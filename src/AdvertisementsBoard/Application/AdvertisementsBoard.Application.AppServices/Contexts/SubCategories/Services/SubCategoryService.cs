@@ -1,6 +1,7 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.SubCategoryErrorExceptions;
 using AdvertisementsBoard.Contracts.SubCategories;
+using AdvertisementsBoard.Domain.SubCategories;
 using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
@@ -32,24 +33,27 @@ public class SubCategoryService : ISubCategoryService
     }
 
     /// <inheritdoc />
-    public async Task<List<SubCategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<SubCategoryShortInfoDto>> GetAllAsync(Guid id, CancellationToken cancellationToken)
     {
-        var listSubCategories = await _subCategoryRepository.GetAllAsync(cancellationToken);
-        return listSubCategories;
+        var listSubCategories = await _subCategoryRepository.GetAllAsync(id, cancellationToken);
+
+        var subCategoryDtos = _mapper.Map<List<SubCategoryShortInfoDto>>(listSubCategories);
+        return subCategoryDtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(Guid categoryId, SubCategoryCreateDto createDto,
+    public async Task<SubCategoryShortInfoDto> CreateAsync(Guid categoryId, SubCategoryCreateDto createDto,
         CancellationToken cancellationToken)
     {
         await DoesSubCategoryExistByNameAsync(categoryId, createDto.Name, cancellationToken);
 
-        var dto = _mapper.Map<SubCategoryDto>(createDto);
+        var subCategory = _mapper.Map<SubCategory>(createDto);
+        subCategory.CategoryId = categoryId;
 
-        dto.CategoryId = categoryId;
+        var createdSubCategory = await _subCategoryRepository.CreateAsync(subCategory, cancellationToken);
 
-        var id = await _subCategoryRepository.CreateAsync(dto, cancellationToken);
-        return id;
+        var dto = _mapper.Map<SubCategoryShortInfoDto>(createdSubCategory);
+        return dto;
     }
 
     /// <inheritdoc />
@@ -63,8 +67,9 @@ public class SubCategoryService : ISubCategoryService
 
         _mapper.Map(editDto, currentSubCategory);
 
-        var updatedDto = await _subCategoryRepository.UpdateAsync(currentSubCategory, cancellationToken);
+        var updatedSubCategory = await _subCategoryRepository.UpdateAsync(currentSubCategory, cancellationToken);
 
+        var updatedDto = _mapper.Map<SubCategoryInfoDto>(updatedSubCategory);
         return updatedDto;
     }
 

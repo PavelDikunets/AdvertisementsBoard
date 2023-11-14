@@ -24,33 +24,37 @@ public class UserService : IUserService
     }
 
     /// <inheritdoc />
-    public async Task<UserInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(id, cancellationToken);
 
-        var userDto = _mapper.Map<UserInfoDto>(user);
-        return userDto;
+        var dto = _mapper.Map<UserDto>(user);
+        return dto;
     }
 
     /// <inheritdoc />
     public async Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var listUsers = await _userRepository.GetAllAsync(cancellationToken);
-        return listUsers;
+
+        var userDtos = _mapper.Map<List<UserShortInfoDto>>(listUsers);
+        return userDtos;
     }
 
     /// <inheritdoc />
     public async Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserEditDto dto, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
+        var currentuser = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
 
-        var updatedUser = _mapper.Map(dto, user);
+        _mapper.Map(dto, currentuser);
 
-        var updatedDto = await _userRepository.UpdateAsync(updatedUser, cancellationToken);
+        var updatedUser = await _userRepository.UpdateAsync(currentuser, cancellationToken);
 
-        return updatedDto;
+        var userDto = _mapper.Map<UserUpdatedDto>(updatedUser);
+        return userDto;
     }
 
+    /// <inheritdoc />
     public async Task<UserRoleDto> SetRoleByIdAsync(Guid id, UserRoleDto roleDto,
         CancellationToken cancellationToken)
     {
@@ -65,6 +69,7 @@ public class UserService : IUserService
         return updatedDto;
     }
 
+    /// <inheritdoc />
     public async Task DoesUserExistByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var exist = await _userRepository.DoesUserExistWhereAsync(u => u.Id == id, cancellationToken);
@@ -72,9 +77,10 @@ public class UserService : IUserService
         if (!exist) throw new UserNotFoundException(id);
     }
 
-    public Task<bool> ValidateUserAsync(Guid userId, Guid userIdFromAdvertisement,
+    /// <inheritdoc />
+    public Task<bool> ValidateUserAsync(Guid currentUserid, Guid otherSourceUserId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult(userId == userIdFromAdvertisement);
+        return Task.FromResult(currentUserid == otherSourceUserId);
     }
 }

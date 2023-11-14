@@ -32,4 +32,9 @@ public class Account : BaseEntity
     ///     Сущность пользователя.
     /// </summary>
     public virtual User User { get; set; }
+
+    /// <summary>
+    ///     Идентификатор пользователя.
+    /// </summary>
+    public Guid UserId { get; set; }
 }

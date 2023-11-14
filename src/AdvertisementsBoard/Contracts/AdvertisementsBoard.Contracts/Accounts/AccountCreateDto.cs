@@ -4,9 +4,9 @@ using AdvertisementsBoard.Contracts.Users;
 namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
-/// Модель регистрации аккаунта.
+///     Модель регистрации аккаунта.
 /// </summary>
-public class AccountSignUpDto
+public class AccountCreateDto
 {
     /// <summary>
     ///     Адрес электронной почты.
@@ -33,7 +33,7 @@ public class AccountSignUpDto
     public string ConfirmPassword { get; set; }
 
     /// <summary>
-    /// Модель создания пользователя.
+    ///     Модель создания пользователя.
     /// </summary>
     public UserCreateDto User { get; set; }
 }

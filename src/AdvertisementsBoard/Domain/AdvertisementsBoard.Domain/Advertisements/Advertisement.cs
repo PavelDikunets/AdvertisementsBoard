@@ -1,5 +1,6 @@
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Domain.Base;
+using AdvertisementsBoard.Domain.Comments;
 using AdvertisementsBoard.Domain.SubCategories;
 using AdvertisementsBoard.Domain.Users;
 
@@ -59,4 +60,9 @@ public class Advertisement : BaseEntity
     ///     Пользователь.
     /// </summary>
     public virtual User User { get; set; }
+
+    /// <summary>
+    ///     Комментарии.
+    /// </summary>
+    public virtual List<Comment> Comments { get; set; }
 }

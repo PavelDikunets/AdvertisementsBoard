@@ -2,6 +2,7 @@ using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Accounts;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Advertisements;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Attachments;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Categories;
+using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Comments;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.SubCategories;
 using AdvertisementsBoard.Infrastructure.Mappings.MapProfiles.Users;
 using AutoMapper;
@@ -27,8 +28,9 @@ public static class MapperConfigurator
             cfg.AddProfile<SubCategoryProfile>();
             cfg.AddProfile<UserProfile>();
             cfg.AddProfile<AccountProfile>();
+            cfg.AddProfile<CommentProfile>();
         });
-        configuration.AssertConfigurationIsValid();
+        ;configuration.AssertConfigurationIsValid();
         return configuration;
     }
 }

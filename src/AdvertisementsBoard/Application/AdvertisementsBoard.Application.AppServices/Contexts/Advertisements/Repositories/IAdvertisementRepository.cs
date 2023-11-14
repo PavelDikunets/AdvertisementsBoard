@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Domain.Advertisements;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
@@ -15,7 +14,7 @@ public interface IAdvertisementRepository
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления.</returns>
-    Task<AdvertisementDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить постраничные объявления.
@@ -24,7 +23,7 @@ public interface IAdvertisementRepository
     /// <param name="pageNumber">Номер страницы.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <returns>Список объявлений с краткой информацией.</returns>
-    Task<List<AdvertisementShortInfoDto>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
+    Task<List<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
         int pageSize);
 
     /// <summary>
@@ -33,23 +32,23 @@ public interface IAdvertisementRepository
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список объявлений пользователя.</returns>
-    Task<List<AdvertisementShortInfoDto>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    Task<List<Advertisement>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать объявление.
     /// </summary>
-    /// <param name="dto">Модель создания объявления.</param>
+    /// <param name="entity">Сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного объявления.</returns>
-    Task<Guid> CreateAsync(AdvertisementDto dto, CancellationToken cancellationToken);
+    Task<Advertisement> CreateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить объявление.
     /// </summary>
-    /// <param name="dto">Модель объявления.</param>
+    /// <param name="entity">Сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленным объявлением.</returns>
-    Task<AdvertisementUpdatedDto> UpdateAsync(AdvertisementDto dto, CancellationToken cancellationToken);
+    Task<Advertisement> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить объявление по идентификатору.
@@ -64,6 +63,6 @@ public interface IAdvertisementRepository
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель объявления.</returns>
-    Task<AdvertisementDto> FindWhereAsync(Expression<Func<Advertisement, bool>> filter,
+    Task<Advertisement> FindWhereAsync(Expression<Func<Advertisement, bool>> filter,
         CancellationToken cancellationToken);
 }

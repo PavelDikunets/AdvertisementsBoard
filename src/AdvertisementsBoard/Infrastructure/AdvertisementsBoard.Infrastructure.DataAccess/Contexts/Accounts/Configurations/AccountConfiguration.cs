@@ -1,5 +1,4 @@
 using AdvertisementsBoard.Domain.Accounts;
-using AdvertisementsBoard.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,11 +20,11 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
 
         builder.HasOne(p => p.User)
             .WithOne(p => p.Account)
-            .HasForeignKey<User>(p => p.AccountId)
+            .HasForeignKey<Account>(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        var accountId = new Guid("F91276A9-01A2-4DC9-BD65-F983C4B8E39D");
-
+        var accountId = Guid.Parse("F91276A9-01A2-4DC9-BD65-F983C4B8E39D");
+        var userId = Guid.Parse("F7ED49F2-467A-4AE0-83B1-FD3C78D1EBB5");
         builder.HasData(
             new Account
             {
@@ -33,7 +32,8 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
                 PasswordHash = "d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892",
                 Email = "admin@admin.com",
                 IsBlocked = false,
-                Created = DateTime.UtcNow
+                Created = DateTime.UtcNow,
+                UserId = userId
             });
     }
 }

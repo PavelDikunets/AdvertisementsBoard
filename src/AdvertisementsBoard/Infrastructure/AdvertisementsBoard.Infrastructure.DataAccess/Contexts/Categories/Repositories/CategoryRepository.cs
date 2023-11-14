@@ -1,11 +1,8 @@
 using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.CategoryErrorExceptions;
-using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Domain.Categories;
 using AdvertisementsBoard.Infrastructure.Repositories;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Categories.Repositories;
@@ -13,57 +10,43 @@ namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Categories.Repo
 /// <inheritdoc />
 public class CategoryRepository : ICategoryRepository
 {
-    private readonly IMapper _mapper;
     private readonly IBaseDbRepository<Category> _repository;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="CategoryRepository" />.
     /// </summary>
     /// <param name="repository">Репозиторий категорий.</param>
-    /// <param name="mapper">Маппер.</param>
-    public CategoryRepository(IBaseDbRepository<Category> repository, IMapper mapper)
+    public CategoryRepository(IBaseDbRepository<Category> repository)
     {
         _repository = repository;
-        _mapper = mapper;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Category> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var category = await TryGetByIdAsync(id, cancellationToken);
-
-        var dto = _mapper.Map<CategoryDto>(category);
-        return dto;
+        return category;
     }
 
     /// <inheritdoc />
-    public async Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<Category>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var listCategories = await _repository.GetAll()
-            .ProjectTo<CategoryShortInfoDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
-
+        var listCategories = await _repository.GetAll().ToListAsync(cancellationToken);
         return listCategories;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)
+    public async Task<Category> CreateAsync(Category category, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<Category>(dto);
-
-        await _repository.AddAsync(entity, cancellationToken);
-        return entity.Id;
+        await _repository.AddAsync(category, cancellationToken);
+        return category;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryInfoDto> UpdateAsync(CategoryDto dto, CancellationToken cancellationToken)
+    public async Task<Category> UpdateAsync(Category category, CancellationToken cancellationToken)
     {
-        var category = _mapper.Map<Category>(dto);
-
         await _repository.UpdateAsync(category, cancellationToken);
-
-        var updatedDto = _mapper.Map<CategoryInfoDto>(category);
-        return updatedDto;
+        return category;
     }
 
     /// <inheritdoc />
@@ -82,15 +65,15 @@ public class CategoryRepository : ICategoryRepository
         return exists;
     }
 
-    public async Task<CategoryDto> FindWhereAsync(Expression<Func<Category, bool>> filter,
+    public async Task<Category> FindWhereAsync(Expression<Func<Category, bool>> filter,
         CancellationToken cancellationToken)
     {
         var category = await _repository.GetAllFiltered(filter)
-            .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
+            .AsSplitQuery()
             .FirstOrDefaultAsync(cancellationToken);
 
         if (category == null) throw new CategoryNotFoundException();
-
         return category;
     }
 
@@ -99,7 +82,6 @@ public class CategoryRepository : ICategoryRepository
         var category = await _repository.GetByIdAsync(id, cancellationToken);
 
         if (category == null) throw new CategoryNotFoundException(id);
-
         return category;
     }
 }

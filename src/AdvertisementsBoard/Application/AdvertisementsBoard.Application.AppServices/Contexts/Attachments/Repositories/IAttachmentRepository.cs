@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
@@ -15,7 +14,7 @@ public interface IAttachmentRepository
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель вложения.</returns>
-    Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Attachment> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все вложения по идентификатору объявления.
@@ -23,15 +22,16 @@ public interface IAttachmentRepository
     /// <param name="id">Идентификтор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список вложений с краткой информацией.</returns>
-    Task<List<AttachmentShortInfoDto>> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<List<Attachment>> GetAllByAdvertisementIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать вложение.
     /// </summary>
-    /// <param name="dto">Модель вложения.</param>
+    /// <param name="entity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <param name="dto">Модель вложения.</param>
     /// <returns>Идентификатор созданного вложения.</returns>
-    Task<Guid> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken);
+    Task<Attachment> CreateAsync(Attachment entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить вложение.
@@ -39,7 +39,7 @@ public interface IAttachmentRepository
     /// <param name="dto">Модель вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленным вложением.</returns>
-    Task<AttachmentDto> UpdateAsync(AttachmentDto dto, CancellationToken cancellationToken);
+    Task<Attachment> UpdateAsync(Attachment dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить вложение по идентификатору.
@@ -54,5 +54,5 @@ public interface IAttachmentRepository
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель вложения.</returns>
-    Task<AttachmentDto> FindWhereAsync(Expression<Func<Attachment, bool>> filter, CancellationToken cancellationToken);
+    Task<Attachment> FindWhereAsync(Expression<Func<Attachment, bool>> filter, CancellationToken cancellationToken);
 }

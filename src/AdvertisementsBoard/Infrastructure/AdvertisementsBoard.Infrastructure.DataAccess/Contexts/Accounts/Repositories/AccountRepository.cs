@@ -1,11 +1,8 @@
 using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Accounts.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.AccountErrorExceptions;
-using AdvertisementsBoard.Contracts.Accounts;
 using AdvertisementsBoard.Domain.Accounts;
 using AdvertisementsBoard.Infrastructure.Repositories;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Accounts.Repositories;
@@ -13,32 +10,26 @@ namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Accounts.Reposi
 /// <inheritdoc />
 public class AccountRepository : IAccountRepository
 {
-    private readonly IMapper _mapper;
     private readonly IBaseDbRepository<Account> _repository;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AccountRepository" />.
     /// </summary>
     /// <param name="repository">Репозиторий аккаунтов.</param>
-    /// <param name="mapper">Маппер.</param>
-    public AccountRepository(IBaseDbRepository<Account> repository, IMapper mapper)
+    public AccountRepository(IBaseDbRepository<Account> repository)
     {
         _repository = repository;
-        _mapper = mapper;
     }
 
     /// <inheritdoc />
-    public async Task<AccountInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Account> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var account = await TryGetByIdAsync(id, cancellationToken);
-
-        var dto = _mapper.Map<AccountInfoDto>(account);
-        return dto;
+        return account;
     }
 
-
     /// <inheritdoc />
-    public async Task<List<AccountShortInfoDto>> GetAllAsync(CancellationToken cancellationToken,
+    public async Task<List<Account>> GetAllAsync(CancellationToken cancellationToken,
         int pageNumber, int pageSize, bool? isBlocked)
     {
         var query = _repository.GetAllFiltered(a => true);
@@ -48,34 +39,23 @@ public class AccountRepository : IAccountRepository
         var listAccounts = await query.OrderBy(a => a.Email)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
-            .ProjectTo<AccountShortInfoDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return listAccounts;
     }
 
     /// <inheritdoc />
-    public async Task<AccountCreatedDto> CreateAsync(AccountDto dto, CancellationToken cancellationToken)
+    public async Task<Account> CreateAsync(Account account, CancellationToken cancellationToken)
     {
-        var account = _mapper.Map<Account>(dto);
-
         await _repository.AddAsync(account, cancellationToken);
-
-        var createdDto = _mapper.Map<AccountCreatedDto>(account);
-
-        return createdDto;
+        return account;
     }
 
     /// <inheritdoc />
-    public async Task<AccountInfoDto> UpdateAsync(AccountDto dto, CancellationToken cancellationToken)
+    public async Task<Account> UpdateAsync(Account account, CancellationToken cancellationToken)
     {
-        var account = _mapper.Map<Account>(dto);
-
         await _repository.UpdateAsync(account, cancellationToken);
-
-        var infoDto = _mapper.Map<AccountInfoDto>(dto);
-
-        return infoDto;
+        return account;
     }
 
     /// <inheritdoc />
@@ -93,18 +73,13 @@ public class AccountRepository : IAccountRepository
         return exist;
     }
 
-    /// <inheritdoc />
-    public async Task<AccountDto> FindWhereAsync(Expression<Func<Account, bool>> filter,
+    public async Task<Account> FindWhereAsync(Expression<Func<Account, bool>> filter,
         CancellationToken cancellationToken)
     {
         var account = await _repository.GetAllFiltered(filter)
-            .AsNoTracking()
-            .Include(a => a.User)
-            .ProjectTo<AccountDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (account == null) throw new AccountNotFoundException();
-
         return account;
     }
 
@@ -114,7 +89,6 @@ public class AccountRepository : IAccountRepository
         var account = await _repository.GetByIdAsync(id, cancellationToken);
 
         if (account == null) throw new AccountNotFoundException();
-
         return account;
     }
 }

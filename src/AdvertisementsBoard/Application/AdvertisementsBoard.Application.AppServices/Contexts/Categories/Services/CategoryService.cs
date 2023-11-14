@@ -1,6 +1,7 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.CategoryErrorExceptions;
 using AdvertisementsBoard.Contracts.Categories;
+using AdvertisementsBoard.Domain.Categories;
 using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Services;
@@ -35,29 +36,36 @@ public class CategoryService : ICategoryService
     public async Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var listCategories = await _categoryRepository.GetAllAsync(cancellationToken);
-        return listCategories;
+        var listDto = _mapper.Map<List<CategoryShortInfoDto>>(listCategories);
+        return listDto;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)
+    public async Task<CategoryShortInfoDto> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)
     {
         await DoesCategoryExistByNameAsync(dto.Name, cancellationToken);
 
-        var id = await _categoryRepository.CreateAsync(dto, cancellationToken);
-        return id;
+        var entity = _mapper.Map<Category>(dto);
+
+        var category = await _categoryRepository.CreateAsync(entity, cancellationToken);
+
+        var createdDto = _mapper.Map<CategoryShortInfoDto>(category);
+        return createdDto;
     }
 
     /// <inheritdoc />
-    public async Task<CategoryInfoDto> UpdateByIdAsync(Guid id, CategoryEditDto editDto,
+    public async Task<CategoryInfoDto> UpdateByIdAsync(Guid id, CategoryEditDto categoryDto,
         CancellationToken cancellationToken)
     {
-        var currentCategory = await _categoryRepository.FindWhereAsync(c => c.Id == id, cancellationToken);
+        var category = await _categoryRepository.FindWhereAsync(c => c.Id == id, cancellationToken);
 
-        await DoesCategoryExistByNameAsync(editDto.Name, cancellationToken);
+        await DoesCategoryExistByNameAsync(categoryDto.Name, cancellationToken);
 
-        _mapper.Map(editDto, currentCategory);
+        _mapper.Map(categoryDto, category);
 
-        var updatedDto = await _categoryRepository.UpdateAsync(currentCategory, cancellationToken);
+        var updatedCategory = await _categoryRepository.UpdateAsync(category, cancellationToken);
+
+        var updatedDto = _mapper.Map<CategoryInfoDto>(updatedCategory);
         return updatedDto;
     }
 
@@ -71,6 +79,7 @@ public class CategoryService : ICategoryService
     {
         var exist = await _categoryRepository.DoesCategoryExistWhereAsync(s => s.Name == categoryName,
             cancellationToken);
+
         if (exist) throw new CategoryAlreadyExistsException(categoryName);
     }
 }

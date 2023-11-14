@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
-/// Модель входа в аккаунт.
+///     Модель входа в аккаунт.
 /// </summary>
 public class AccountSignInDto
 {

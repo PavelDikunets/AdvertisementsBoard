@@ -13,7 +13,7 @@ public interface IUserService
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с информацией о пользователе.</returns>
-    Task<UserInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить всех пользователей.
@@ -52,9 +52,9 @@ public interface IUserService
     /// <summary>
     ///     Проверят, является ли пользователь автором объявления.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="userIdFromAdvertisement">Идентификатор пользователя, полученный из объявления.</param>
+    /// <param name="currentUserid">Идентификатор текущего пользователя.</param>
+    /// <param name="otherSourceUserId">Идентификатор пользователя, полученный из другого источника.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если пользователь является автором объявления, false в противном случае.</returns>
-    Task<bool> ValidateUserAsync(Guid userId, Guid userIdFromAdvertisement, CancellationToken cancellationToken);
+    Task<bool> ValidateUserAsync(Guid currentUserid, Guid otherSourceUserId, CancellationToken cancellationToken);
 }

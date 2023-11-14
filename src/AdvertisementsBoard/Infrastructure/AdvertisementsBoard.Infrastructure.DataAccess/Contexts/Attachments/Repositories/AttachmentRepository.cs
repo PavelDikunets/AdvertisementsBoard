@@ -1,11 +1,8 @@
 using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.AttachmentErrorExceptions;
-using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Domain.Attachments;
 using AdvertisementsBoard.Infrastructure.Repositories;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Repositories;
@@ -15,59 +12,49 @@ namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Attachments.Rep
 /// </summary>
 public class AttachmentRepository : IAttachmentRepository
 {
-    private readonly IMapper _mapper;
     private readonly IBaseDbRepository<Attachment> _repository;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AttachmentRepository" />
     /// </summary>
     /// <param name="repository">Репозиторий вложений.</param>
-    /// <param name="mapper">Маппер.</param>
-    public AttachmentRepository(IBaseDbRepository<Attachment> repository, IMapper mapper)
+    public AttachmentRepository(IBaseDbRepository<Attachment> repository)
     {
         _repository = repository;
-        _mapper = mapper;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Attachment> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var attachment = await TryGetByIdAsync(id, cancellationToken);
 
-        var dto = _mapper.Map<AttachmentDto>(attachment);
-        return dto;
+        return attachment;
     }
 
     /// <inheritdoc />
-    public async Task<List<AttachmentShortInfoDto>> GetAllByAdvertisementIdAsync(Guid id,
+    public async Task<List<Attachment>> GetAllByAdvertisementIdAsync(Guid id,
         CancellationToken cancellationToken)
     {
         var listAttachments = await _repository.GetAll()
             .Where(a => a.AdvertisementId == id)
-            .ProjectTo<AttachmentShortInfoDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return listAttachments;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(AttachmentDto dto, CancellationToken cancellationToken)
+    public async Task<Attachment> CreateAsync(Attachment entity, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<Attachment>(dto);
-
         await _repository.AddAsync(entity, cancellationToken);
-        return entity.Id;
+        return entity;
     }
 
     /// <inheritdoc />
-    public async Task<AttachmentDto> UpdateAsync(AttachmentDto dto,
+    public async Task<Attachment> UpdateAsync(Attachment entity,
         CancellationToken cancellationToken)
     {
-        var attachment = _mapper.Map<Attachment>(dto);
-
-        await _repository.UpdateAsync(attachment, cancellationToken);
-
-        return dto;
+        await _repository.UpdateAsync(entity, cancellationToken);
+        return entity;
     }
 
     /// <inheritdoc />
@@ -78,15 +65,15 @@ public class AttachmentRepository : IAttachmentRepository
         await _repository.DeleteAsync(attachment, cancellationToken);
     }
 
-    public async Task<AttachmentDto> FindWhereAsync(Expression<Func<Attachment, bool>> filter,
+    /// <inheritdoc />
+    public async Task<Attachment> FindWhereAsync(Expression<Func<Attachment, bool>> filter,
         CancellationToken cancellationToken)
     {
         var attachment = await _repository.GetAllFiltered(filter)
-            .ProjectTo<AttachmentDto>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
         if (attachment == null) throw new AttachmentNotFoundException();
-
         return attachment;
     }
 
@@ -95,7 +82,6 @@ public class AttachmentRepository : IAttachmentRepository
         var account = await _repository.GetByIdAsync(id, cancellationToken);
 
         if (account == null) throw new AttachmentNotFoundException(id);
-
         return account;
     }
 }

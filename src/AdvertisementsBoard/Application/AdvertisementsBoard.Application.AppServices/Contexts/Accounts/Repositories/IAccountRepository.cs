@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AdvertisementsBoard.Contracts.Accounts;
 using AdvertisementsBoard.Domain.Accounts;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Accounts.Repositories;
@@ -14,36 +13,36 @@ public interface IAccountRepository
     /// </summary>
     /// <param name="id">Идентификатор аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель аккаунта.</returns>
-    Task<AccountInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    /// <returns>Сущность аккаунта.</returns>
+    Task<Account> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать аккаунт.
     /// </summary>
-    /// <param name="dto">Модель аккаунта.</param>
+    /// <param name="account">Сущность аккаунта</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного пользователя.</returns>
-    Task<AccountCreatedDto> CreateAsync(AccountDto dto, CancellationToken cancellationToken);
+    Task<Account> CreateAsync(Account account, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все аккаунты.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <param name="pageSize"></param>
-    /// <param name="pageNumber"></param>
-    /// <param name="isBlocked"></param>
+    /// <param name="pageSize">Размер страницы.</param>
+    /// <param name="pageNumber">Номер страницы</param>
+    /// <param name="isBlocked">Признак блокировки.</param>
     /// <returns>Список аккаунтов с краткой информацией.</returns>
-    Task<List<AccountShortInfoDto>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
+    Task<List<Account>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber,
         bool? isBlocked);
 
     /// <summary>
     ///     Обновить аккаунт.
     /// </summary>
-    /// <param name="dto">Модель аккаунта.</param>
+    /// <param name="account">Сущность аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленной информацией аккаунта.</returns>
-    Task<AccountInfoDto> UpdateAsync(AccountDto dto, CancellationToken cancellationToken);
+    Task<Account> UpdateAsync(Account account, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить аккаунт по идентификатору.
@@ -66,5 +65,5 @@ public interface IAccountRepository
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель аккаунта.</returns>
-    Task<AccountDto> FindWhereAsync(Expression<Func<Account, bool>> filter, CancellationToken cancellationToken);
+    Task<Account> FindWhereAsync(Expression<Func<Account, bool>> filter, CancellationToken cancellationToken);
 }

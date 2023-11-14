@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
+using AdvertisementsBoard.Common.ErrorExceptions.AuthenticationErrorExceptions;
 using AdvertisementsBoard.Contracts.Errors;
 using AdvertisementsBoard.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,7 @@ public class UserController : ControllerBase
     ///     Инициализирует экземпляр <see cref="UserController" />
     /// </summary>
     /// <param name="userService">Сервис для работы с пользователями.</param>
-    /// <param name="logger"></param>
+    /// <param name="logger">Логирование.</param>
     public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
@@ -68,20 +69,14 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserInfoAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос информации о пользователе.");
+        var userId = GetUserIdFromClaims();
 
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(userIdString, out var userId))
-        {
-            _logger.LogInformation("Не удалось преобразовать идентификатор пользователя в Guid.");
-            return BadRequest("Недействительный идентификатор пользователя.");
-        }
+        _logger.LogInformation("Запрос информации о текущем пользователе по Id: '{UserId}'", userId);
 
         var user = await _userService.GetByIdAsync(userId, cancellationToken);
 
-        _logger.LogInformation("Информация о пользователе '{NickName}' успешно получена (Id: '{Id}').", user.Name,
-            userId);
+        _logger.LogInformation("Информация о пользователе '{NickName}' успешно получена Id: '{Id}'.",
+            user.NickName, userId);
 
         return Ok(user);
     }
@@ -107,7 +102,7 @@ public class UserController : ControllerBase
 
         var user = await _userService.GetByIdAsync(id, cancellationToken);
 
-        _logger.LogInformation("Пользователь '{NickName}' успешно получен по Id: '{Id}'.", user.Name, id);
+        _logger.LogInformation("Пользователь '{NickName}' успешно получен по Id: '{Id}'.", user.NickName, id);
 
         return Ok(user);
     }
@@ -132,22 +127,16 @@ public class UserController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateByIdAsync([FromBody] UserEditDto dto, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос обновления пользователя.");
+        var userId = GetUserIdFromClaims();
 
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        _logger.LogInformation("Запрос обновления пользователя Id: '{UserId}'.", userId);
 
-        if (Guid.TryParse(userIdString, out var userId))
-        {
-            var updatedUser = await _userService.UpdateByIdAsync(userId, dto, cancellationToken);
+        var updatedUser = await _userService.UpdateByIdAsync(userId, dto, cancellationToken);
 
-            _logger.LogInformation("Пользователь '{NickName}' успешно обновлен на '{updatedName}' Id: '{Id}'.",
-                dto.Name,
-                updatedUser.Name, userId);
+        _logger.LogInformation("Пользователь '{NickName}' успешно обновлен на '{updatedName}' Id: '{UserId}'.",
+            dto.Name, updatedUser.Name, userId);
 
-            return Ok(updatedUser);
-        }
-
-        return BadRequest();
+        return Ok(updatedUser);
     }
 
     /// <summary>
@@ -155,12 +144,12 @@ public class UserController : ControllerBase
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: администратор.</permission>
-    /// <para>
-    /// Доступные значения ролей:   
-    /// 0 - Пользователь
-    /// 1 - Модератор
-    /// 2 - Администратор
-    /// </para>
+    ///     <para>
+    ///         Доступные значения ролей:
+    ///         0 - Пользователь
+    ///         1 - Модератор
+    ///         2 - Администратор
+    ///     </para>
     /// </remarks>
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="dto">Модель обновления пользователя.</param>
@@ -179,11 +168,20 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Запрос установки роли для пользователя по Id: '{Id}'.", id);
 
-        var updatedUser = await _userService.SetRoleByIdAsync(id, dto, cancellationToken);
+        var userRoleDto = await _userService.SetRoleByIdAsync(id, dto, cancellationToken);
 
         _logger.LogInformation("Роль '{RoleName}' успешно установлена пользователю по Id: '{Id}'.",
-            updatedUser.Role, id);
+            userRoleDto.Role, id);
 
-        return Ok(updatedUser);
+        return Ok(userRoleDto);
+    }
+
+
+    private Guid GetUserIdFromClaims()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(userIdValue, out var userId)) throw new AuthenticationFailedException();
+        return userId;
     }
 }
