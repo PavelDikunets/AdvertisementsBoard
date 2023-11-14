@@ -1,6 +1,7 @@
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Base;
 using AdvertisementsBoard.Contracts.Categories;
+using AdvertisementsBoard.Contracts.Comments;
 using AdvertisementsBoard.Contracts.SubCategories;
 using AdvertisementsBoard.Contracts.Users;
 
@@ -55,6 +56,9 @@ public class AdvertisementDto : BaseDto
     ///     Модель пользователя.
     /// </summary>
     public UserDto User { get; set; }
+
+
+    public List<CommentDto> Comments { get; set; }
 
     /// <summary>
     /// </summary>

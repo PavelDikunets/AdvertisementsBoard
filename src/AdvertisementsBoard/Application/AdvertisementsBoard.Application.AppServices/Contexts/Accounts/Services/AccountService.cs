@@ -7,6 +7,8 @@ using AdvertisementsBoard.Application.AppServices.Services.Passwords.Services;
 using AdvertisementsBoard.Common.ErrorExceptions.AccountErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.AuthenticationErrorExceptions;
 using AdvertisementsBoard.Contracts.Accounts;
+using AdvertisementsBoard.Contracts.Users;
+using AdvertisementsBoard.Domain.Accounts;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -41,9 +43,18 @@ public class AccountService : IAccountService
     }
 
     /// <inheritdoc />
-    public async Task<AccountInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountAdminDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
+
+        var dto = _mapper.Map<AccountAdminDto>(account);
+        return dto;
+    }
+
+    /// <inheritdoc />
+    public async Task<AccountInfoDto> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var account = await _accountRepository.FindWhereAsync(a => a.UserId == userId, cancellationToken);
 
         var dto = _mapper.Map<AccountInfoDto>(account);
         return dto;
@@ -54,84 +65,83 @@ public class AccountService : IAccountService
         CancellationToken cancellationToken)
     {
         var listAccounts = await _accountRepository.GetAllAsync(cancellationToken, pageNumber, pageSize, isBlocked);
-        return listAccounts;
+
+        var accountDtos = _mapper.Map<List<AccountShortInfoDto>>(listAccounts);
+        return accountDtos;
     }
 
     /// <inheritdoc />
-    public async Task<AccountCreatedDto> SignUpAsync(AccountSignUpDto dto, CancellationToken cancellationToken)
+    public async Task<AccountCreatedDto> SignUpAsync(AccountCreateDto dto, CancellationToken cancellationToken)
     {
         _passwordService.ComparePasswords(dto.Password, dto.ConfirmPassword);
 
-        var exit = await _accountRepository.DoesAccountExistWhereAsync(
+        var exist = await _accountRepository.DoesAccountExistWhereAsync(
             a => a.Email == dto.Email || a.User.NickName == dto.User.NickName, cancellationToken);
 
-        if (exit) throw new AccountAlreadyExistsException();
+        if (exist) throw new AccountAlreadyExistsException();
 
-        var newAccount = _mapper.Map<AccountDto>(dto);
+        var account = _mapper.Map<Account>(dto);
 
-        newAccount.Created = DateTime.UtcNow;
-        newAccount.PasswordHash = _passwordService.HashPassword(dto.Password);
+        account.Created = DateTime.UtcNow;
+        account.PasswordHash = _passwordService.HashPassword(dto.Password);
 
-        var createdAccount = await _accountRepository.CreateAsync(newAccount, cancellationToken);
-        return createdAccount;
+        var createdAccount = await _accountRepository.CreateAsync(account, cancellationToken);
+
+        var createdDto = _mapper.Map<AccountCreatedDto>(createdAccount);
+        return createdDto;
     }
 
     /// <inheritdoc />
-    public async Task<string> SignInAsync(AccountSignInDto dto, CancellationToken cancellationToken)
+    public async Task<string> SignInAsync(AccountSignInDto signInDto, CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.FindWhereAsync(a => a.Email == dto.Email, cancellationToken);
+        var account = await _accountRepository.FindWhereAsync(a => a.Email == signInDto.Email, cancellationToken);
+        var user = await _userService.GetByIdAsync(account.UserId, cancellationToken);
 
-        _passwordService.ComparePasswordHashWithPassword(account.PasswordHash, dto.Password);
+        _passwordService.ComparePasswordHashWithPassword(account.PasswordHash, signInDto.Password);
 
-        var token = JwtSecurityToken(account);
+        var accountDto = _mapper.Map<AccountDto>(account);
+        var userDto = _mapper.Map<UserSignInDto>(user);
+
+        var token = JwtSecurityToken(accountDto, userDto);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return jwt;
     }
 
     /// <inheritdoc />
-    public async Task ChangePasswordAsync(Guid userId, AccountPasswordEditDto editDto,
+    public async Task ChangePasswordAsync(Guid userId, AccountPasswordEditDto accountDto,
         CancellationToken cancellationToken)
     {
-        await _userService.DoesUserExistByIdAsync(userId, cancellationToken);
+        var account = await _accountRepository.FindWhereAsync(a => a.UserId == userId, cancellationToken);
 
-        var account = await _accountRepository.FindWhereAsync(a => a.User.Id == userId, cancellationToken);
+        _passwordService.ComparePasswordHashWithPassword(account.PasswordHash, accountDto.CurrentPassword);
 
-        _passwordService.ComparePasswordHashWithPassword(account.PasswordHash, editDto.CurrentPassword);
+        _passwordService.ComparePasswords(accountDto.NewPassword, accountDto.ConfirmPassword);
 
-        _passwordService.ComparePasswords(editDto.NewPassword, editDto.ConfirmPassword);
+        account.PasswordHash = _passwordService.HashPassword(accountDto.NewPassword);
 
-        _mapper.Map(editDto, account);
+        var updatedAccount = _mapper.Map(accountDto, account);
 
-        account.PasswordHash = _passwordService.HashPassword(editDto.NewPassword);
-
-        await _accountRepository.UpdateAsync(account, cancellationToken);
+        await _accountRepository.UpdateAsync(updatedAccount, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<AccountBlockDto> BlockByIdAsync(Guid id, AccountBlockDto dto, CancellationToken cancellationToken)
+    public async Task<AccountBlockStatusDto> BlockByIdAsync(Guid id, AccountBlockStatusDto dto,
+        CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.FindWhereAsync(a => a.Id == id, cancellationToken);
+        var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
 
-        _mapper.Map(dto, account);
+        var updatedAccount = _mapper.Map<Account>(account);
 
-        await _accountRepository.UpdateAsync(account, cancellationToken);
+        await _accountRepository.UpdateAsync(updatedAccount, cancellationToken);
         return dto;
     }
 
     /// <inheritdoc />
     public async Task<bool> IsAccountBlocked(Guid userId, CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.FindWhereAsync(a => a.User.Id == userId, cancellationToken);
+        var account = await _accountRepository.GetByIdAsync(userId, cancellationToken);
         return account.IsBlocked;
-    }
-
-    public async Task<AccountInfoDto> GetCurrentByUserId(Guid userId, CancellationToken cancellationToken)
-    {
-        var account = await _accountRepository.FindWhereAsync(a => a.User.Id == userId, cancellationToken);
-
-        var dto = _mapper.Map<AccountInfoDto>(account);
-        return dto;
     }
 
     /// <inheritdoc />
@@ -141,14 +151,14 @@ public class AccountService : IAccountService
     }
 
 
-    private JwtSecurityToken JwtSecurityToken(AccountDto account)
+    private JwtSecurityToken JwtSecurityToken(AccountDto accountDto, UserSignInDto user)
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, account.User.Id.ToString()),
-            new(ClaimTypes.Name, account.User.NickName),
-            new(ClaimTypes.Role, account.User.Role.ToString()),
-            new("isBlocked", account.IsBlocked.ToString())
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.NickName),
+            new(ClaimTypes.Role, user.Role.ToString()),
+            new("isBlocked", accountDto.IsBlocked.ToString())
         };
 
         var secretKey = _configuration["Jwt:Key"];

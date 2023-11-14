@@ -16,20 +16,23 @@ public interface ISubCategoryService
     Task<SubCategoryInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить все подкатегории.
+    ///     Получить все подкатегории в категории.
     /// </summary>
+    /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список подкатегорий с краткой информацией.</returns>
-    Task<List<SubCategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
+    Task<List<SubCategoryShortInfoDto>> GetAllAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать подкатегорию.
     /// </summary>
     /// <param name="categoryId">Идентификатор категории.</param>
-    /// <param name="createDto">Модель создания подкатегории.</param>
+    /// <param name="dto"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <param name="entity"></param>
     /// <returns>Идентификатор созданной подкатегории.</returns>
-    Task<Guid> CreateAsync(Guid categoryId, SubCategoryCreateDto createDto, CancellationToken cancellationToken);
+    Task<SubCategoryShortInfoDto> CreateAsync(Guid categoryId, SubCategoryCreateDto dto,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить подкатегорию по идентификатору.

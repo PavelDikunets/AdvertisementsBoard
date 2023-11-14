@@ -1,11 +1,9 @@
 using System.Linq.Expressions;
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.UserErrorExceptions;
-using AdvertisementsBoard.Contracts.Users;
 using AdvertisementsBoard.Domain.Users;
 using AdvertisementsBoard.Infrastructure.Repositories;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdvertisementsBoard.Infrastructure.DataAccess.Contexts.Users.Repositories;
@@ -28,34 +26,27 @@ public class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
-    public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await TryGetByIdAsync(id, cancellationToken);
-
-        var dto = _mapper.Map<UserDto>(user);
-        return dto;
+        return user;
     }
 
     /// <inheritdoc />
-    public async Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<User>> GetAllAsync(CancellationToken cancellationToken)
     {
         var listUsers = await _repository.GetAll()
             .AsNoTracking()
-            .ProjectTo<UserShortInfoDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return listUsers;
     }
 
     /// <inheritdoc />
-    public async Task<UserUpdatedDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken)
+    public async Task<User> UpdateAsync(User user, CancellationToken cancellationToken)
     {
-        var entity = _mapper.Map<User>(dto);
-
-        await _repository.UpdateAsync(entity, cancellationToken);
-
-        var updatedDto = _mapper.Map<UserUpdatedDto>(entity);
-        return updatedDto;
+        await _repository.UpdateAsync(user, cancellationToken);
+        return user;
     }
 
     public async Task<bool> DoesUserExistWhereAsync(Expression<Func<User, bool>> filter,
@@ -65,15 +56,13 @@ public class UserRepository : IUserRepository
         return exist;
     }
 
-    public async Task<UserDto> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken)
+    public async Task<User> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken)
     {
         var user = await _repository.GetAllFiltered(filter)
             .AsNoTracking()
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (user == null) throw new UserNotFoundException();
-
         return user;
     }
 
@@ -83,7 +72,6 @@ public class UserRepository : IUserRepository
         var user = await _repository.GetByIdAsync(id, cancellationToken);
 
         if (user == null) throw new UserNotFoundException(id);
-
         return user;
     }
 }

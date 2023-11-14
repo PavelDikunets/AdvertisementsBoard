@@ -1,5 +1,3 @@
-using AdvertisementsBoard.Contracts.Users;
-
 namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
@@ -15,9 +13,4 @@ public class AccountInfoDto
     ///     Дата регистрации.
     /// </summary>
     public DateTime Created { get; set; }
-
-    /// <summary>
-    ///     Модель с краткой информациией о пользователе.
-    /// </summary>
-    public UserShortInfoDto User { get; set; }
 }

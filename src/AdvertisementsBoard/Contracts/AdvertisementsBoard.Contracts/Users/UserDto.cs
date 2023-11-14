@@ -9,26 +9,22 @@ namespace AdvertisementsBoard.Contracts.Users;
 public class UserDto : BaseDto
 {
     /// <summary>
+    ///     Имя пользователя.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    ///     Номер телефона.
+    /// </summary>
+    public string PhoneNumber { get; set; }
+
+    /// <summary>
     ///     Никнейм.
     /// </summary>
     public string NickName { get; set; }
 
     /// <summary>
-    ///     Имя.
-    /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// </summary>
-    public string PhoneNumber { get; set; }
-
-    /// <summary>
-    ///     Наименование роли
+    ///     Роль пользователя.
     /// </summary>
     public UserRole Role { get; set; }
-
-    /// <summary>
-    ///     Идентификатор аккаунта.
-    /// </summary>
-    public Guid AccountId { get; set; }
 }

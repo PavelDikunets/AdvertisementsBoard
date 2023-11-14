@@ -31,7 +31,8 @@ public interface IAttachmentService
     /// <param name="dto">Модель загрузки вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор загруженного вложения.</returns>
-    Task<Guid> UploadByAdvertisementIdAsync(Guid advertisementId, Guid userId, AttachmentUploadDto dto,
+    Task<AttachmentShortInfoDto> UploadByAdvertisementIdAsync(Guid advertisementId, Guid userId,
+        AttachmentUploadDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -49,7 +50,7 @@ public interface IAttachmentService
     ///     Удалить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
-    /// <param name="userId"></param>
+    /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     Task DeleteByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken);
 }

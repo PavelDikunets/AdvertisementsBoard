@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
-/// Модель изменения пароля.
+///     Модель изменения пароля.
 /// </summary>
 public class AccountPasswordEditDto
 {

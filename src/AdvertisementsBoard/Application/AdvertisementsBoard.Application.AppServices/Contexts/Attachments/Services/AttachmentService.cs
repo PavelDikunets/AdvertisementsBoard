@@ -4,6 +4,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Application.AppServices.Services.Files.Services;
 using AdvertisementsBoard.Common.ErrorExceptions.AttachmentErrorExceptions;
 using AdvertisementsBoard.Contracts.Attachments;
+using AdvertisementsBoard.Domain.Attachments;
 using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Attachments.Services;
@@ -51,41 +52,44 @@ public class AttachmentService : IAttachmentService
         var listAttachments =
             await _attachmentRepository.GetAllByAdvertisementIdAsync(advertisementId, cancellationToken);
 
-        return listAttachments;
+        var attachmentDtos = _mapper.Map<List<AttachmentShortInfoDto>>(listAttachments);
+        return attachmentDtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> UploadByAdvertisementIdAsync(Guid advertisementId, Guid userId,
+    public async Task<AttachmentShortInfoDto> UploadByAdvertisementIdAsync(Guid advertisementId, Guid userId,
         AttachmentUploadDto uploadDto, CancellationToken cancellationToken)
     {
-        await ValidateUser(advertisementId, userId, cancellationToken);
+        await ValidateUserAsync(advertisementId, userId, cancellationToken);
 
-        var dto = _mapper.Map<AttachmentDto>(uploadDto);
+        var attachment = _mapper.Map<Attachment>(uploadDto);
 
         var fileUrl = await _fileService.UploadFileAsync(uploadDto.File, cancellationToken);
-        dto.AdvertisementId = advertisementId;
-        dto.Url = fileUrl;
+        attachment.Url = fileUrl;
+        attachment.AdvertisementId = advertisementId;
 
-        var id = await _attachmentRepository.CreateAsync(dto, cancellationToken);
-        return id;
+        var uploadedAttachment = await _attachmentRepository.CreateAsync(attachment, cancellationToken);
+
+        var dto = _mapper.Map<AttachmentShortInfoDto>(uploadedAttachment);
+        return dto;
     }
 
     /// <inheritdoc />
     public async Task<AttachmentInfoDto> UpdateByIdAsync(Guid id, Guid userId, AttachmentEditDto editDto,
         CancellationToken cancellationToken)
     {
-        var currentAttachment = await _attachmentRepository.FindWhereAsync(a => a.Id == id, cancellationToken);
+        var attachment = await _attachmentRepository.FindWhereAsync(a => a.Id == id, cancellationToken);
 
-        await ValidateUser(currentAttachment.AdvertisementId, userId, cancellationToken);
+        await ValidateUserAsync(attachment.AdvertisementId, userId, cancellationToken);
 
-        _mapper.Map(editDto, currentAttachment);
+        _mapper.Map(editDto, attachment);
 
         var url = await _fileService.UploadFileAsync(editDto.File, cancellationToken);
-        currentAttachment.Url = url;
+        attachment.Url = url;
 
-        var dto = await _attachmentRepository.UpdateAsync(currentAttachment, cancellationToken);
+        var updatedAttachment = await _attachmentRepository.UpdateAsync(attachment, cancellationToken);
 
-        var updatedDto = _mapper.Map<AttachmentInfoDto>(dto);
+        var updatedDto = _mapper.Map<AttachmentInfoDto>(updatedAttachment);
         return updatedDto;
     }
 
@@ -94,13 +98,13 @@ public class AttachmentService : IAttachmentService
     {
         var attachment = await _attachmentRepository.GetByIdAsync(id, cancellationToken);
 
-        await ValidateUser(attachment.AdvertisementId, userId, cancellationToken);
+        await ValidateUserAsync(attachment.AdvertisementId, userId, cancellationToken);
 
         await _attachmentRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
 
-    private async Task ValidateUser(Guid advertisementId, Guid userId, CancellationToken cancellationToken)
+    private async Task ValidateUserAsync(Guid advertisementId, Guid userId, CancellationToken cancellationToken)
     {
         var userIdFromAdvertisement = await _advertisementService.GetUserIdAsync(advertisementId, cancellationToken);
 

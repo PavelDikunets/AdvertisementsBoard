@@ -86,7 +86,7 @@ builder.Services.AddSwaggerGen(s =>
 
         typeof(AdvertisementInfoDto),
         typeof(AdvertisementShortInfoDto),
-        typeof(AdvertisementCreateDto),
+        typeof(AdvertisementCreatedDto),
         typeof(AdvertisementEditDto),
         typeof(AdvertisementUpdatedDto),
 
@@ -121,7 +121,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 app.UseAuthentication();
 
-app.UseMiddleware<BlockUserMiddleware>();
+//app.UseMiddleware<BlockUserMiddleware>();
 
 app.UseAuthorization();
 

@@ -2,6 +2,7 @@ using AdvertisementsBoard.Common.Enums.Users;
 using AdvertisementsBoard.Domain.Accounts;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Domain.Base;
+using AdvertisementsBoard.Domain.Comments;
 
 namespace AdvertisementsBoard.Domain.Users;
 
@@ -10,10 +11,6 @@ namespace AdvertisementsBoard.Domain.Users;
 /// </summary>
 public class User : BaseEntity
 {
-    /// <summary>
-    ///     Никнейм пользователя.
-    /// </summary>
-    /// public string NickName { get; set; }
     /// <summary>
     ///     Имя пользователя.
     /// </summary>
@@ -40,10 +37,12 @@ public class User : BaseEntity
     public virtual Account Account { get; set; }
 
     /// <summary>
-    /// </summary>
-    public Guid AccountId { get; set; }
-
-    /// <summary>
+    ///     Никнейм.
     /// </summary>
     public string NickName { get; set; }
+
+    /// <summary>
+    ///     Комментарии.
+    /// </summary>
+    public virtual List<Comment> Comments { get; set; }
 }

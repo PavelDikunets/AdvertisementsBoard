@@ -3,6 +3,7 @@ using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Service
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Common.ErrorExceptions.AdvertisementErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
+using AdvertisementsBoard.Domain.Advertisements;
 using AutoMapper;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
@@ -45,7 +46,9 @@ public class AdvertisementService : IAdvertisementService
         CancellationToken cancellationToken)
     {
         var listAdvertisements = await _advertisementRepository.GetAllByUserIdAsync(userId, cancellationToken);
-        return listAdvertisements;
+
+        var avertisementsDtos = _mapper.Map<List<AdvertisementShortInfoDto>>(listAdvertisements);
+        return avertisementsDtos;
     }
 
     /// <inheritdoc />
@@ -53,22 +56,26 @@ public class AdvertisementService : IAdvertisementService
         int pageNumber)
     {
         var listAdvertisements = await _advertisementRepository.GetAllAsync(cancellationToken, pageNumber, pageSize);
-        return listAdvertisements;
+
+        var avertisementsDtos = _mapper.Map<List<AdvertisementShortInfoDto>>(listAdvertisements);
+        return avertisementsDtos;
     }
 
     /// <inheritdoc />
-    public async Task<Guid> CreateAsync(AdvertisementCreateDto dto, Guid userId, CancellationToken cancellationToken)
+    public async Task<AdvertisementCreatedDto> CreateAsync(AdvertisementCreateDto dto, Guid userId,
+        CancellationToken cancellationToken)
     {
         await _userService.DoesUserExistByIdAsync(userId, cancellationToken);
 
         await _subCategoryService.DoesSubCategoryExistByIdAsync(dto.SubCategoryId, cancellationToken);
 
-        var advertDto = _mapper.Map<AdvertisementDto>(dto);
-        advertDto.UserId = userId;
-        advertDto.IsActive = true;
+        var entity = _mapper.Map<Advertisement>(dto);
+        entity.UserId = userId;
 
-        var id = await _advertisementRepository.CreateAsync(advertDto, cancellationToken);
-        return id;
+        var advertisement = await _advertisementRepository.CreateAsync(entity, cancellationToken);
+
+        var createdDto = _mapper.Map<AdvertisementCreatedDto>(advertisement);
+        return createdDto;
     }
 
     /// <inheritdoc />
@@ -77,13 +84,19 @@ public class AdvertisementService : IAdvertisementService
     {
         var currentAdvertisement = await _advertisementRepository.FindWhereAsync(a => a.Id == id, cancellationToken);
 
-        await ValidateUserAsync(id, userId, cancellationToken);
+        await ValidateUserAsync(userId, currentAdvertisement.UserId, cancellationToken);
 
-        _mapper.Map(editDto, currentAdvertisement);
+        var advertisement = _mapper.Map<Advertisement>(editDto);
+        advertisement.Id = id;
+        advertisement.SubCategoryId = currentAdvertisement.SubCategoryId;
+        advertisement.UserId = userId;
 
-        var updatedDto = await _advertisementRepository.UpdateAsync(currentAdvertisement, cancellationToken);
+        var updatedAdvertisement = await _advertisementRepository.UpdateAsync(advertisement, cancellationToken);
+
+        var updatedDto = _mapper.Map<AdvertisementUpdatedDto>(updatedAdvertisement);
         return updatedDto;
     }
+
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken)
@@ -92,22 +105,22 @@ public class AdvertisementService : IAdvertisementService
 
         await ValidateUserAsync(userId, currentAdvertisement.UserId, cancellationToken);
 
-        await _advertisementRepository.DeleteByIdAsync(currentAdvertisement.Id, cancellationToken);
+        await _advertisementRepository.DeleteByIdAsync(id, cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task<Guid> GetUserIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var advertisement = await _advertisementRepository.FindWhereAsync(a => a.Id == id, cancellationToken);
-
         return advertisement.UserId;
     }
 
 
-    private async Task ValidateUserAsync(Guid userId, Guid userIdFromAdvertisement, CancellationToken cancellationToken)
+    private async Task ValidateUserAsync(Guid userId, Guid advertisementUserId,
+        CancellationToken cancellationToken)
     {
-        var isValid = await _userService.ValidateUserAsync(userId, userIdFromAdvertisement, cancellationToken);
+        var valid = await _userService.ValidateUserAsync(userId, advertisementUserId, cancellationToken);
 
-        if (!isValid) throw new AdvertisementForbiddenException();
+        if (!valid) throw new AdvertisementForbiddenException();
     }
 }

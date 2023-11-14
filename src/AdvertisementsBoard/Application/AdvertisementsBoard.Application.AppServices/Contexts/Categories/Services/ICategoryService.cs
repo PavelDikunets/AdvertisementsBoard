@@ -27,17 +27,17 @@ public interface ICategoryService
     /// </summary>
     /// <param name="dto">Модель создания категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор созданной категории.</returns>
-    Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken);
+    /// <returns>Модель категории.</returns>
+    Task<CategoryShortInfoDto> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить категорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
-    /// <param name="editDto">Модель обновления категории.</param>
+    /// <param name="categoryDto">Модель обновления категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель обновленной категорией.</returns>
-    Task<CategoryInfoDto> UpdateByIdAsync(Guid id, CategoryEditDto editDto, CancellationToken cancellationToken);
+    /// <returns>Модель категории.</returns>
+    Task<CategoryInfoDto> UpdateByIdAsync(Guid id, CategoryEditDto categoryDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить категорию по идентификатору.

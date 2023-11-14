@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AdvertisementsBoard.Contracts.Users;
 using AdvertisementsBoard.Domain.Users;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
@@ -15,22 +14,22 @@ public interface IUserRepository
     /// <param name="id">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель пользователя.</returns>
-    Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить всех пользователей.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список пользователей с краткой информацией.</returns>
-    Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
+    Task<List<User>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить пользователя.
     /// </summary>
-    /// <param name="dto">Модель пользователя.</param>
+    /// <param name="user">Пользователь.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной информацией пользователя.</returns>
-    Task<UserUpdatedDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken);
+    /// <returns>Обновленный пользователь.</returns>
+    Task<User> UpdateAsync(User user, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Проверить, существует ли пользователь с указанным фильтром.
@@ -45,6 +44,6 @@ public interface IUserRepository
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель пользователя.</returns>
-    Task<UserDto> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken);
+    /// <returns>Пользователь.</returns>
+    Task<User> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken);
 }

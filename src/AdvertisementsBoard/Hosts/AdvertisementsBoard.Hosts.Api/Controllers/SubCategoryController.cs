@@ -39,7 +39,7 @@ public class SubCategoryController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetAllAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _subCategoryService.GetAllAsync(cancellationToken);
+        var result = await _subCategoryService.GetAllAsync(id, cancellationToken);
         return Ok(result);
     }
 

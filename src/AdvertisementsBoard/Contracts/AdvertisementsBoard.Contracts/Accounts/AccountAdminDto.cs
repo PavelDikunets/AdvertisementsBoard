@@ -1,20 +1,19 @@
-using AdvertisementsBoard.Contracts.Base;
-
 namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
+///     Модель аккаунта для просмотра администратором.
 /// </summary>
-public class AccountDto : BaseDto
+public class AccountAdminDto
 {
     /// <summary>
-    ///     Статус блокировки.
+    ///     Адрес электронной почты.
     /// </summary>
     public bool IsBlocked { get; set; }
 
     /// <summary>
-    ///     Захешированный пароль.
+    ///     Дата регистрации.
     /// </summary>
-    public string PasswordHash { get; set; }
+    public DateTime Created { get; set; }
 
     /// <summary>
     ///     Идентификатор пользователя.

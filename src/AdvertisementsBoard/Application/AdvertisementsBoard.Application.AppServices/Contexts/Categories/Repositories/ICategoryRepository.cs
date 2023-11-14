@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AdvertisementsBoard.Contracts.Categories;
 using AdvertisementsBoard.Domain.Categories;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Categories.Repositories;
@@ -15,30 +14,31 @@ public interface ICategoryRepository
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель категории.</returns>
-    Task<CategoryDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Category> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все категории.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список категорий с краткой информацией.</returns>
-    Task<List<CategoryShortInfoDto>> GetAllAsync(CancellationToken cancellationToken);
+    Task<List<Category>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать категорию.
     /// </summary>
-    /// <param name="dto">Модель создания категории.</param>
+    /// <param name="entity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданной категории.</returns>
-    Task<Guid> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken);
+    Task<Category> CreateAsync(Category entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить категорию.
     /// </summary>
     /// <param name="dto">Модель категории.</param>
+    /// <param name="entity"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленной категорией.</returns>
-    Task<CategoryInfoDto> UpdateAsync(CategoryDto dto, CancellationToken cancellationToken);
+    Task<Category> UpdateAsync(Category entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить категорию по идентификатору.
@@ -62,5 +62,5 @@ public interface ICategoryRepository
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель категории.</returns>
-    Task<CategoryDto> FindWhereAsync(Expression<Func<Category, bool>> filter, CancellationToken cancellationToken);
+    Task<Category> FindWhereAsync(Expression<Func<Category, bool>> filter, CancellationToken cancellationToken);
 }

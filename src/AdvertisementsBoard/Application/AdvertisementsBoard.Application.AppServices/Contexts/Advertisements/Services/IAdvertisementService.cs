@@ -40,7 +40,8 @@ public interface IAdvertisementService
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного объявления.</returns>
-    Task<Guid> CreateAsync(AdvertisementCreateDto dto, Guid userId, CancellationToken cancellationToken);
+    Task<AdvertisementCreatedDto> CreateAsync(AdvertisementCreateDto dto, Guid userId,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить объявление по идентификатору.

@@ -52,10 +52,12 @@ public class CategoryController : ControllerBase
     /// <response code="400">Некорректный запрос.</response>
     /// <response code="409">Категория с таким именем уже существует.</response>
     /// <response code="401">Аутентификация не выполнена.</response>
+    /// <response code="403">Доступ запрещен.</response>
     /// <returns>Идентификатор созданной категории.</returns>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [HttpPost]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken)

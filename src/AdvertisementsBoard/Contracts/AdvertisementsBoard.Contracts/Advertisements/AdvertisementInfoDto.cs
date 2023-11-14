@@ -35,16 +35,11 @@ public class AdvertisementInfoDto
     /// </summary>
     public bool IsActive { get; set; }
 
-    /// <summary>
+    /*/// <summary>
     ///     Список моделей вложений с информацией.
     /// </summary>
     public List<AttachmentShortInfoDto> Attachments { get; set; }
-
-    /// <summary>
-    ///     Модель информации о категории.
-    /// </summary>
-    public CategoryShortInfoDto Category { get; set; }
-
+    
     /// <summary>
     ///     Модель информации о подкатегории.
     /// </summary>
@@ -53,5 +48,5 @@ public class AdvertisementInfoDto
     /// <summary>
     ///     Модель информации о пользователе.
     /// </summary>
-    public UserInfoDto User { get; set; }
+    public UserInfoDto User { get; set; }*/
 }

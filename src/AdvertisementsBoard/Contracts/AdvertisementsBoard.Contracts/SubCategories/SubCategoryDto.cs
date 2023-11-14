@@ -1,4 +1,5 @@
 using AdvertisementsBoard.Contracts.Base;
+using AdvertisementsBoard.Contracts.Categories;
 
 namespace AdvertisementsBoard.Contracts.SubCategories;
 
@@ -16,4 +17,9 @@ public class SubCategoryDto : BaseDto
     ///     Идентификатор категории.
     /// </summary>
     public Guid CategoryId { get; set; }
+
+    /// <summary>
+    ///     Категория.
+    /// </summary>
+    public CategoryDto Category { get; set; }
 }

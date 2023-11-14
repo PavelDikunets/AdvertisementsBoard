@@ -14,16 +14,13 @@ public class UserProfile : Profile
     /// </summary>
     public UserProfile()
     {
-        CreateMap<User, UserDto>().ReverseMap();
-        CreateMap<User, UserShortInfoDto>();
-        CreateMap<User, UserUpdatedDto>();
-
-        CreateMap<User, UserInfoDto>();
-        CreateMap<UserDto, UserShortInfoDto>();
-
+        CreateMap<UserDto, UserSignInDto>();
+        CreateMap<UserDto, UserInfoDto>();
         CreateMap<User, UserCreatedDto>();
-        CreateMap<UserRoleDto, UserDto>().IgnoreAllNonExisting().ReverseMap();
-        CreateMap<UserEditDto, UserDto>().IgnoreAllNonExisting();
-        CreateMap<UserCreateDto, UserDto>().IgnoreAllNonExisting();
+        CreateMap<User, UserDto>().ReverseMap();
+
+        CreateMap<UserEditDto, User>().IgnoreAllNonExisting();
+        CreateMap<UserRoleDto, User>().IgnoreAllNonExisting();
+        CreateMap<UserCreateDto, User>().IgnoreAllNonExisting();
     }
 }

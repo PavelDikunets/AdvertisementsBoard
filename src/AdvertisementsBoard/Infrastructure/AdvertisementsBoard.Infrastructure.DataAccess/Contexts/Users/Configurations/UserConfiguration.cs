@@ -31,16 +31,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(p => p.User)
             .OnDelete(DeleteBehavior.Cascade);
 
-        var accountId = new Guid("F91276A9-01A2-4DC9-BD65-F983C4B8E39D");
+        var userId = Guid.Parse("F7ED49F2-467A-4AE0-83B1-FD3C78D1EBB5");
 
         builder.HasData(
             new User
             {
-                Id = Guid.NewGuid(),
+                Id = userId,
                 Name = "Administrator",
                 NickName = "Administrator",
-                Role = UserRole.Administrator,
-                AccountId = accountId
+                Role = UserRole.Administrator
             });
     }
 }

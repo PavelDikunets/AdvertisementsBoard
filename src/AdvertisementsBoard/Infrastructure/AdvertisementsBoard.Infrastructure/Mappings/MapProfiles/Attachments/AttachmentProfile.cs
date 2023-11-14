@@ -14,13 +14,10 @@ public class AttachmentProfile : Profile
     /// </summary>
     public AttachmentProfile()
     {
-        CreateMap<Attachment, AttachmentDto>().ReverseMap();
+        CreateMap<AttachmentUploadDto, Attachment>().IgnoreAllNonExisting();
+        CreateMap<AttachmentEditDto, Attachment>().IgnoreAllNonExisting();
+
         CreateMap<Attachment, AttachmentShortInfoDto>();
-
-        CreateMap<AttachmentDto, AttachmentInfoDto>();
-        CreateMap<AttachmentDto, AttachmentShortInfoDto>();
-
-        CreateMap<AttachmentUploadDto, AttachmentDto>().IgnoreAllNonExisting();
-        CreateMap<AttachmentEditDto, AttachmentDto>().IgnoreAllNonExisting();
+        CreateMap<Attachment, AttachmentInfoDto>();
     }
 }

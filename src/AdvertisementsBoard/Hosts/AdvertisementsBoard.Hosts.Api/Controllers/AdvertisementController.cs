@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
-using AdvertisementsBoard.Common.ErrorExceptions.UserErrorExceptions;
+using AdvertisementsBoard.Common.ErrorExceptions.AuthenticationErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Errors;
 using Microsoft.AspNetCore.Authorization;
@@ -19,13 +19,15 @@ namespace AdvertisementsBoard.Hosts.Api.Controllers;
 public class AdvertisementController : ControllerBase
 {
     private readonly IAdvertisementService _advertisementService;
+
+    //  private readonly IUserClaimsService _userClaimsService;
     private readonly ILogger<AdvertisementController> _logger;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AdvertisementController" />
     /// </summary>
     /// <param name="advertisementService">Сервис для работы с объявлениями.</param>
-    /// <param name="logger"></param>
+    /// <param name="logger">Логирование.</param>
     public AdvertisementController(IAdvertisementService advertisementService, ILogger<AdvertisementController> logger)
     {
         _advertisementService = advertisementService;
@@ -193,12 +195,9 @@ public class AdvertisementController : ControllerBase
 
     private Guid GetUserIdFromClaims()
     {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (!Guid.TryParse(userIdString, out var userId))
-            if (userIdString != null)
-                throw new InvalidUserIdException(userIdString);
-
+        if (!Guid.TryParse(userIdValue, out var userId)) throw new AuthenticationFailedException();
         return userId;
     }
 }
