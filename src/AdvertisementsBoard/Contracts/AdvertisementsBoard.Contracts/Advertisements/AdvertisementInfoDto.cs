@@ -1,8 +1,3 @@
-using AdvertisementsBoard.Contracts.Attachments;
-using AdvertisementsBoard.Contracts.Categories;
-using AdvertisementsBoard.Contracts.SubCategories;
-using AdvertisementsBoard.Contracts.Users;
-
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>

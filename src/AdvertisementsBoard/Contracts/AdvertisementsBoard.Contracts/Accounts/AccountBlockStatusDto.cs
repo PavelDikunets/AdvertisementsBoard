@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using AdvertisementsBoard.Contracts.Base;
 
 namespace AdvertisementsBoard.Contracts.Accounts;

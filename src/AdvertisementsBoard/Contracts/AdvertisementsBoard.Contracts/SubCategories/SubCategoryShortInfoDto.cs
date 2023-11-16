@@ -1,5 +1,4 @@
 using AdvertisementsBoard.Contracts.Base;
-using AdvertisementsBoard.Contracts.Categories;
 
 namespace AdvertisementsBoard.Contracts.SubCategories;
 
