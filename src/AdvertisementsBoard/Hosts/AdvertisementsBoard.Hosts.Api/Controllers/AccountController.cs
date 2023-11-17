@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using AdvertisementsBoard.Application.AppServices.Contexts.Accounts.Services;
 using AdvertisementsBoard.Common.ErrorExceptions.AuthenticationErrorExceptions;
@@ -23,7 +24,7 @@ public class AccountController : ControllerBase
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AccountController" />
     /// </summary>
-    /// <param name="logger"></param>
+    /// <param name="logger">Логгер.</param>
     /// <param name="accountService">Сервис для работы с аккаунтами.</param>
     public AccountController(ILogger<AccountController> logger, IAccountService accountService)
     {
@@ -34,7 +35,7 @@ public class AccountController : ControllerBase
     /// <summary>
     ///     Зарегистрировать аккаунт.
     /// </summary>
-    /// <param name="dto">Модель регистрации аккаунта.</param>
+    /// <param name="createDto">Модель регистрации аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Аккаунт успешно создан.</response>
     /// <response code="400">Некорректный запрос.</response>
@@ -45,16 +46,17 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(AccountCreatedDto), StatusCodes.Status201Created)]
     [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> SignUpAsync([FromBody] AccountCreateDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignUpAsync([FromBody] AccountCreateDto createDto,
+        CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос регистрации аккаунта пользователя '{userNickName}'.", dto.User.NickName);
+        _logger.LogInformation("Запрос регистрации аккаунта пользователя '{userNickName}'.", createDto.User.NickName);
 
-        var createdAccount = await _accountService.SignUpAsync(dto, cancellationToken);
+        var createdAccount = await _accountService.SignUpAsync(createDto, cancellationToken);
 
         _logger.LogInformation("Аккаунт пользователя '{userNickName}' успешно зарегистрирован.",
-            createdAccount.User.NickName);
+            createDto.User.NickName);
 
-        return Created(nameof(SignUpAsync), createdAccount);
+        return Created($"/accounts/{createdAccount.Id}", createdAccount);
     }
 
     /// <summary>
@@ -73,7 +75,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
     [HttpPost("signin")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignInAsync(AccountSignInDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> SignInAsync([FromBody] AccountSignInDto dto, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Запрос  входа в аккаунт.");
 
@@ -103,16 +105,18 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
     [HttpGet]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageNumber = 0,
-        int pageSize = 10, bool? isBlocked = null)
+    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken,
+        [Range(0, int.MaxValue)] int pageNumber = 0,
+        [Range(1, 100)] int pageSize = 10,
+        bool isBlocked = false)
     {
         _logger.LogInformation("Запрос списка аккаунтов.");
 
-        var accounts = await _accountService.GetAllAsync(pageSize, pageNumber, isBlocked, cancellationToken);
+        var listOfAccounts = await _accountService.GetAllAsync(pageSize, pageNumber, isBlocked, cancellationToken);
 
         _logger.LogInformation("Список аккаунтов успешно получен.");
 
-        return Ok(accounts);
+        return Ok(listOfAccounts);
     }
 
     /// <summary>
@@ -137,11 +141,11 @@ public class AccountController : ControllerBase
     {
         _logger.LogInformation("Запрос аккаунта по Id: {Id}.", id);
 
-        var accounts = await _accountService.GetByIdAsync(id, cancellationToken);
+        var account = await _accountService.GetByIdAsync(id, cancellationToken);
 
         _logger.LogInformation("Аккаунт по '{Id}' успешно получен.", id);
 
-        return Ok(accounts);
+        return Ok(account);
     }
 
     /// <summary>
@@ -163,13 +167,12 @@ public class AccountController : ControllerBase
 
         _logger.LogInformation("Запрос аккаунта пользователем Id: '{Id}'.", userId);
 
-        var accounts = await _accountService.GetByUserIdAsync(userId, cancellationToken);
+        var account = await _accountService.GetByUserIdAsync(userId, cancellationToken);
 
         _logger.LogInformation("Аккаунт успешно получен пользователем Id: '{Id}'.", userId);
 
-        return Ok(accounts);
+        return Ok(account);
     }
-
 
     /// <summary>
     ///     Изменить пароль.
@@ -183,8 +186,8 @@ public class AccountController : ControllerBase
     /// <response code="400">Некорректный запрос.</response>
     /// <response code="422">Некорректные данные.</response>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [HttpPut("password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPatch("password")]
     [Authorize]
     public async Task<IActionResult> ChangePasswordAsync([FromBody] AccountPasswordEditDto dto,
         CancellationToken cancellationToken)
@@ -217,7 +220,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
-    [HttpPut("{id:guid}/block")]
+    [HttpPatch("{id:guid}/block")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> BlockByIdAsync(Guid id, [FromBody] AccountBlockStatusDto statusDto,
         CancellationToken cancellationToken)
