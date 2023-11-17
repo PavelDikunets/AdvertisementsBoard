@@ -1,3 +1,4 @@
+using AdvertisementsBoard.Contracts.Accounts;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Attachments;
 using AdvertisementsBoard.Contracts.Categories;
@@ -62,38 +63,12 @@ builder.Services.AddSwaggerGen(s =>
 
     var includeDocsTypesMarkers = new[]
     {
-        typeof(UserInfoDto),
-        typeof(UserShortInfoDto),
-        typeof(UserCreateDto),
-        typeof(UserEditDto),
-        typeof(UserUpdatedDto),
-        typeof(UserRoleDto),
-
+        typeof(AccountInfoDto), 
+        typeof(UserInfoDto),    
         typeof(SubCategoryInfoDto),
-        typeof(SubCategoryShortInfoDto),
-        typeof(SubCategoryCreateDto),
-        typeof(SubCategoryEditDto),
-
-        typeof(CategoryInfoDto),
-        typeof(CategoryShortInfoDto),
-        typeof(CategoryCreateDto),
-        typeof(CategoryEditDto),
-
+        typeof(CategoryInfoDto), 
         typeof(AttachmentInfoDto),
-        typeof(AttachmentShortInfoDto),
-        typeof(AttachmentUploadDto),
-        typeof(AttachmentEditDto),
-
         typeof(AdvertisementInfoDto),
-        typeof(AdvertisementShortInfoDto),
-        typeof(AdvertisementCreatedDto),
-        typeof(AdvertisementEditDto),
-        typeof(AdvertisementUpdatedDto),
-
-        typeof(UserController),
-        typeof(SubCategoryController),
-        typeof(CategoryController),
-        typeof(AttachmentController),
         typeof(AdvertisementController)
     };
     foreach (var marker in includeDocsTypesMarkers)

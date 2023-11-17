@@ -1,3 +1,4 @@
+using AdvertisementsBoard.Contracts.Base;
 using AdvertisementsBoard.Contracts.Users;
 
 namespace AdvertisementsBoard.Contracts.Accounts;
@@ -5,7 +6,7 @@ namespace AdvertisementsBoard.Contracts.Accounts;
 /// <summary>
 ///     Модель созданного аккаунта.
 /// </summary>
-public class AccountCreatedDto
+public class AccountCreatedDto : BaseDto
 {
     /// <summary>
     ///     Адрес электронной почты.

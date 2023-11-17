@@ -30,18 +30,16 @@ public class AccountRepository : IAccountRepository
 
     /// <inheritdoc />
     public async Task<List<Account>> GetAllAsync(CancellationToken cancellationToken,
-        int pageNumber, int pageSize, bool? isBlocked)
+        int pageNumber, int pageSize, bool isBlocked)
     {
-        var query = _repository.GetAllFiltered(a => true);
-
-        if (isBlocked != null) query = query.Where(s => s.IsBlocked == isBlocked);
-
-        var listAccounts = await query.OrderBy(a => a.Email)
+        var listOfAccounts = await _repository.GetAllFiltered(a => true)
+            .Where(s => s.IsBlocked == isBlocked)
+            .OrderBy(a => a.Email)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return listAccounts;
+        return listOfAccounts;
     }
 
     /// <inheritdoc />

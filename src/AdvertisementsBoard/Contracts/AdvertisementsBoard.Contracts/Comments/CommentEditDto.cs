@@ -1,7 +1,7 @@
 namespace AdvertisementsBoard.Contracts.Comments;
 
 /// <summary>
-///     Модель создания комментария.
+///     Модель обновления комментария.
 /// </summary>
 public class CommentEditDto : CommentCreateDto
 {

@@ -31,7 +31,7 @@ public class AccountService : IAccountService
     /// <param name="mapper">Маппер.</param>
     /// <param name="passwordService">Сервис для работы с паролями.</param>
     /// <param name="configuration"></param>
-    /// <param name="userService"></param>
+    /// <param name="userService">Сервис для работы с пользователями.</param>
     public AccountService(IAccountRepository accountRepository, IMapper mapper, IPasswordService passwordService,
         IConfiguration configuration, IUserService userService)
     {
@@ -61,7 +61,7 @@ public class AccountService : IAccountService
     }
 
     /// <inheritdoc />
-    public async Task<List<AccountShortInfoDto>> GetAllAsync(int pageSize, int pageNumber, bool? isBlocked,
+    public async Task<List<AccountShortInfoDto>> GetAllAsync(int pageSize, int pageNumber, bool isBlocked,
         CancellationToken cancellationToken)
     {
         var listAccounts = await _accountRepository.GetAllAsync(cancellationToken, pageNumber, pageSize, isBlocked);
@@ -71,24 +71,24 @@ public class AccountService : IAccountService
     }
 
     /// <inheritdoc />
-    public async Task<AccountCreatedDto> SignUpAsync(AccountCreateDto dto, CancellationToken cancellationToken)
+    public async Task<AccountCreatedDto> SignUpAsync(AccountCreateDto createDto, CancellationToken cancellationToken)
     {
-        _passwordService.ComparePasswords(dto.Password, dto.ConfirmPassword);
+        _passwordService.ComparePasswords(createDto.Password, createDto.ConfirmPassword);
 
         var exist = await _accountRepository.DoesAccountExistWhereAsync(
-            a => a.Email == dto.Email || a.User.NickName == dto.User.NickName, cancellationToken);
+            a => a.Email == createDto.Email || a.User.NickName == createDto.User.NickName, cancellationToken);
 
         if (exist) throw new AccountAlreadyExistsException();
 
-        var account = _mapper.Map<Account>(dto);
+        var account = _mapper.Map<Account>(createDto);
 
         account.Created = DateTime.UtcNow;
-        account.PasswordHash = _passwordService.HashPassword(dto.Password);
+        account.PasswordHash = _passwordService.HashPassword(createDto.Password);
 
         var createdAccount = await _accountRepository.CreateAsync(account, cancellationToken);
 
-        var createdDto = _mapper.Map<AccountCreatedDto>(createdAccount);
-        return createdDto;
+        var dto = _mapper.Map<AccountCreatedDto>(createdAccount);
+        return dto;
     }
 
     /// <inheritdoc />
@@ -102,7 +102,7 @@ public class AccountService : IAccountService
         var accountDto = _mapper.Map<AccountDto>(account);
         var userDto = _mapper.Map<UserSignInDto>(user);
 
-        var token = JwtSecurityToken(accountDto, userDto);
+        var token = GetJwtToken(accountDto, userDto);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return jwt;
@@ -131,7 +131,7 @@ public class AccountService : IAccountService
     {
         var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
 
-        var updatedAccount = _mapper.Map<Account>(account);
+        var updatedAccount = _mapper.Map(dto, account);
 
         await _accountRepository.UpdateAsync(updatedAccount, cancellationToken);
         return dto;
@@ -151,7 +151,7 @@ public class AccountService : IAccountService
     }
 
 
-    private JwtSecurityToken JwtSecurityToken(AccountDto accountDto, UserSignInDto user)
+    private JwtSecurityToken GetJwtToken(AccountDto accountDto, UserSignInDto user)
     {
         var claims = new List<Claim>
         {

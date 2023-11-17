@@ -19,7 +19,7 @@ public interface IAccountRepository
     /// <summary>
     ///     Создать аккаунт.
     /// </summary>
-    /// <param name="account">Сущность аккаунта</param>
+    /// <param name="account">Сущность аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного пользователя.</returns>
     Task<Account> CreateAsync(Account account, CancellationToken cancellationToken);
@@ -34,7 +34,7 @@ public interface IAccountRepository
     /// <returns>Список аккаунтов с краткой информацией.</returns>
     Task<List<Account>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
         int pageNumber,
-        bool? isBlocked);
+        bool isBlocked);
 
     /// <summary>
     ///     Обновить аккаунт.

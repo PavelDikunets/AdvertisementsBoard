@@ -1,16 +1,14 @@
+using AdvertisementsBoard.Contracts.Base;
+
 namespace AdvertisementsBoard.Contracts.Accounts;
 
 /// <summary>
+/// Модель информации об аккаунте.
 /// </summary>
-public class AccountInfoDto
+public class AccountInfoDto : BaseDto
 {
     /// <summary>
     ///     Адрес электронной почты.
     /// </summary>
     public string Email { get; set; }
-
-    /// <summary>
-    ///     Дата регистрации.
-    /// </summary>
-    public DateTime Created { get; set; }
 }

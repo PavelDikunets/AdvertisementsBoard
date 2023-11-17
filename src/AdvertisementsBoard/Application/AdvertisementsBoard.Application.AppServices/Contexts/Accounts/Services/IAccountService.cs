@@ -31,8 +31,8 @@ public interface IAccountService
     /// <param name="isBlocked">Признак блокировки аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Список аккаунтов с краткой информацией.</returns>
-    Task<List<AccountShortInfoDto>> GetAllAsync(int pageSize, int pageNumber,
-        bool? isBlocked, CancellationToken cancellationToken);
+    Task<List<AccountShortInfoDto>> GetAllAsync(int pageSize, int pageNumber, bool isBlocked,
+        CancellationToken cancellationToken);
 
     /// <summary>
     ///     Пройти аутентификацию.
@@ -45,15 +45,15 @@ public interface IAccountService
     /// <summary>
     ///     Создать аккаунт.
     /// </summary>
-    /// <param name="dto"></param>
+    /// <param name="createDto">Модель создания аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель созданного аккаунта.</returns>
-    Task<AccountCreatedDto> SignUpAsync(AccountCreateDto dto, CancellationToken cancellationToken);
+    /// <returns>Идентификатор аккаунта.</returns>
+    Task<AccountCreatedDto> SignUpAsync(AccountCreateDto createDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить аккаунт по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="id">Идентификатор аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
@@ -61,19 +61,18 @@ public interface IAccountService
     ///     Изменить пароль аккаунта.
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="accountDto">Модель изменения пароля.</param>
+    /// <param name="passwordEditDto">Модель изменения пароля.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    Task ChangePasswordAsync(Guid userId, AccountPasswordEditDto accountDto, CancellationToken cancellationToken);
+    Task ChangePasswordAsync(Guid userId, AccountPasswordEditDto passwordEditDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Заблокировать аккаунт.
     /// </summary>
     /// <param name="id">Идентификатор аккаунта.</param>
-    /// <param name="dto">Модель блокировки аккаунта.</param>
+    /// <param name="blockStatusDto">Модель блокировки аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель блокировки пользователя.</returns>
-    /// >
-    Task<AccountBlockStatusDto> BlockByIdAsync(Guid id, AccountBlockStatusDto dto,
+    /// <returns>Модель блокировки аккаунта.</returns>
+    Task<AccountBlockStatusDto> BlockByIdAsync(Guid id, AccountBlockStatusDto blockStatusDto,
         CancellationToken cancellationToken);
 
     /// <summary>
