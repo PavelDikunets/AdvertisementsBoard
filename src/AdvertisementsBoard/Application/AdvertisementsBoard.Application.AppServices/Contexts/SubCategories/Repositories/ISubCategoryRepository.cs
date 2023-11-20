@@ -27,18 +27,18 @@ public interface ISubCategoryRepository
     /// <summary>
     ///     Создать подкатегорию.
     /// </summary>
-    /// <param name="dto">Модель создания подкатегории.</param>
+    /// <param name="entity">Сущность подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Подкатегория.</returns>
-    Task<SubCategory> CreateAsync(SubCategory dto, CancellationToken cancellationToken);
+    /// <returns>Идентификатор созданной подкатегории.</returns>
+    Task<Guid> CreateAsync(SubCategory entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить подкатегорию.
     /// </summary>
-    /// <param name="dto">Модель подкатегории.</param>
+    /// <param name="entity">Сущность подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной подкатегорией.</returns>
-    Task<SubCategory> UpdateAsync(SubCategory dto, CancellationToken cancellationToken);
+    /// <returns>Сущность подкатегории.</returns>
+    Task<SubCategory> UpdateAsync(SubCategory entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить подкатегорию по идентификатору.
@@ -52,16 +52,15 @@ public interface ISubCategoryRepository
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Возвращает true, если категория существует, и false в противном случае.</returns>
+    /// <returns>Возвращает true, если подкатегория существует, и false в противном случае.</returns>
     Task<bool> DoesSubCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> filter,
         CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить подкатегорию по фильтру.
     /// </summary>
-    /// <param name="filter">Фильтр.</param>
+    /// <param name="filter"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель подкатегории.</returns>
-    Task<SubCategory> FindWhereAsync(Expression<Func<SubCategory, bool>> filter,
-        CancellationToken cancellationToken);
+    /// <returns>Сущность подкатегории.</returns>
+    Task<SubCategory> FindWhereAsync(Expression<Func<SubCategory, bool>> filter, CancellationToken cancellationToken);
 }

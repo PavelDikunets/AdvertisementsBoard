@@ -58,7 +58,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User> FindWhereAsync(Expression<Func<User, bool>> filter, CancellationToken cancellationToken)
     {
-        var user = await _repository.GetAllFiltered(filter)
+        var user = await _repository.FindWhereAsync(filter)
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 

@@ -31,7 +31,7 @@ public interface ICommentService
     /// <param name="createDto">Модель создания комментари.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного комментария.</returns>
-    Task<CommentInfoDto> CreateAsync(Guid advertisementId, Guid userId, CommentCreateDto createDto,
+    Task<Guid> CreateAsync(Guid advertisementId, Guid userId, CommentCreateDto createDto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -39,10 +39,10 @@ public interface ICommentService
     /// </summary>
     /// <param name="id">Идентификатор комментария.</param>
     /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="editDto">Модель редактирования комментария.</param>
+    /// <param name="updateDto">Модель редактирования комментария.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с информацией комментария.</returns>
-    Task<CommentUpdatedDto> UpdateByIdAsync(Guid id, Guid userId, CommentEditDto editDto,
+    Task<CommentUpdatedDto> UpdateByIdAsync(Guid id, Guid userId, CommentUpdateDto updateDto,
         CancellationToken cancellationToken);
 
     /// <summary>

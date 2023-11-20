@@ -30,7 +30,7 @@ public class BaseDbRepository<TEntity> : IBaseDbRepository<TEntity> where TEntit
     }
 
     /// <inheritdoc />
-    public IQueryable<TEntity> GetAllFiltered(Expression<Func<TEntity, bool>> predicate)
+    public IQueryable<TEntity> FindWhereAsync(Expression<Func<TEntity, bool>> predicate)
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 

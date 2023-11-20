@@ -13,31 +13,30 @@ public interface ICategoryRepository
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель категории.</returns>
+    /// <returns>Сущность категории.</returns>
     Task<Category> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Получить все категории.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Список категорий с краткой информацией.</returns>
+    /// <returns>Список категорий.</returns>
     Task<List<Category>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     ///     Создать категорию.
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="entity">Сущность категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданной категории.</returns>
-    Task<Category> CreateAsync(Category entity, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(Category entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить категорию.
     /// </summary>
-    /// <param name="dto">Модель категории.</param>
-    /// <param name="entity"></param>
+    /// <param name="entity">Сущность категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной категорией.</returns>
+    /// <returns>Сущность категории.</returns>
     Task<Category> UpdateAsync(Category entity, CancellationToken cancellationToken);
 
     /// <summary>
@@ -61,6 +60,6 @@ public interface ICategoryRepository
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель категории.</returns>
+    /// <returns>Сущность категории.</returns>
     Task<Category> FindWhereAsync(Expression<Func<Category, bool>> filter, CancellationToken cancellationToken);
 }

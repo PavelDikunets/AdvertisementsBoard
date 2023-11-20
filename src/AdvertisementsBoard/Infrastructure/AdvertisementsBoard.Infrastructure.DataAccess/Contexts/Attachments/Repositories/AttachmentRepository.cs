@@ -43,10 +43,10 @@ public class AttachmentRepository : IAttachmentRepository
     }
 
     /// <inheritdoc />
-    public async Task<Attachment> CreateAsync(Attachment entity, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Attachment entity, CancellationToken cancellationToken)
     {
         await _repository.AddAsync(entity, cancellationToken);
-        return entity;
+        return entity.Id;
     }
 
     /// <inheritdoc />
@@ -69,7 +69,7 @@ public class AttachmentRepository : IAttachmentRepository
     public async Task<Attachment> FindWhereAsync(Expression<Func<Attachment, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var attachment = await _repository.GetAllFiltered(filter)
+        var attachment = await _repository.FindWhereAsync(filter)
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 

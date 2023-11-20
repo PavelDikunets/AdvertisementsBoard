@@ -5,7 +5,7 @@ namespace AdvertisementsBoard.Contracts.Users;
 /// <summary>
 ///     Модель обновления пользователя.
 /// </summary>
-public class UserEditDto
+public class UserUpdateDto
 {
     /// <summary>
     ///     Имя пользователя.

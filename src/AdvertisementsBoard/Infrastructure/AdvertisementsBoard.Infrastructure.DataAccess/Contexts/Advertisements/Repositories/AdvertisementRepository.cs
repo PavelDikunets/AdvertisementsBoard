@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
+﻿using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 using AdvertisementsBoard.Common.ErrorExceptions.AdvertisementErrorExceptions;
 using AdvertisementsBoard.Domain.Advertisements;
 using AdvertisementsBoard.Infrastructure.Repositories;
@@ -34,32 +33,30 @@ public class AdvertisementRepository : IAdvertisementRepository
     public async Task<List<Advertisement>> GetAllAsync(CancellationToken cancellationToken, int pageNumber,
         int pageSize)
     {
-        var listAdvertisements = await _repository.GetAllFiltered(a => true)
-            .Where(s => s.IsActive)
+        var listOfAdvertisements = await _repository.FindWhereAsync(a => a.IsActive)
             .OrderBy(a => a.Title)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return listAdvertisements;
+        return listOfAdvertisements;
     }
 
     public async Task<List<Advertisement>> GetAllByUserIdAsync(Guid userId,
         CancellationToken cancellationToken)
     {
-        var listAdvertisements = await _repository.GetAllFiltered(a => true)
-            .Where(a => a.UserId == userId)
+        var listOfAdvertisements = await _repository.FindWhereAsync(a => a.UserId == userId)
             .OrderBy(a => a.Title)
             .ToListAsync(cancellationToken);
 
-        return listAdvertisements;
+        return listOfAdvertisements;
     }
 
     /// <inheritdoc />
-    public async Task<Advertisement> CreateAsync(Advertisement entity, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Advertisement entity, CancellationToken cancellationToken)
     {
         await _repository.AddAsync(entity, cancellationToken);
-        return entity;
+        return entity.Id;
     }
 
     /// <inheritdoc />
@@ -79,14 +76,14 @@ public class AdvertisementRepository : IAdvertisementRepository
     }
 
     /// <inheritdoc />
-    public async Task<Advertisement> FindWhereAsync(Expression<Func<Advertisement, bool>> filter,
-        CancellationToken cancellationToken)
+    public async Task<Advertisement> FindByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var advertisement = await _repository.GetAllFiltered(filter)
+        var advertisement = await _repository.FindWhereAsync(a => a.Id == id)
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (advertisement == null) throw new AdvertisementNotFoundException();
+        if (advertisement == null) throw new AdvertisementNotFoundException(id);
+
         return advertisement;
     }
 

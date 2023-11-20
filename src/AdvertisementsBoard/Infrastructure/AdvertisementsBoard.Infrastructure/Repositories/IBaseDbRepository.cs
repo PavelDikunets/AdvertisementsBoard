@@ -19,7 +19,7 @@ public interface IBaseDbRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="filter">Фильтр.</param>
     /// <returns>Все эелементы сущности <see cref="TEntity" /> по фильтру.</returns>
-    IQueryable<TEntity> GetAllFiltered(Expression<Func<TEntity, bool>> filter);
+    IQueryable<TEntity> FindWhereAsync(Expression<Func<TEntity, bool>> filter);
 
     /// <summary>
     ///     Получить элемент сущности <see cref="TEntity" /> по идентификатору.
@@ -54,10 +54,9 @@ public interface IBaseDbRepository<TEntity> where TEntity : class
     Task DeleteAsync(TEntity model, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Найти сущность по фильтру.
     /// </summary>
-    /// <param name="filter">Фильтр.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <param name="filter"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<bool> FindAnyAsync(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken);
 }

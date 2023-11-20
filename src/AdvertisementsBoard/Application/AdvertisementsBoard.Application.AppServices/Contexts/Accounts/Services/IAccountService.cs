@@ -48,7 +48,7 @@ public interface IAccountService
     /// <param name="createDto">Модель создания аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор аккаунта.</returns>
-    Task<AccountCreatedDto> SignUpAsync(AccountCreateDto createDto, CancellationToken cancellationToken);
+    Task<Guid> SignUpAsync(AccountCreateDto createDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить аккаунт по идентификатору.

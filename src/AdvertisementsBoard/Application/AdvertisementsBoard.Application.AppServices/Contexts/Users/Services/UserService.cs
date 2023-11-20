@@ -1,5 +1,6 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Users.Repositories;
 using AdvertisementsBoard.Common.Enums.Users;
+using AdvertisementsBoard.Common.ErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.UserErrorExceptions;
 using AdvertisementsBoard.Contracts.Users;
 using AutoMapper;
@@ -26,32 +27,33 @@ public class UserService : IUserService
     /// <inheritdoc />
     public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+        var userEntity = await _userRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = _mapper.Map<UserDto>(user);
-        return dto;
+        var userDto = _mapper.Map<UserDto>(userEntity);
+        return userDto;
     }
 
     /// <inheritdoc />
     public async Task<List<UserShortInfoDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var listUsers = await _userRepository.GetAllAsync(cancellationToken);
+        var userEntities = await _userRepository.GetAllAsync(cancellationToken);
 
-        var userDtos = _mapper.Map<List<UserShortInfoDto>>(listUsers);
+        var userDtos = _mapper.Map<List<UserShortInfoDto>>(userEntities);
         return userDtos;
     }
 
     /// <inheritdoc />
-    public async Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserEditDto dto, CancellationToken cancellationToken)
+    public async Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserUpdateDto updateDto,
+        CancellationToken cancellationToken)
     {
-        var currentuser = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
+        var userEntity = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
 
-        _mapper.Map(dto, currentuser);
+        _mapper.Map(updateDto, userEntity);
 
-        var updatedUser = await _userRepository.UpdateAsync(currentuser, cancellationToken);
+        var updatedUserEntity = await _userRepository.UpdateAsync(userEntity, cancellationToken);
 
-        var userDto = _mapper.Map<UserUpdatedDto>(updatedUser);
-        return userDto;
+        var updatedUserDto = _mapper.Map<UserUpdatedDto>(updatedUserEntity);
+        return updatedUserDto;
     }
 
     /// <inheritdoc />
@@ -60,27 +62,29 @@ public class UserService : IUserService
     {
         if (!Enum.IsDefined(typeof(UserRole), roleDto.Role)) throw new InvalidRoleValueException();
 
-        var user = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
+        var userEntity = await _userRepository.FindWhereAsync(u => u.Id == id, cancellationToken);
 
-        _mapper.Map(roleDto, user);
+        _mapper.Map(roleDto, userEntity);
 
-        var dto = await _userRepository.UpdateAsync(user, cancellationToken);
-        var updatedDto = _mapper.Map<UserRoleDto>(dto);
-        return updatedDto;
+        var updatedUserEntity = await _userRepository.UpdateAsync(userEntity, cancellationToken);
+
+        var updatedUserDto = _mapper.Map<UserRoleDto>(updatedUserEntity);
+        return updatedUserDto;
     }
 
     /// <inheritdoc />
     public async Task DoesUserExistByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var exist = await _userRepository.DoesUserExistWhereAsync(u => u.Id == id, cancellationToken);
+        var userExists = await _userRepository.DoesUserExistWhereAsync(u => u.Id == id, cancellationToken);
 
-        if (!exist) throw new UserNotFoundException(id);
+        if (!userExists) throw new UserNotFoundException(id);
     }
 
     /// <inheritdoc />
-    public Task<bool> ValidateUserAsync(Guid currentUserid, Guid otherSourceUserId,
+    public Task CheckUserPermissionAsync(Guid currentUserid, Guid otherSourceUserId,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult(currentUserid == otherSourceUserId);
+        if (currentUserid != otherSourceUserId) throw new PermissionException();
+        return Task.CompletedTask;
     }
 }

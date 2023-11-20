@@ -63,10 +63,10 @@ builder.Services.AddSwaggerGen(s =>
 
     var includeDocsTypesMarkers = new[]
     {
-        typeof(AccountInfoDto), 
-        typeof(UserInfoDto),    
+        typeof(AccountInfoDto),
+        typeof(UserInfoDto),
         typeof(SubCategoryInfoDto),
-        typeof(CategoryInfoDto), 
+        typeof(CategoryInfoDto),
         typeof(AttachmentInfoDto),
         typeof(AdvertisementInfoDto),
         typeof(AdvertisementController)

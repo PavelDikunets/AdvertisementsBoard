@@ -1,16 +1,15 @@
 namespace AdvertisementsBoard.Common.ErrorExceptions.CategoryErrorExceptions;
 
 /// <summary>
-///     Исключение, когда категория уже существует с таким наименованием.
+///     Исключение, когда категория уже существует.
 /// </summary>
 public class CategoryAlreadyExistsException : Exception
 {
     /// <summary>
     ///     Инициализирует экземпляр класса <see cref="CategoryAlreadyExistsException" /> с указанием сообщения об ошибке.
     /// </summary>
-    /// <param name="сategoryName">Наименование категории.</param>
-    public CategoryAlreadyExistsException(string сategoryName) : base(
-        $"Категория с наименованием '{сategoryName}' уже существует.")
+    /// <param name="categoryName">Имя категории.</param>
+    public CategoryAlreadyExistsException(string categoryName) : base($"Категория '{categoryName}' уже существует.")
     {
     }
 }

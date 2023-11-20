@@ -15,7 +15,7 @@ public class AttachmentProfile : Profile
     public AttachmentProfile()
     {
         CreateMap<AttachmentUploadDto, Attachment>().IgnoreAllNonExisting();
-        CreateMap<AttachmentEditDto, Attachment>().IgnoreAllNonExisting();
+        CreateMap<AttachmentUpdateDto, Attachment>().IgnoreAllNonExisting();
 
         CreateMap<Attachment, AttachmentShortInfoDto>();
         CreateMap<Attachment, AttachmentInfoDto>();

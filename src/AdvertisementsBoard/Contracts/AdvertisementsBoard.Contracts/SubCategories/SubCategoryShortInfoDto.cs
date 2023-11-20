@@ -11,5 +11,4 @@ public class SubCategoryShortInfoDto : BaseDto
     ///     Наименование подкатегории.
     /// </summary>
     public string Name { get; set; }
-
 }

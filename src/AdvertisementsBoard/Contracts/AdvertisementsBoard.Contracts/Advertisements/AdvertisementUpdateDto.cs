@@ -5,7 +5,7 @@ namespace AdvertisementsBoard.Contracts.Advertisements;
 /// <summary>
 ///     Модель обновления объявления.
 /// </summary>
-public class AdvertisementEditDto
+public class AdvertisementUpdateDto
 {
     /// <summary>
     ///     Заголовок.

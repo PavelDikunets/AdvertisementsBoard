@@ -28,8 +28,8 @@ public class BlockUserMiddleware
         var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
         if (token != null)
         {
-               var userIdValue = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-               if (!Guid.TryParse(userIdValue, out var userId)) throw new AuthenticationFailedException();
+            var userIdValue = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdValue, out var userId)) throw new AuthenticationFailedException();
             var isBlocked = await accountService.IsAccountBlocked(userId, context.RequestAborted);
             if (isBlocked) throw new AccountForbiddenException();
         }

@@ -34,7 +34,7 @@ public class AdvertisementInfoDto
     ///     Список моделей вложений с информацией.
     /// </summary>
     public List<AttachmentShortInfoDto> Attachments { get; set; }
-    
+
     /// <summary>
     ///     Модель информации о подкатегории.
     /// </summary>

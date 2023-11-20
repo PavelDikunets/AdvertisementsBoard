@@ -19,30 +19,28 @@ public interface IAccountRepository
     /// <summary>
     ///     Создать аккаунт.
     /// </summary>
-    /// <param name="account">Сущность аккаунта.</param>
+    /// <param name="entity">Сущность аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Идентификатор созданного пользователя.</returns>
-    Task<Account> CreateAsync(Account account, CancellationToken cancellationToken);
+    /// <returns>Идентификатор созданного аккаунта.</returns>
+    Task<Guid> CreateAsync(Account entity, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить все аккаунты.
+    ///     Получить список аккаунтов.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageSize">Размер страницы.</param>
     /// <param name="pageNumber">Номер страницы</param>
     /// <param name="isBlocked">Признак блокировки.</param>
-    /// <returns>Список аккаунтов с краткой информацией.</returns>
-    Task<List<Account>> GetAllAsync(CancellationToken cancellationToken, int pageSize,
-        int pageNumber,
-        bool isBlocked);
+    /// <returns>Список аккаунтов.</returns>
+    Task<List<Account>> GetAllAsync(CancellationToken cancellationToken, int pageSize, int pageNumber, bool isBlocked);
 
     /// <summary>
     ///     Обновить аккаунт.
     /// </summary>
-    /// <param name="account">Сущность аккаунта.</param>
+    /// <param name="entity">Сущность аккаунта.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленной информацией аккаунта.</returns>
-    Task<Account> UpdateAsync(Account account, CancellationToken cancellationToken);
+    /// <returns>Сущность аккаунта.</returns>
+    Task<Account> UpdateAsync(Account entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить аккаунт по идентификатору.

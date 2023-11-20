@@ -26,10 +26,10 @@ public interface IUserService
     ///     Обновить пользователя по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="dto">Модель редактирования пользователя.</param>
+    /// <param name="updateDto">Модель редактирования пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель пользователя.</returns>
-    Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserEditDto dto, CancellationToken cancellationToken);
+    Task<UserUpdatedDto> UpdateByIdAsync(Guid id, UserUpdateDto updateDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Назначить роль пользователю.
@@ -50,11 +50,11 @@ public interface IUserService
     Task DoesUserExistByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Проверят, является ли пользователь автором объявления.
+    ///     Проверят, есть ли у пользователя разрешение на изменения.
     /// </summary>
     /// <param name="currentUserid">Идентификатор текущего пользователя.</param>
     /// <param name="otherSourceUserId">Идентификатор пользователя, полученный из другого источника.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если пользователь является автором объявления, false в противном случае.</returns>
-    Task<bool> ValidateUserAsync(Guid currentUserid, Guid otherSourceUserId, CancellationToken cancellationToken);
+    Task CheckUserPermissionAsync(Guid currentUserid, Guid otherSourceUserId, CancellationToken cancellationToken);
 }

@@ -29,7 +29,7 @@ public interface ICommentRepository
     /// <param name="comment"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного комментария.</returns>
-    Task<Comment> CreateAsync(Comment comment, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(Comment comment, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить комментарий.

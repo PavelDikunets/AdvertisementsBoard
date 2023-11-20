@@ -32,7 +32,7 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить все вложения к объявлению.
+    ///     Получить список вложений к объявлению по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
@@ -49,7 +49,7 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Загрузить вложения к объявлению.
+    ///     Загрузить вложения к объявлению по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
@@ -74,7 +74,7 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить вложение.
+    ///     Получить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
@@ -91,7 +91,7 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Редактировать вложение.
+    ///     Обновить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="dto">Модель редактирования вложения.</param>
@@ -103,7 +103,7 @@ public class AttachmentController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [HttpPut("/attachments/{id:guid}")]
     [Authorize]
-    public async Task<IActionResult> UpdateByIdAsync(Guid id, [FromForm] AttachmentEditDto dto,
+    public async Task<IActionResult> UpdateByIdAsync(Guid id, [FromForm] AttachmentUpdateDto dto,
         CancellationToken cancellationToken)
     {
         var userId = GetUserIdFromClaims();
@@ -113,7 +113,7 @@ public class AttachmentController : ControllerBase
     }
 
     /// <summary>
-    ///     Удалить вложение.
+    ///     Удалить вложение по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>

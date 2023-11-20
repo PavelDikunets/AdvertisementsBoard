@@ -18,9 +18,8 @@ public class AdvertisementProfile : Profile
         CreateMap<Advertisement, AdvertisementInfoDto>();
         CreateMap<Advertisement, AdvertisementShortInfoDto>()
             .ForMember(dest => dest.Attachment, map => map.MapFrom(src => src.Attachments.FirstOrDefault()));
-        CreateMap<Advertisement, AdvertisementCreatedDto>();
 
-        CreateMap<AdvertisementEditDto, Advertisement>().IgnoreAllNonExisting();
+        CreateMap<AdvertisementUpdateDto, Advertisement>().IgnoreAllNonExisting();
         CreateMap<AdvertisementCreateDto, Advertisement>().IgnoreAllNonExisting();
     }
 }

@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using AdvertisementsBoard.Application.AppServices.Contexts.Accounts.Services;
+using AdvertisementsBoard.Common.ErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.AuthenticationErrorExceptions;
 using AdvertisementsBoard.Contracts.Accounts;
 using AdvertisementsBoard.Contracts.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AdvertisementsBoard.Hosts.Api.Controllers;
 
@@ -24,7 +26,7 @@ public class AccountController : ControllerBase
     /// <summary>
     ///     Инициализирует экземпляр <see cref="AccountController" />
     /// </summary>
-    /// <param name="logger">Логгер.</param>
+    /// <param name="logger">Логирование.</param>
     /// <param name="accountService">Сервис для работы с аккаунтами.</param>
     public AccountController(ILogger<AccountController> logger, IAccountService accountService)
     {
@@ -43,20 +45,25 @@ public class AccountController : ControllerBase
     /// <returns>Модель созданного аккаунта.</returns>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(AccountCreatedDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> SignUpAsync([FromBody] AccountCreateDto createDto,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос регистрации аккаунта пользователя '{userNickName}'.", createDto.User.NickName);
+        _logger.LogInformation("Запрос регистрации аккаунта пользователя '{User}'.",
+            JsonConvert.SerializeObject(createDto.User));
 
-        var createdAccount = await _accountService.SignUpAsync(createDto, cancellationToken);
+        var createdAccountId = await _accountService.SignUpAsync(createDto, cancellationToken);
 
-        _logger.LogInformation("Аккаунт пользователя '{userNickName}' успешно зарегистрирован.",
-            createDto.User.NickName);
+        _logger.LogInformation("Аккаунт Id: '{AccountId}' пользователя '{User}' успешно зарегистрирован.",
+            createdAccountId, JsonConvert.SerializeObject(createDto.User));
 
-        return Created($"/accounts/{createdAccount.Id}", createdAccount);
+        var relativeUrl = Url.Action("GetById", new { id = createdAccountId });
+
+        if (relativeUrl == null) throw new UrlGenerationException();
+
+        return Created(relativeUrl, createdAccountId);
     }
 
     /// <summary>
@@ -77,7 +84,7 @@ public class AccountController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SignInAsync([FromBody] AccountSignInDto dto, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос  входа в аккаунт.");
+        _logger.LogInformation("Запрос входа в аккаунт.");
 
         var token = await _accountService.SignInAsync(dto, cancellationToken);
 
@@ -120,7 +127,7 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить информацию об аккаунте.
+    ///     Получить аккаунт по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission> Уровень доступа: администратор.</permission>
@@ -137,19 +144,19 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Запрос аккаунта по Id: {Id}.", id);
 
         var account = await _accountService.GetByIdAsync(id, cancellationToken);
 
-        _logger.LogInformation("Аккаунт по '{Id}' успешно получен.", id);
+        _logger.LogInformation("Аккаунт успешно получен: '{Account}' .", JsonConvert.SerializeObject(account));
 
         return Ok(account);
     }
 
     /// <summary>
-    ///     Получить аккаунт текущим пользователем.
+    ///     Получить текущий аккаунт.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <response code="200">Аккаунт успешно получен.</response>
@@ -175,7 +182,7 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    ///     Изменить пароль.
+    ///     Изменить пароль текущего аккаунта.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
@@ -184,7 +191,6 @@ public class AccountController : ControllerBase
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Пароль успешно изменен.</response>
     /// <response code="400">Некорректный запрос.</response>
-    /// <response code="422">Некорректные данные.</response>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPatch("password")]
@@ -194,16 +200,16 @@ public class AccountController : ControllerBase
     {
         var userId = GetUserIdFromClaims();
 
-        _logger.LogInformation("Запрос изменения пароля пользователем Id: '{userId}'.", userId);
+        _logger.LogInformation("Запрос изменения пароля пользователем Id: '{UserId}'.", userId);
 
         await _accountService.ChangePasswordAsync(userId, dto, cancellationToken);
 
-        _logger.LogInformation("Пароль пользователя Id: '{userId}' успешно изменен.", userId);
+        _logger.LogInformation("Пароль пользователя Id: '{UserId}' успешно изменен.", userId);
         return Ok();
     }
 
     /// <summary>
-    ///     Заблокировать аккаунт.
+    ///     Заблокировать аккаунт по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: администратор.</permission>
@@ -222,7 +228,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
     [HttpPatch("{id:guid}/block")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> BlockByIdAsync(Guid id, [FromBody] AccountBlockStatusDto statusDto,
+    public async Task<IActionResult> BlockByIdAsync([Required] Guid id, [FromBody] AccountBlockStatusDto statusDto,
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Запрос установки блоровки аккаунта по Id: '{Id}' в статус '{IsBlocked}'.",
@@ -237,7 +243,7 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    ///     Удалить аккаунт.
+    ///     Удалить аккаунт по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: администратор.</permission>
@@ -254,7 +260,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteByIdAsync([Required] Guid id, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Запрос удаления аккаунта по Id: '{Id}'.", id);
 

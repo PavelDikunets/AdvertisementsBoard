@@ -33,7 +33,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить всех пользователей.
+    ///     Получить список пользователей.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
@@ -48,11 +48,11 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Запрос списка пользователей.");
 
-        var listUsers = await _userService.GetAllAsync(cancellationToken);
+        var listOfUsers = await _userService.GetAllAsync(cancellationToken);
 
         _logger.LogInformation("Список пользователей успешно получен.");
 
-        return Ok(listUsers);
+        return Ok(listOfUsers);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///     Получить пользователя.
+    ///     Получить пользователя по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
@@ -109,7 +109,7 @@ public class UserController : ControllerBase
 
 
     /// <summary>
-    ///     Редактировать пользователя.
+    ///     Обновить текущего пользователя.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
@@ -125,7 +125,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [HttpPut("current")]
     [Authorize]
-    public async Task<IActionResult> UpdateByIdAsync([FromBody] UserEditDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateByIdAsync([FromBody] UserUpdateDto dto, CancellationToken cancellationToken)
     {
         var userId = GetUserIdFromClaims();
 
@@ -140,7 +140,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///     Назначить роль пользователю.
+    ///     Назначить роль пользователю по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: администратор.</permission>
@@ -161,7 +161,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [HttpPut("{id:guid}/role")]
+    [HttpPatch("{id:guid}/role")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> SetRoleByIdAsync(Guid id, [FromBody] UserRoleDto dto,
         CancellationToken cancellationToken)

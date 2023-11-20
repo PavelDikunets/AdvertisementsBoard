@@ -40,10 +40,10 @@ public interface IAttachmentService
     /// </summary>
     /// <param name="id">Идентификатор вложения.</param>
     /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="editDto">Модель обновления вложения.</param>
+    /// <param name="updateDto">Модель обновления вложения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленным вложением.</returns>
-    Task<AttachmentInfoDto> UpdateByIdAsync(Guid id, Guid userId, AttachmentEditDto editDto,
+    Task<AttachmentInfoDto> UpdateByIdAsync(Guid id, Guid userId, AttachmentUpdateDto updateDto,
         CancellationToken cancellationToken);
 
     /// <summary>
