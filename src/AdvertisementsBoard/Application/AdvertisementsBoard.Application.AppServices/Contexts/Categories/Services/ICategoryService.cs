@@ -25,19 +25,19 @@ public interface ICategoryService
     /// <summary>
     ///     Создать категорию.
     /// </summary>
-    /// <param name="dto">Модель создания категории.</param>
+    /// <param name="createDto">Модель создания категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель категории.</returns>
-    Task<CategoryShortInfoDto> CreateAsync(CategoryCreateDto dto, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(CategoryCreateDto createDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить категорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
-    /// <param name="categoryDto">Модель обновления категории.</param>
+    /// <param name="updateDto">Модель обновления категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель категории.</returns>
-    Task<CategoryInfoDto> UpdateByIdAsync(Guid id, CategoryEditDto categoryDto, CancellationToken cancellationToken);
+    Task<CategoryInfoDto> UpdateByIdAsync(Guid id, CategoryUpdateDto updateDto, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Удалить категорию по идентификатору.
@@ -45,4 +45,11 @@ public interface ICategoryService
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Проверить категорию на существование по идентификатору.
+    /// </summary>
+    /// <param name="categoryId">Идентификатор категории.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    Task DoesCategoryExistAsync(Guid categoryId, CancellationToken cancellationToken);
 }
