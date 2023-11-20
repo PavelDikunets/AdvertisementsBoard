@@ -40,5 +40,5 @@ AdvertisementBoard - это веб API приложение, которое по
 3. Запустите приложение с помощью команды `docker-compose up -d --build` без стека ELK, 
    со стеком ELK: `docker-compose -f docker-compose.yml -f docker-compose.elk.yml up -d --build`
 5. Для доступа к API используйте адрес `http://localhost5259/swagger/` 
-   Логин и пароль для администратора по умолчанию: admin@admin, adminadmin
+   Логин и пароль для администратора по умолчанию: admin@admin.com, adminadmin
 6. Для доступа к Kibana используйте адрес `http://localhost:5601`
