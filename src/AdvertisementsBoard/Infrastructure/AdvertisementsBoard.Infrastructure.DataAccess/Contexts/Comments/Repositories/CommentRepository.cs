@@ -39,10 +39,10 @@ public class CommentRepository : ICommentRepository
     }
 
     /// <inheritdoc />
-    public async Task<Comment> CreateAsync(Comment comment, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Comment comment, CancellationToken cancellationToken)
     {
         await _repository.AddAsync(comment, cancellationToken);
-        return comment;
+        return comment.Id;
     }
 
     /// <inheritdoc />

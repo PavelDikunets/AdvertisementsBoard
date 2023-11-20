@@ -31,15 +31,15 @@ public class CategoryRepository : ICategoryRepository
     /// <inheritdoc />
     public async Task<List<Category>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var listCategories = await _repository.GetAll().ToListAsync(cancellationToken);
-        return listCategories;
+        var listOfCategories = await _repository.GetAll().ToListAsync(cancellationToken);
+        return listOfCategories;
     }
 
     /// <inheritdoc />
-    public async Task<Category> CreateAsync(Category category, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Category category, CancellationToken cancellationToken)
     {
         await _repository.AddAsync(category, cancellationToken);
-        return category;
+        return category.Id;
     }
 
     /// <inheritdoc />
@@ -61,16 +61,14 @@ public class CategoryRepository : ICategoryRepository
     public async Task<bool> DoesCategoryExistWhereAsync(Expression<Func<Category, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var exists = await _repository.FindAnyAsync(filter, cancellationToken);
-        return exists;
+        return await _repository.FindAnyAsync(filter, cancellationToken);
     }
 
     public async Task<Category> FindWhereAsync(Expression<Func<Category, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var category = await _repository.GetAllFiltered(filter)
+        var category = await _repository.FindWhereAsync(filter)
             .AsNoTracking()
-            .AsSplitQuery()
             .FirstOrDefaultAsync(cancellationToken);
 
         if (category == null) throw new CategoryNotFoundException();

@@ -40,7 +40,7 @@ public interface IAdvertisementService
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного объявления.</returns>
-    Task<AdvertisementCreatedDto> CreateAsync(AdvertisementCreateDto dto, Guid userId,
+    Task<Guid> CreateAsync(AdvertisementCreateDto dto, Guid userId,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -51,7 +51,7 @@ public interface IAdvertisementService
     /// <param name="dto">Модель обновления объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленным объявлением.</returns>
-    Task<AdvertisementUpdatedDto> UpdateByIdAsync(Guid id, Guid userId, AdvertisementEditDto dto,
+    Task<AdvertisementUpdatedDto> UpdateByIdAsync(Guid id, Guid userId, AdvertisementUpdateDto dto,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -68,5 +68,5 @@ public interface IAdvertisementService
     /// <param name="id">Идентификатор объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор пользователя.</returns>
-    Task<Guid> GetUserIdAsync(Guid id, CancellationToken cancellationToken);
+    //  Task<Guid> GetUserIdAsync(Guid id, CancellationToken cancellationToken);
 }

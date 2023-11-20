@@ -32,25 +32,24 @@ public class SubCategoryRepository : ISubCategoryRepository
     /// <inheritdoc />
     public async Task<List<SubCategory>> GetAllAsync(Guid categoryId, CancellationToken cancellationToken)
     {
-        var listSubCategories = await _repository.GetAll()
-            .Where(a => a.CategoryId == categoryId)
+        var listOfSubCategories = await _repository.FindWhereAsync(s => s.CategoryId == categoryId)
             .ToListAsync(cancellationToken);
 
-        return listSubCategories;
+        return listOfSubCategories;
     }
 
     /// <inheritdoc />
-    public async Task<SubCategory> CreateAsync(SubCategory subCategory, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(SubCategory entity, CancellationToken cancellationToken)
     {
-        await _repository.AddAsync(subCategory, cancellationToken);
-        return subCategory;
+        await _repository.AddAsync(entity, cancellationToken);
+        return entity.Id;
     }
 
     /// <inheritdoc />
-    public async Task<SubCategory> UpdateAsync(SubCategory subCategory, CancellationToken cancellationToken)
+    public async Task<SubCategory> UpdateAsync(SubCategory entity, CancellationToken cancellationToken)
     {
-        await _repository.UpdateAsync(subCategory, cancellationToken);
-        return subCategory;
+        await _repository.UpdateAsync(entity, cancellationToken);
+        return entity;
     }
 
     /// <inheritdoc />
@@ -61,24 +60,24 @@ public class SubCategoryRepository : ISubCategoryRepository
         await _repository.DeleteAsync(subCategory, cancellationToken);
     }
 
-
-    public async Task<SubCategory> FindWhereAsync(Expression<Func<SubCategory, bool>> predicate,
+    /// <inheritdoc />
+    public async Task<bool> DoesSubCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var subCategory = await _repository.GetAllFiltered(predicate)
+        var subCategoryExists = await _repository.FindAnyAsync(filter, cancellationToken);
+        return subCategoryExists;
+    }
+
+    public async Task<SubCategory> FindWhereAsync(Expression<Func<SubCategory, bool>> filter,
+        CancellationToken cancellationToken)
+    {
+        var subCategory = await _repository.FindWhereAsync(filter)
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
         if (subCategory == null) throw new SubCategoryNotFoundException();
 
         return subCategory;
-    }
-
-    /// <inheritdoc />
-    public async Task<bool> DoesSubCategoryExistWhereAsync(Expression<Func<SubCategory, bool>> predicate,
-        CancellationToken cancellationToken)
-    {
-        return await _repository.FindAnyAsync(predicate, cancellationToken);
     }
 
 

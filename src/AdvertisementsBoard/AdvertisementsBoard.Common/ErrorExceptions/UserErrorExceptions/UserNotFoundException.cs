@@ -7,8 +7,7 @@ public class UserNotFoundException : Exception
 {
     /// <summary>
     ///     Инициализирует экземпляр класса
-    ///     <see cref="UserNotFoundException" /> с указанием сообщения об
-    ///     ошибке.
+    ///     <see cref="UserNotFoundException" /> с указанием сообщения об ошибке.
     /// </summary>
     public UserNotFoundException() : base("Пользователь не найден.")
     {

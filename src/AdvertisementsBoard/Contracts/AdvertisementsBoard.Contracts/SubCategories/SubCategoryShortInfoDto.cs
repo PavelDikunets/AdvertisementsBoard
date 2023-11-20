@@ -1,5 +1,4 @@
 using AdvertisementsBoard.Contracts.Base;
-using AdvertisementsBoard.Contracts.Categories;
 
 namespace AdvertisementsBoard.Contracts.SubCategories;
 
@@ -12,5 +11,4 @@ public class SubCategoryShortInfoDto : BaseDto
     ///     Наименование подкатегории.
     /// </summary>
     public string Name { get; set; }
-
 }

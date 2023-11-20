@@ -27,21 +27,20 @@ public interface ISubCategoryService
     ///     Создать подкатегорию.
     /// </summary>
     /// <param name="categoryId">Идентификатор категории.</param>
-    /// <param name="dto"></param>
+    /// <param name="categoryDto"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <param name="entity"></param>
     /// <returns>Идентификатор созданной подкатегории.</returns>
-    Task<SubCategoryShortInfoDto> CreateAsync(Guid categoryId, SubCategoryCreateDto dto,
+    Task<Guid> CreateAsync(Guid categoryId, SubCategoryCreateDto categoryDto,
         CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить подкатегорию по идентификатору.
     /// </summary>
-    /// <param name="categoryId">Идентификатор подкатегории.</param>
-    /// <param name="editDto">Модель обновления подкатегории.</param>
+    /// <param name="id">Идентификатор подкатегории.</param>
+    /// <param name="updateDto">Модель обновления подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с обновленной подкатегорией.</returns>
-    Task<SubCategoryInfoDto> UpdateByIdAsync(Guid categoryId, SubCategoryEditDto editDto,
+    Task<SubCategoryInfoDto> UpdateByIdAsync(Guid id, SubCategoryUpdateDto updateDto,
         CancellationToken cancellationToken);
 
     /// <summary>

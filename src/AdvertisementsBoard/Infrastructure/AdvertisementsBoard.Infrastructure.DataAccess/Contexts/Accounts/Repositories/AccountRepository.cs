@@ -30,32 +30,30 @@ public class AccountRepository : IAccountRepository
 
     /// <inheritdoc />
     public async Task<List<Account>> GetAllAsync(CancellationToken cancellationToken,
-        int pageNumber, int pageSize, bool? isBlocked)
+        int pageNumber, int pageSize, bool isBlocked)
     {
-        var query = _repository.GetAllFiltered(a => true);
-
-        if (isBlocked != null) query = query.Where(s => s.IsBlocked == isBlocked);
-
-        var listAccounts = await query.OrderBy(a => a.Email)
+        var listOfAccounts = await _repository.FindWhereAsync(a => true)
+            .Where(s => s.IsBlocked == isBlocked)
+            .OrderBy(a => a.Email)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return listAccounts;
+        return listOfAccounts;
     }
 
     /// <inheritdoc />
-    public async Task<Account> CreateAsync(Account account, CancellationToken cancellationToken)
+    public async Task<Guid> CreateAsync(Account entity, CancellationToken cancellationToken)
     {
-        await _repository.AddAsync(account, cancellationToken);
-        return account;
+        await _repository.AddAsync(entity, cancellationToken);
+        return entity.Id;
     }
 
     /// <inheritdoc />
-    public async Task<Account> UpdateAsync(Account account, CancellationToken cancellationToken)
+    public async Task<Account> UpdateAsync(Account entity, CancellationToken cancellationToken)
     {
-        await _repository.UpdateAsync(account, cancellationToken);
-        return account;
+        await _repository.UpdateAsync(entity, cancellationToken);
+        return entity;
     }
 
     /// <inheritdoc />
@@ -76,7 +74,7 @@ public class AccountRepository : IAccountRepository
     public async Task<Account> FindWhereAsync(Expression<Func<Account, bool>> filter,
         CancellationToken cancellationToken)
     {
-        var account = await _repository.GetAllFiltered(filter)
+        var account = await _repository.FindWhereAsync(filter)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (account == null) throw new AccountNotFoundException();

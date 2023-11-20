@@ -10,8 +10,6 @@ services:
     build:
       context: .
       dockerfile: src/AdvertisementsBoard/Hosts/AdvertisementsBoard.Hosts.Api/Dockerfile
-    entrypoint: [ "/wait-for-it.sh", "database:5432", "--", "/wait-for-it.sh", "-t", "60", "elasticsearch:9200", "--" ]
-    command: [ "dotnet", "AdvertisementsBoard.Hosts.Api.dll" ]
     environment:
       - "ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}"
       - "ASPNETCORE_URLS=http://+:5259"
@@ -23,7 +21,6 @@ services:
       - "5259:5259"
     networks:
       - app
-      - elk
   
   migrator:
     container_name: migrator

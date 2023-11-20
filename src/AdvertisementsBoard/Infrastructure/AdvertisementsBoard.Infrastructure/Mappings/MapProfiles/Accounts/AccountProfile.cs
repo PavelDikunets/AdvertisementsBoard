@@ -15,9 +15,11 @@ public class AccountProfile : Profile
     public AccountProfile()
     {
         CreateMap<Account, AccountInfoDto>();
-        CreateMap<Account, AccountBlockStatusDto>();
-        CreateMap<Account, AccountDto>();
-        CreateMap<Account, AccountCreatedDto>().IgnoreAllNonExisting();
+        CreateMap<Account, AccountShortInfoDto>();
+        CreateMap<Account, AccountAdminDto>();
+
         CreateMap<AccountCreateDto, Account>().IgnoreAllNonExisting();
+        CreateMap<AccountPasswordEditDto, Account>().IgnoreAllNonExisting();
+        CreateMap<AccountBlockStatusDto, Account>().IgnoreAllNonExisting();
     }
 }

@@ -30,7 +30,7 @@ public static class MapperConfigurator
             cfg.AddProfile<AccountProfile>();
             cfg.AddProfile<CommentProfile>();
         });
-        ;configuration.AssertConfigurationIsValid();
+        configuration.AssertConfigurationIsValid();
         return configuration;
     }
 }

@@ -1,8 +1,3 @@
-using AdvertisementsBoard.Contracts.Attachments;
-using AdvertisementsBoard.Contracts.Categories;
-using AdvertisementsBoard.Contracts.SubCategories;
-using AdvertisementsBoard.Contracts.Users;
-
 namespace AdvertisementsBoard.Contracts.Advertisements;
 
 /// <summary>
@@ -39,7 +34,7 @@ public class AdvertisementInfoDto
     ///     Список моделей вложений с информацией.
     /// </summary>
     public List<AttachmentShortInfoDto> Attachments { get; set; }
-    
+
     /// <summary>
     ///     Модель информации о подкатегории.
     /// </summary>

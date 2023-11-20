@@ -1,5 +1,5 @@
 using AdvertisementsBoard.Application.AppServices.Contexts.Comments.Repositories;
-using AdvertisementsBoard.Common.ErrorExceptions.CommentErrorExceptions;
+using AdvertisementsBoard.Application.AppServices.Contexts.Users.Services;
 using AdvertisementsBoard.Contracts.Comments;
 using AdvertisementsBoard.Domain.Comments;
 using AutoMapper;
@@ -11,69 +11,78 @@ public class CommentService : ICommentService
 {
     private readonly ICommentRepository _commentRepository;
     private readonly IMapper _mapper;
+    private readonly IUserService _userService;
 
-    public CommentService(ICommentRepository commentRepository, IMapper mapper)
+    /// <summary>
+    ///     Инициализирует экземпляр <see cref="CommentService" />.
+    /// </summary>
+    /// <param name="commentRepository">Репозиторий для работы с комментариями.</param>
+    /// <param name="userService">Сервис для работы с пользователями.</param>
+    /// <param name="mapper">Маппер.</param>
+    public CommentService(ICommentRepository commentRepository, IMapper mapper, IUserService userService)
     {
-        _mapper = mapper;
         _commentRepository = commentRepository;
+        _userService = userService;
+        _mapper = mapper;
     }
 
     /// <inheritdoc />
     public async Task<CommentInfoDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var comment = await _commentRepository.GetByIdAsync(id, cancellationToken);
+        var commentEntity = await _commentRepository.GetByIdAsync(id, cancellationToken);
 
-        var dto = _mapper.Map<CommentInfoDto>(comment);
-        return dto;
+        var commentDto = _mapper.Map<CommentInfoDto>(commentEntity);
+        return commentDto;
     }
 
     /// <inheritdoc />
     public async Task<List<CommentInfoDto>> GetAllByAdvertisementIdAsync(Guid advertisementId,
         CancellationToken cancellationToken)
     {
-        var listComments = await _commentRepository.GetAllByAdvertisementIdAsync(advertisementId, cancellationToken);
+        var commentEntities = await _commentRepository.GetAllByAdvertisementIdAsync(advertisementId, cancellationToken);
 
-        var commentDtos = _mapper.Map<List<CommentInfoDto>>(listComments);
+        var commentDtos = _mapper.Map<List<CommentInfoDto>>(commentEntities);
         return commentDtos;
     }
 
     /// <inheritdoc />
-    public async Task<CommentInfoDto> CreateAsync(Guid advertisementId, Guid userId, CommentCreateDto createDto,
+    public async Task<Guid> CreateAsync(Guid advertisementId, Guid userId, CommentCreateDto createDto,
         CancellationToken cancellationToken)
     {
-        var comment = _mapper.Map<Comment>(createDto);
+        var newCommentEntity = _mapper.Map<Comment>(createDto);
 
-        comment.Created = DateTime.UtcNow;
-        comment.UserId = userId;
-        comment.AdvertisementId = advertisementId;
-        var createdComment = await _commentRepository.CreateAsync(comment, cancellationToken);
+        newCommentEntity.Created = DateTime.UtcNow;
+        newCommentEntity.UserId = userId;
+        newCommentEntity.AdvertisementId = advertisementId;
 
-        var createdDto = _mapper.Map<CommentInfoDto>(createdComment);
-        return createdDto;
+        var createdCommentId = await _commentRepository.CreateAsync(newCommentEntity, cancellationToken);
+        return createdCommentId;
     }
 
     /// <inheritdoc />
-    public async Task<CommentUpdatedDto> UpdateByIdAsync(Guid id, Guid userId, CommentEditDto editDto,
+    public async Task<CommentUpdatedDto> UpdateByIdAsync(Guid id, Guid userId, CommentUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        var comment = await _commentRepository.GetByIdAsync(id, cancellationToken);
+        var commentEntity = await _commentRepository.GetByIdAsync(id, cancellationToken);
 
-        if (comment.UserId != userId) throw new CommentForbiddenException();
+        await _userService.CheckUserPermissionAsync(userId, commentEntity.UserId, cancellationToken);
 
-        _mapper.Map(editDto, comment);
-        comment.UserId = userId;
-        var updatedComment = await _commentRepository.UpdateAsync(comment, cancellationToken);
+        _mapper.Map(updateDto, commentEntity);
+        commentEntity.Id = id;
+        commentEntity.UserId = userId;
 
-        var updatedDto = _mapper.Map<CommentUpdatedDto>(updatedComment);
-        return updatedDto;
+        var updatedCommentEntity = await _commentRepository.UpdateAsync(commentEntity, cancellationToken);
+
+        var updatedCommentDto = _mapper.Map<CommentUpdatedDto>(updatedCommentEntity);
+        return updatedCommentDto;
     }
 
     /// <inheritdoc />
     public async Task DeleteByIdAsync(Guid id, Guid userId, CancellationToken cancellationToken)
     {
-        var comment = await _commentRepository.GetByIdAsync(id, cancellationToken);
+        var commentEntity = await _commentRepository.GetByIdAsync(id, cancellationToken);
 
-        if (comment.UserId != userId) throw new CommentForbiddenException();
+        await _userService.CheckUserPermissionAsync(userId, commentEntity.UserId, cancellationToken);
 
         await _commentRepository.DeleteByIdAsync(id, cancellationToken);
     }

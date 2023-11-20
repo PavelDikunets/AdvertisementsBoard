@@ -90,8 +90,8 @@ public static class ComponentReqistrar
             });
 
         #endregion
-        
-        
+
+
         services.AddAuthorization(s =>
 
             // Политика для незаблокированных пользователей.

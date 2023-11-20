@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using AdvertisementsBoard.Domain.Advertisements;
+﻿using AdvertisementsBoard.Domain.Advertisements;
 
 namespace AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Repositories;
 
@@ -13,7 +12,7 @@ public interface IAdvertisementRepository
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления.</returns>
+    /// <returns>Сущность объявления.</returns>
     Task<Advertisement> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
@@ -40,14 +39,14 @@ public interface IAdvertisementRepository
     /// <param name="entity">Сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Идентификатор созданного объявления.</returns>
-    Task<Advertisement> CreateAsync(Advertisement entity, CancellationToken cancellationToken);
+    Task<Guid> CreateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Обновить объявление.
     /// </summary>
     /// <param name="entity">Сущность объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель с обновленным объявлением.</returns>
+    /// <returns>Сущность объявления.</returns>
     Task<Advertisement> UpdateAsync(Advertisement entity, CancellationToken cancellationToken);
 
     /// <summary>
@@ -58,11 +57,9 @@ public interface IAdvertisementRepository
     Task DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Получить объявление по фильтру.
     /// </summary>
-    /// <param name="filter">Фильтр.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель объявления.</returns>
-    Task<Advertisement> FindWhereAsync(Expression<Func<Advertisement, bool>> filter,
-        CancellationToken cancellationToken);
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Advertisement> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 }

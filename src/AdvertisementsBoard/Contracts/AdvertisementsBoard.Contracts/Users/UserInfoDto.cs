@@ -1,3 +1,5 @@
+using AdvertisementsBoard.Common.Enums.Users;
+
 namespace AdvertisementsBoard.Contracts.Users;
 
 /// <summary>
@@ -19,4 +21,9 @@ public class UserInfoDto
     ///     Номер телефона.
     /// </summary>
     public string PhoneNumber { get; set; }
+
+    /// <summary>
+    ///     Роль пользователя.
+    /// </summary>
+    public UserRole Role { get; set; }
 }
