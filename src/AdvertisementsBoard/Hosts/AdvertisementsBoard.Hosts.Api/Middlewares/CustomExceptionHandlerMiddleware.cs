@@ -1,4 +1,5 @@
 using System.Text.Json;
+using AdvertisementsBoard.Common.ErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.AccountErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.AdvertisementErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.AttachmentErrorExceptions;
@@ -64,7 +65,7 @@ public class CustomExceptionHandlerMiddleware
                 logger.LogInformation(ex, "{Message}", ex.Message);
                 break;
 
-            case AdvertisementForbiddenException or AccountForbiddenException:
+            case AdvertisementForbiddenException or AccountForbiddenException or PermissionException:
                 context.Response.StatusCode = 403;
                 logger.LogInformation(ex, "{Message}", ex.Message);
                 break;
@@ -76,6 +77,11 @@ public class CustomExceptionHandlerMiddleware
 
             case PasswordMismatchException or InvalidUserIdException:
                 context.Response.StatusCode = 400;
+                logger.LogInformation(ex, "{Message}", ex.Message);
+                break;
+
+            case UrlGenerationException:
+                context.Response.StatusCode = 500;
                 logger.LogInformation(ex, "{Message}", ex.Message);
                 break;
         }
