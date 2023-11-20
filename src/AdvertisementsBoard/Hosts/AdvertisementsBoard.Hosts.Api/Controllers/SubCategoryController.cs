@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using AdvertisementsBoard.Application.AppServices.Contexts.SubCategories.Services;
+using AdvertisementsBoard.Common.ErrorExceptions;
 using AdvertisementsBoard.Contracts.Errors;
 using AdvertisementsBoard.Contracts.SubCategories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AdvertisementsBoard.Hosts.Api.Controllers;
 
@@ -16,19 +19,22 @@ namespace AdvertisementsBoard.Hosts.Api.Controllers;
 [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
 public class SubCategoryController : ControllerBase
 {
+    private readonly ILogger<SubCategoryController> _logger;
     private readonly ISubCategoryService _subCategoryService;
 
     /// <summary>
     ///     Инициализирует экземпляр <see cref="SubCategoryController" />
     /// </summary>
     /// <param name="subCategoryService">Сервис для работы с подкатегориями.</param>
-    public SubCategoryController(ISubCategoryService subCategoryService)
+    /// <param name="logger">Логгер.</param>
+    public SubCategoryController(ISubCategoryService subCategoryService, ILogger<SubCategoryController> logger)
     {
         _subCategoryService = subCategoryService;
+        _logger = logger;
     }
 
     /// <summary>
-    ///     Получить все подкатегории в категории.
+    ///     Получить список подкатегорий в категории по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
@@ -39,15 +45,20 @@ public class SubCategoryController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetAllAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _subCategoryService.GetAllAsync(id, cancellationToken);
-        return Ok(result);
+        _logger.LogInformation("Запрос списка подкатегорий в категории Id: '{CategoryId}'.", id);
+
+        var listOfSubcategories = await _subCategoryService.GetAllAsync(id, cancellationToken);
+
+        _logger.LogInformation("Список подкатегорий успешно получен в категории Id: '{CategoryId}'.", id);
+
+        return Ok(listOfSubcategories);
     }
 
     /// <summary>
-    ///     Создать подкатегорию в категории.
+    ///     Создать подкатегорию в категории по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор категории.</param>
-    /// <param name="dto">Модель создания подкатегории</param>
+    /// <param name="createDto">Модель создания подкатегории</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Подкатегория успешно создана.</response>
     /// <response code="400">Некорректный запрос.</response>
@@ -56,15 +67,27 @@ public class SubCategoryController : ControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [HttpPost("/categories/{id:guid}/subcategories")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> CreateAsync(Guid id, SubCategoryCreateDto dto,
+    public async Task<IActionResult> CreateAsync([Required] Guid id, SubCategoryCreateDto createDto,
         CancellationToken cancellationToken)
     {
-        var result = await _subCategoryService.CreateAsync(id, dto, cancellationToken);
-        return Created(nameof(CreateAsync), result);
+        _logger.LogInformation("Запрос создания подкатегории: '{SubCategory}' в категории Id: '{CategoryId}'.",
+            JsonConvert.SerializeObject(createDto), id);
+
+        var createdSubCategoryId = await _subCategoryService.CreateAsync(id, createDto, cancellationToken);
+
+        var relativeUrl = Url.Action("GetById", new { id = createdSubCategoryId });
+
+        if (relativeUrl == null) throw new UrlGenerationException();
+
+        _logger.LogInformation(
+            "Подкатегория успешно создана Id: '{SubCategoryId}' '{SubCategory}' в категории Id: '{CagerotyId}'.",
+            createdSubCategoryId, JsonConvert.SerializeObject(createDto), id);
+
+        return Created(relativeUrl, createdSubCategoryId);
     }
 
     /// <summary>
-    ///     Получить подкатегорию.
+    ///     Получить подкатегорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
@@ -77,16 +100,21 @@ public class SubCategoryController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _subCategoryService.GetByIdAsync(id, cancellationToken);
-        return Ok(result);
+        _logger.LogInformation("Запрос подкатегории по Id: '{SubCategoryId}'.", id);
+
+        var subCategory = await _subCategoryService.GetByIdAsync(id, cancellationToken);
+
+        _logger.LogInformation("Категория успешно получена по Id: '{SubCategoryId}' '{SubCategory}'.",
+            id, JsonConvert.SerializeObject(subCategory));
+
+        return Ok(subCategory);
     }
 
-
     /// <summary>
-    ///     Редактировать подкатегорию.
+    ///     Обновить подкатегорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
-    /// <param name="dto">Модель редактирования подкатегории.</param>
+    /// <param name="updateDto">Модель обновления подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="404">Подкатегории не найдена.</response>
     /// <response code="200">Подкатегории успешно обновлена.</response>
@@ -97,26 +125,38 @@ public class SubCategoryController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> UpdateByIdAsync(Guid id, SubCategoryEditDto dto,
+    public async Task<IActionResult> UpdateByIdAsync(Guid id, SubCategoryUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        var result = await _subCategoryService.UpdateByIdAsync(id, dto, cancellationToken);
-        return Ok(result);
+        _logger.LogInformation("Запрос обновления подкатегории по Id: '{SubCategoryId}.", id);
+
+        var updatedSubCategory = await _subCategoryService.UpdateByIdAsync(id, updateDto, cancellationToken);
+
+        _logger.LogInformation("Подкатегория успешно обновлена по Id: '{SubCategoryId}', '{SubCategory}'.",
+            id, JsonConvert.SerializeObject(updatedSubCategory));
+
+        return Ok(updatedSubCategory);
     }
 
     /// <summary>
-    ///     Удалить подкатегорию.
+    ///     Удалить подкатегорию по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор подкатегории.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="204">Подкатегория успешно удалена.</response>
     /// <response code="404">Подкатегория не найдена.</response>
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Запрос удаления подкатегории по Id: '{SubCategoryId}'.", id);
+
         await _subCategoryService.DeleteByIdAsync(id, cancellationToken);
+
+        _logger.LogInformation("Подкатегория успешно удалена по Id: '{SubCategoryId}'.", id);
+
         return NoContent();
     }
 }
