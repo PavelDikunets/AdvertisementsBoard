@@ -37,7 +37,8 @@ AdvertisementBoard - это веб API приложение, которое по
 
 1. Клонируйте репозиторий с помощью команды `git clone https://github.com/PavelDikunets/AdvertisementBoard.git`
 2. Перейдите в папку проекта с помощью команды `cd AdvertisementBoard`
-3. Запустите приложение с помощью команды `docker-compose up -d --build` без стека ELK, со стеком ELK: `docker-compose -f docker-compose.yml -f docker-compose.elk.yml up -d --build`
+3. Запустите приложение с помощью команды `docker-compose up -d --build` без стека ELK, 
+   со стеком ELK: `docker-compose -f docker-compose.yml -f docker-compose.elk.yml up -d --build`
 5. Для доступа к API используйте адрес `http://localhost5259/swagger/` 
    Логин и пароль для администратора по умолчанию: admin@admin, adminadmin
 6. Для доступа к Kibana используйте адрес `http://localhost:5601`
