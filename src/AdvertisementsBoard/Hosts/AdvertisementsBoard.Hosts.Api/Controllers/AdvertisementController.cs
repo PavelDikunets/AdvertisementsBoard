@@ -1,10 +1,13 @@
-﻿using System.Security.Claims;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using AdvertisementsBoard.Application.AppServices.Contexts.Advertisements.Services;
+using AdvertisementsBoard.Common.ErrorExceptions;
 using AdvertisementsBoard.Common.ErrorExceptions.AuthenticationErrorExceptions;
 using AdvertisementsBoard.Contracts.Advertisements;
 using AdvertisementsBoard.Contracts.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AdvertisementsBoard.Hosts.Api.Controllers;
 
@@ -19,8 +22,6 @@ namespace AdvertisementsBoard.Hosts.Api.Controllers;
 public class AdvertisementController : ControllerBase
 {
     private readonly IAdvertisementService _advertisementService;
-
-    //  private readonly IUserClaimsService _userClaimsService;
     private readonly ILogger<AdvertisementController> _logger;
 
     /// <summary>
@@ -34,9 +35,8 @@ public class AdvertisementController : ControllerBase
         _logger = logger;
     }
 
-
     /// <summary>
-    ///     Получить постраничные объявления.
+    ///     Получить список объявлений с постраничной навигацией.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <param name="pageNumber">Номер страницы.</param>
@@ -46,20 +46,21 @@ public class AdvertisementController : ControllerBase
     [ProducesResponseType(typeof(AdvertisementShortInfoDto[]), StatusCodes.Status200OK)]
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken, int pageNumber = 0,
-        int pageSize = 10)
+    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken,
+        [Range(0, 100)] int pageNumber = 0,
+        [Range(1, int.MaxValue)] int pageSize = 10)
     {
         _logger.LogInformation("Запрос списка объявлений.");
 
-        var result = await _advertisementService.GetAllAsync(cancellationToken, pageSize, pageNumber);
+        var listOfAdvertisements = await _advertisementService.GetAllAsync(cancellationToken, pageSize, pageNumber);
 
         _logger.LogInformation("Список объявлений успешно получен.");
 
-        return Ok(result);
+        return Ok(listOfAdvertisements);
     }
 
     /// <summary>
-    ///     Получить список объявлений пользователя.
+    ///     Получить список объявлений текущего пользователя.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="200">Объявления найдены.</response>
@@ -71,17 +72,17 @@ public class AdvertisementController : ControllerBase
     {
         var userId = GetUserIdFromClaims();
 
-        _logger.LogInformation("Запрос списка объявлений аутентифицированного пользователя Id: {userId}.", userId);
+        _logger.LogInformation("Запрос списка объявлений пользователя Id: '{UserId}'.", userId);
 
-        var result = await _advertisementService.GetAllByUserIdAsync(userId, cancellationToken);
+        var listOfAdvertisements = await _advertisementService.GetAllByUserIdAsync(userId, cancellationToken);
 
-        _logger.LogInformation("Список объявлений пользователя успешно получен.");
+        _logger.LogInformation("Список объявлений пользователя Id: '{UserId}' успешно получен.", userId);
 
-        return Ok(result);
+        return Ok(listOfAdvertisements);
     }
 
     /// <summary>
-    ///     Получить объявление.
+    ///     Получить объявление по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор объявления.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
@@ -94,13 +95,14 @@ public class AdvertisementController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос объявления по Id: {Id}.", id);
+        _logger.LogInformation("Запрос объявления по Id: {AdvertisementId}.", id);
 
-        var result = await _advertisementService.GetByIdAsync(id, cancellationToken);
+        var advertisement = await _advertisementService.GetByIdAsync(id, cancellationToken);
 
-        _logger.LogInformation("Объявление по '{Id}' успешно получено.", id);
+        _logger.LogInformation("Объявление успешно получено: '{Advertisement}'.",
+            JsonConvert.SerializeObject(advertisement));
 
-        return Ok(result);
+        return Ok(advertisement);
     }
 
     /// <summary>
@@ -109,7 +111,7 @@ public class AdvertisementController : ControllerBase
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
     /// </remarks>
-    /// <param name="dto">Модель создания объявления</param>
+    /// <param name="createDto">Модель создания объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="201">Объявление успешно создано.</response>
     /// <response code="404">Не найдено.</response>
@@ -118,28 +120,33 @@ public class AdvertisementController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status404NotFound)]
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateAsync(AdvertisementCreateDto dto,
+    public async Task<IActionResult> CreateAsync(AdvertisementCreateDto createDto,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос создания объявления '{Title}'.", dto.Title);
+        _logger.LogInformation("Запрос создания объявления '{Advertisement}'.", JsonConvert.SerializeObject(createDto));
 
         var userId = GetUserIdFromClaims();
 
-        var id = await _advertisementService.CreateAsync(dto, userId, cancellationToken);
+        var createdAdvertisementId = await _advertisementService.CreateAsync(createDto, userId, cancellationToken);
 
-        _logger.LogInformation("Объявление '{Title}' успешно создано Id: {Id}.", dto.Title, id);
+        var relativeUrl = Url.Action("GetById", new { id = createdAdvertisementId });
 
-        return Created(nameof(CreateAsync), id);
+        if (relativeUrl == null) throw new UrlGenerationException();
+
+        _logger.LogInformation("Объявление  успешно создано: '{AdvertisementId}' пользователем Id: '{UserId}'.",
+            JsonConvert.SerializeObject(createdAdvertisementId), userId);
+
+        return Created(relativeUrl, createdAdvertisementId);
     }
 
     /// <summary>
-    ///     Редактировать объявление.
+    ///     Обновить объявление по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
     /// </remarks>
     /// <param name="id">Идентификатор объявления.</param>
-    /// <param name="dto">Модель объявления</param>
+    /// <param name="updateDto">Модель объявления</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <response code="404">Не найдено.</response>
     /// <response code="200">Объявление успешно обновлено.</response>
@@ -152,22 +159,25 @@ public class AdvertisementController : ControllerBase
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status403Forbidden)]
     [HttpPut("{id:guid}")]
     [Authorize]
-    public async Task<IActionResult> UpdateByIdAsync(Guid id, AdvertisementEditDto dto,
+    public async Task<IActionResult> UpdateByIdAsync(Guid id, AdvertisementUpdateDto updateDto,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос изменения объявления: {dto}, Id: '{Id}'.", id, dto);
+        _logger.LogInformation("Запрос обновления объявления по Id: '{AdvertisementId}'.", id);
 
         var userId = GetUserIdFromClaims();
 
-        var updatedDto = await _advertisementService.UpdateByIdAsync(id, userId, dto, cancellationToken);
+        var updatedAdvertisement =
+            await _advertisementService.UpdateByIdAsync(id, userId, updateDto, cancellationToken);
 
-        _logger.LogInformation("Объявление успешно изменено: {dto}, Id: '{Id}'.", id, updatedDto);
+        _logger.LogInformation(
+            "Объявление успешно обновлено по Id: '{AdvertisementId}' '{Advertisement}' пользователем Id: '{UserId}'.",
+            id, JsonConvert.SerializeObject(updatedAdvertisement), userId);
 
-        return Ok(updatedDto);
+        return Ok(updatedAdvertisement);
     }
 
     /// <summary>
-    ///     Удалить объявление.
+    ///     Удалить объявление по идентификатору.
     /// </summary>
     /// <remarks>
     ///     <permission>Уровень доступа: авторизованный пользователь.</permission>
@@ -181,13 +191,14 @@ public class AdvertisementController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Запрос удаления объявления по Id: '{Id}'.", id);
+        _logger.LogInformation("Запрос удаления объявления по Id: '{AdvertisementId}'.", id);
 
         var userId = GetUserIdFromClaims();
 
         await _advertisementService.DeleteByIdAsync(id, userId, cancellationToken);
 
-        _logger.LogInformation("Объявление успешно удалено по Id: '{Id}'.", id);
+        _logger.LogInformation("Объявление успешно удалено по Id: '{AdvertisementId}' пользователем Id: '{UserId}'.",
+            id, userId);
 
         return NoContent();
     }
