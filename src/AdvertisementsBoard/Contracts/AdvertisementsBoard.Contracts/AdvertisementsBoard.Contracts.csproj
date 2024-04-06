@@ -6,4 +6,24 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DocumentationFile>AdvertisementsBoard.Contracts.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DocumentationFile>AdvertisementsBoard.Contracts.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="AdvertisementsBoard.Contracts.xml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\AdvertisementsBoard.Common\AdvertisementsBoard.Common.csproj"/>
+    </ItemGroup>
+
 </Project>

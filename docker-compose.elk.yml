@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.17.14
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_USERNAME: ${ELASTICSEARCH_USER}
+      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+      discovery.type: single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - app
+
+  logstash:
+    container_name: logstash
+    image: logstash:7.17.14
+    depends_on:
+      - elasticsearch
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    networks:
+      - app
+
+  kibana:
+    container_name: kibana
+    image: kibana:7.17.14
+    depends_on:
+      - elasticsearch
+    environment:
+      elasticsearch.hosts: "http://elasticsearch:9200"
+      elasticsearch.username: ${ELASTICSEARCH_USER}
+      elasticsearch.password: ${ELASTICSEARCH_PASSWORD}
+      monitoring.ui.container.elasticsearch.enabled: "true"
+    ports:
+      - "5601:5601"
+    networks:
+      - app
+
+volumes:
+  elasticsearch-data:
+
+networks:
+  elk:
